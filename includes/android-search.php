@@ -1,14 +1,17 @@
 <?php
 include 'SearchAnalytics.php';
-
 $terms = filter_input(INPUT_POST, 'terms');
 $location = filter_input(INPUT_POST, 'location');
-$GLOBALS['limit'] = filter_input(INPUT_POST, 'limit');
+$limit = 10; // filter_input(INPUT_POST, 'limit');
 $page = filter_input(INPUT_POST, 'page');
 $offset = filter_input(INPUT_POST, 'offset');
 $distance = filter_input(INPUT_POST, 'distance');
-$type = "Desktop/Non-app";
-$platform = $_SERVER['HTTP_USER_AGENT'];
+$type = "Mobile";
+$platform = "iOS";
+
+if (isset($terms)) {
+    getResults($location, $distance, $terms);
+}
 
 $GLOBALS['lat'] = '';
 $GLOBALS['lng'] = '';
@@ -35,7 +38,7 @@ function getDataTables($location, $distance) {
 
     // First determine if zip or city/state was given
     $length = strlen($location);
-    echo $location;
+    
     if ($length == 5 && preg_match('|[0-9]|', $location)) {
 	    // If we are working with a zip code then we need to get the city, state, and country
 	    $json_zip = file_get_contents("https://maps.googleapis.com/maps/api/geocode/json?address=$location&key=AIzaSyDo0e6jGh6cZhToU-XRWeRHCKezjLT9_Ko");
@@ -54,7 +57,7 @@ function getDataTables($location, $distance) {
         $lng = $obj['results'][0]['geometry']['location']['lng'];
         
         // Assign the latitude and longitude to the global variables lat & lng, respectively.
-        //$GLOBALS['zip'] = $location;
+        $GLOBALS['zip'] = $location;
         $GLOBALS['lat'] = $lat;
         $GLOBALS['lng'] = $lng;
     } else {
@@ -64,7 +67,7 @@ function getDataTables($location, $distance) {
         $obj = json_decode($json, true);
         $lat = $obj['results'][0]['geometry']['location']['lat'];
         $lng = $obj['results'][0]['geometry']['location']['lng'];
-        //$GLOBALS['zip'] = $zipcode;
+        $GLOBALS['zip'] = $zipcode;
         $GLOBALS['lat'] = $lat;
         $GLOBALS['lng'] = $lng;
     }
@@ -144,43 +147,27 @@ function getResults($location, $distance, $terms) {
 
 
     // Remove all unwanted words from the search terms
-    $pattern = "/\ band | that | this | or | because | want | of | with | |[^a-zA-Z0-9]+\b/i ";
+    $pattern = "/\band|that|this|or|because|want|of| |\b/i";
     $sterile_terms = explode(" ", preg_replace($pattern, '/', $terms));
 
-	$sterilized_string = null;
     foreach ($sterile_terms as $sterilized) {
         $sterilized_string .= $sterilized;
     }
 
     $search_terms = array_diff(explode('/', $sterilized_string), ['']);
 
-	/*
-    $parameters_one = "$items_one.ITEM_NAME = '$search_terms' OR $items_one.ITEM_DESCRIPTION = '$search_terms' OR $items_one.COMPANY_ID = (SELECT COMPANY_ID FROM $customer_one WHERE $customer_one.COMPANY_NAME = '$search_terms') OR $customer_one.COMPANY_NAME = '$search_terms'";
-    
-    $parameters_two = "$items_two.ITEM_NAME = '$terms' OR $items_two.ITEM_DESCRIPTION = '$terms' OR $items_two.COMPANY_ID = (SELECT COMPANY_ID FROM $customer_two WHERE $customer_two.COMPANY_NAME = '$terms') OR $customer_two.COMPANY_NAME = '$terms'";
-    
-    $parameters_three = "$items_three.ITEM_NAME = '$search_terms' OR $items_three.ITEM_DESCRIPTION = '$$search_terms' OR $items_three.COMPANY_ID = (SELECT COMPANY_ID FROM $customer_three WHERE $customer_three.COMPANY_NAME = '$search_terms') OR $customer_three.COMPANY_NAME = '$search_terms'";
-	*/
-	
-	$parameters_one = '';
-	$parameters_two = '';
-	$parameters_three = '';
 
-	$loop = 0;
-	$joiner = null;
+    $parameters_one = "$items_one.ITEM_NAME = '$terms' OR $items_one.ITEM_DESCRIPTION = '$terms' OR $items_one.COMPANY_ID = (SELECT COMPANY_ID FROM $customer_one WHERE $customer_one.COMPANY_NAME = '$terms') OR $customer_one.COMPANY_NAME = '$terms' OR $customer_one.KEYWORDS = '$terms'";
+    
+    $parameters_two = "$items_two.ITEM_NAME = '$terms' OR $items_two.ITEM_DESCRIPTION = '$terms' OR $items_two.COMPANY_ID = (SELECT COMPANY_ID FROM $customer_two WHERE $customer_two.COMPANY_NAME = '$terms') OR $customer_two.COMPANY_NAME = '$terms' OR $customer_two.KEYWORDS = '$terms'";
+    
+    $parameters_three = "$items_three.ITEM_NAME = '$terms' OR $items_three.ITEM_DESCRIPTION = '$terms' OR $items_three.COMPANY_ID = (SELECT COMPANY_ID FROM $customer_three WHERE $customer_three.COMPANY_NAME = '$terms') OR $customer_three.COMPANY_NAME = '$terms' OR $customer_three.KEYWORDS = '$terms'";
+
+
     foreach ($search_terms as $new_terms) {
-	    if($loop > 0){
-		    $joiner = 'OR ';
-	    }       
-
-	    $parameters_one .= "$joiner $items_one.ITEM_NAME = '$new_terms' OR $items_one.ITEM_DESCRIPTION = '$new_terms' OR $items_one.COMPANY_ID = (SELECT COMPANY_ID FROM $customer_one WHERE $customer_one.COMPANY_NAME = '$search_terms') OR $customer_one.COMPANY_NAME = '$new_terms'  OR $items_one.ITEM_DESCRIPTION LIKE '%" . $new_terms . "%' OR $items_one.ITEM_NAME LIKE '%" . $new_terms . "%' OR $customer_one.COMPANY_NAME LIKE '%" . $new_terms . "%' ";
-        if(isset($items_two)){
-	        $parameters_two .= "$joiner $items_two.ITEM_DESCRIPTION LIKE '%" . $new_terms . "%' OR $items_two.ITEM_NAME LIKE '%" . $new_terms . "%' OR $customer_two.COMPANY_NAME LIKE '%" . $new_terms . "%' ";
-        }
-        if(isset($items_three)){
-			$parameters_three .= "$joiner $items_three.ITEM_DESCRIPTION LIKE '%" . $new_terms . "%' OR $items_three.ITEM_NAME LIKE '%" . $new_terms . "%' OR $customer_three.COMPANY_NAME LIKE '%" . $new_terms . "%' ";
-		}
-		$loop++;
+        $parameters_one .= " OR $items_one.ITEM_DESCRIPTION LIKE '%" . $new_terms . "%' OR $items_one.ITEM_NAME LIKE '%" . $new_terms . "%' OR $customer_one.KEYWORDS LIKE '%" . $new_terms . "%' OR $customer_one.COMPANY_NAME LIKE '%" . $new_terms . "%' ";
+        $parameters_two .= " OR $items_two.ITEM_DESCRIPTION LIKE '%" . $new_terms . "%' OR $items_two.ITEM_NAME LIKE '%" . $new_terms . "%' OR $customer_two.KEYWORDS LIKE '%" . $new_terms . "%' OR $customer_two.COMPANY_NAME LIKE '%" . $new_terms . "%' ";
+	$parameters_three .= " OR $items_three.ITEM_DESCRIPTION LIKE '%" . $new_terms . "%' OR $items_three.ITEM_NAME LIKE '%" . $new_terms . "%' OR $customer_three.KEYWORDS LIKE '%" . $new_terms . "%' OR $customer_three.COMPANY_NAME LIKE '%" . $new_terms . "%' ";
     }
 
     $sql = "SELECT $items_one.ID AS 'ITEM_ID', $customer_one.KEYWORDS AS 'KEYWORDS',$customer_one.LATITUDE AS 'LATITUDE', $customer_one.LONGITUDE AS 'LONGITUDE', $items_one.COMPANY_ID AS 'COMPANY_ID', $customer_one.COMPANY_NAME AS 'COMPANY', if($customer_one.SECONDARY_ADDRESS != '', CONCAT($customer_one.PRIMARY_ADDRESS, '\n', $customer_one.SECONDARY_ADDRESS), $customer_one.PRIMARY_ADDRESS) as 'ADDRESS', $customer_one.city as 'CITY', $customer_one.state AS 'STATE', $customer_one.zip AS 'ZIP', $items_one.ITEM_NAME AS 'NAME', $items_one.ITEM_RANK AS 'ITEM_RANK', $items_one.ITEM_DESCRIPTION AS 'DESCRIPTION', $items_one.ITEM_IMAGE AS 'PHOTO_DIRECTORY', $items_one.ID AS 'ID',  IF($customer_one.PRIMARY_PHONE != '', $customer_one.PRIMARY_PHONE, '') AS 'PHONE', $customer_one.COMPANY_URL AS 'LINK',DEGREES((ACOS(SIN(RADIANS($lat))*SIN(RADIANS($customer_one.LATITUDE))+ COS(RADIANS($lat))*COS(RADIANS($customer_one.LATITUDE))*COS(RADIANS(($customer_one.LONGITUDE)-($lng)))))) * 60 * 1.1515 AS 'DISTANCE' FROM $items_one JOIN $customer_one ON $customer_one.ID = $items_one.COMPANY_ID WHERE ($parameters_one) AND DEGREES((ACOS(SIN(RADIANS($lat))*SIN(RADIANS($customer_one.LATITUDE))+ COS(RADIANS($lat))*COS(RADIANS($customer_one.LATITUDE))*COS(RADIANS(($customer_one.LONGITUDE)-($lng)))))) * 60 * 1.1515 <= $distance";
@@ -191,7 +178,8 @@ function getResults($location, $distance, $terms) {
         $sql .= " UNION ALL SELECT $items_three.ID AS 'ITEM_ID', $customer_three.KEYWORDS AS 'KEYWORDS',$customer_three.LATITUDE AS 'LATITUDE', $customer_three.LONGITUDE AS 'LONGITUDE', $items_three.COMPANY_ID AS 'COMPANY_ID', $customer_three.COMPANY_NAME AS 'COMPANY', if($customer_three.SECONDARY_ADDRESS != '', CONCAT($customer_three.PRIMARY_ADDRESS, '\n', $customer_three.SECONDARY_ADDRESS), $customer_three.PRIMARY_ADDRESS) as 'ADDRESS', $customer_three.city as 'CITY', $customer_three.state AS 'STATE', $customer_three.zip AS 'ZIP', $items_three.ITEM_RANK AS 'ITEM_RANK', $items_three.ITEM_NAME AS 'NAME', $items_three.ITEM_DESCRIPTION AS 'DESCRIPTION', $items_three.ITEM_IMAGE AS 'PHOTO_DIRECTORY', $items_three.ID AS 'ID' , IF($customer_three.PRIMARY_PHONE != '', $customer_three.PRIMARY_PHONE, '') AS 'PHONE', $customer_three.COMPANY_URL AS 'LINK',DEGREES((ACOS(SIN(RADIANS($lat))*SIN(RADIANS($customer_three.LATITUDE))+ COS(RADIANS($lat))*COS(RADIANS($customer_three.LATITUDE))*COS(RADIANS(($customer_three.LONGITUDE)-($lng)))))) * 60 * 1.1515 AS 'DISTANCE' FROM $items_three JOIN $customer_three ON $customer_three.ID = $items_three.COMPANY_ID WHERE ($parameters_three) AND DEGREES((ACOS(SIN(RADIANS($lat))*SIN(RADIANS($customer_three.LATITUDE))+ COS(RADIANS($lat))*COS(RADIANS($customer_three.LATITUDE))*COS(RADIANS(($customer_three.LONGITUDE)-($lng)))))) * 60 * 1.1515 <= $distance";
     } 
     
-    $sql .= " ORDER BY DISTANCE limit 1000 OFFSET $offset";
+    $sql .= " limit 10 OFFSET $offset";
+    
     $stmt = $conn->prepare($sql);
     $stmt->execute();
     $stmt->setFetchMode(PDO::FETCH_ASSOC);
@@ -204,7 +192,7 @@ function getResults($location, $distance, $terms) {
         //print_r($results);
         
         // Calculate the distance to each vendor from the applied location
-        $sorted_results = array();
+        $distance_sorted_results = array();
         foreach ($results as &$result) {
 	        $lat1 = $result['LATITUDE'];
 	        $lng1 = $result['LONGITUDE'];
@@ -220,38 +208,34 @@ function getResults($location, $distance, $terms) {
         
         for($i = 0; $i < count($results); $i++){
 	        if(ceil($result['DISTANCE']) <= $distance){
-		        array_push($sorted_results, $results[$i]);
+		        array_push($distance_sorted_results, $results[$i]);
 	        }
         }       
 						
         $num_words = count($search_terms);
-        foreach ($sorted_results as &$result) {
+        foreach ($distance_sorted_results as &$result) {
             $result['rank'] = 100;
+            $key_words = " " . preg_replace('/\s+/', '^', preg_replace('/[[:punct:]]/', ' ', strtoupper(' ' . $result['KEYWORDS'] . ' ')));
             $item_description = " " . preg_replace('/\s+/', '^', preg_replace('/[[:punct:]]/', ' ', strtoupper(' ' . $result['DESCRIPTION'] . ' ')));
             $customer_name = " " . preg_replace('/\s+/', '^', preg_replace('/[[:punct:]]/', ' ', strtoupper(' ' . $result['COMPANY'] . ' ')));
             $item_name = " " . preg_replace('/\s+/', '^', preg_replace('/[[:punct:]]/', ' ', strtoupper(' ' . $result['NAME'] . ' ')));
             $customer_distance = $result['DISTANCE'];
             $counter = 0;
+            $name_match = 0;
             while ($counter < $num_words) {
-            	$name_match = 0;
-                $search_word = $search_terms[$counter];
+                $search_word = "^" . $search_terms[++$counter] . "^";
                 // Ranks the word based on number of matches with the name
-                foreach(explode('^', $item_name) as $i_name){
-	                
-	                //echo $name_match;
-	                if ( in_array($i_name, array_map('strtoupper',$search_terms))) {
-	                    $name_match += 1;
-	
-	                    //Adjust the ranking accordingly
-	                    if ($name_match > 1) {
-	                        $result['rank'] = $result['rank'] - (10 * $name_match);
-	                    } else {
-	                        $result['rank'] = $result['rank'] - (5 * $name_match);
-	                    }
-                	}
+                if (strpos($item_name, strtoupper($search_word)) != false) {
+                    $name_match += 1;
 
+                    //Adjust the ranking accordingly
+                    if ($name_match > 1) {
+                        $result['rank'] = $result['rank'] - (10 * $name_match);
+                    } else {
+                        $result['rank'] = $result['rank'] - (5 * $name_match);
+                    }
                 }
-                
+
                 // Ranks based on number of matches with the description
                 if (strpos($item_description, $search_word) != false) {
                     $name_match += 1;
@@ -282,79 +266,38 @@ function getResults($location, $distance, $terms) {
                     }
                 }
 
+                // Ranks based on number of matches with the keywords
+                if (strpos($key_words, $search_word) != false) {
+                    $name_match += 1;
+
+                    //Adjust the ranking accordingly
+                    if ($name_match > 1) {
+                        $result['rank'] = $result['rank'] - 2;
+                    }
+                }
                 $counter++;
             }
         }
-        //array_multisort($sorted_results, SORT_ASC, SORT_NATURAL);
-        usort($sorted_results, 'rankItems');
-        ?>     
-        
-        <div class="container-fluid">
-            <?php
-	           	$counter = 0;
-				foreach ($sorted_results as &$result) {
-					if($counter < 10){
-	                if($result["PHOTO_DIRECTORY"] == null || strpos($result['PHOTO_DIRECTORY'], '/images/') == false){
-		                if(strpos(get_headers("https://www.utterfare.com/images/profile_pictures/" . md5($result['COMPANY_ID']) .".png")[0], '200 OK') > -1){
-			                $image_url = "https://www.utterfare.com/images/profile_pictures/" . md5($result['COMPANY_ID']) . ".png";
-		                }else{
-			                $image_url = "https://www.utterfare.com/images/290sc_images/emptyplate.png";
-		                }
-	                }else{
-		                $image_url = $result["PHOTO_DIRECTORY"];
-	                }
-	                ?>
-	                <div class="row">
-	                    <div class="col-xs-12 col-md-2 ml-auto">
-	                        <img src="<?php echo $image_url; ?>" alt="Item Image" class="item__image"/>
-	                    </div>
-	                    <div class="col-xs-12 col-md-6">
-	                        <div class="row">
-	                            <div class="col-xs-12 col-md-12">
-	                                <span class="item__item-name"><?php echo $result['NAME']; ?> </span>
-	                            </div>
-	                            <div class="col-xs-12 col-md-12">
-	                                <span class="item__description"><?php echo $result['DESCRIPTION']; ?></span>
-	                            </div>
-	                        </div>
-	                    </div>
-	                    <div class='col-xs-12 col-md-3'>
-	                        <div class="row">
-	                            <div class="hidden-xs-down col-md-12">
-	                                <address>
-	                                    <?php echo $result['COMPANY']; ?> <br />
-	                                    <?php echo $result['ADDRESS']; ?> <br />
-	                                    <?php echo $result['CITY']; ?> , <?php echo $results[$counter]['STATE']; ?><br/>
-	                                    <a href="tel:<?php echo $result['PHONE']; ?>"><?php echo $result['PHONE']; ?> </a><br />
-	                                    <a href="http://<?php echo $result['LINK']; ?>" target="_blank"><?php echo $result['LINK']; ?> </a> <br/>
-										<?php echo "<strong>Distance: </strong>" . number_format($result["DISTANCE"], 2); echo ($result['DISTANCE'] > 1.0) ? " miles" : " mile"; ?>
-	                                	<a href="http://maps.google.com/?q=<?php echo $result['ADDRESS'] . ', ' . $result['CITY'] . ', ' . $result['STATE']; ?>" target="_blank">Directions</a>
-	                                </address>
-	                            </div>
-	                        </div>
-	                        <div class="row">
-	                            <div class="col-xs-12 hidden-sm-up"><hr></div>
-	                        </div>
-	                    </div>
-	                </div>
-	               <?php
-		        $counter++;
-		        }
+        usort($distance_sorted_results, 'rankItems');
+        $counter = 0;
+        $ios_results = array();
+        foreach ($distance_sorted_results as &$result) {
+            $image = $result['PHOTO_DIRECTORY'];
+            if(strpos($image, "http") != false) {
+                $result['image_url'] = $result['PHOTO_DIRECTORY'];
+            } else {
+                $result['image_url'] = "https://www.utterfare.com/290sc_images/emptyplate.png";
             }
-            ?>
-        </div>
-        <?php
+            array_push($ios_results, $result);
+        }
+        echo json_encode($distance_sorted_results);
+        
     } else {
-        echo"No Results";
+        echo json_encode("No Results");
     }
-    
-   $conn = null;
 }
 
 function rankItems($a, $b) {
-    return $a['rank'] - $b['rank'];
+    $retval = strnatcmp($a['rank'], $b['rank']);
+    return $retval;
 }
-
-echo getResults($location, $distance, $terms);
-
-

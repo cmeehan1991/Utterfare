@@ -5,11 +5,15 @@ var offset = '0';
 $(document).ready(function () {
     $('.loadmore-button').hide();
     $('.navbar-normal').hide();
+    
+    $(window).on('load', function(){
+	   console.log(window.location.search);
+    });
 });
 
 // Save the current search parameters and run the search again
 
-$(window).unload(function(){
+$(window).on("unload", function(){
 	var terms = $('.searchInput').val();
 	var location = null;
     if ($('.locationLink').is(":visible")) {
@@ -49,6 +53,9 @@ function formSearch() {
 
     // Check if all of the inputs have been filled
     if (authorized(terms, location, distance) === true) {
+	    
+	    $('.loader').show();
+	    
         var data = {
             'location': location,
             'terms': terms,
@@ -63,7 +70,10 @@ function formSearch() {
             data: data,
             method: 'post',
             success: function (results) {
+	            $('.loader').hide();
                 if (results !== "No Results") {
+	                var newUrl = window.location.href + "?terms=" + terms + "&limit=" + limit + "&location=" + location + "&page=" + page + "&distance=" + distance + "&offset="+offset;
+	                window.history.pushState({path:newUrl}, '', newUrl);;
                     $('.results').html(results);
                     $('.page-title').hide();
                     $('.navbar-normal').show();
@@ -73,6 +83,7 @@ function formSearch() {
                     $('.results').html("We're afraid that nothing was returned for your search. Please try something else!");
                 }
             }, error: function (jqXHR, error, errorThrown) {
+	            $('.loader').hide();
                 console.log('error');
                 console.log(jqXHR);
                 console.log(error);
@@ -117,7 +128,7 @@ function loadMore() {
         method: 'post',
         success: function (results) {
             if (results !== "No Results") {
-                $('.results').append(results);
+                $('.results').append(displayResults(results));
                 $('.page-title').hide();
                 $('.navbar-normal').show();
                     $('.navbar-presearch').hide();
@@ -133,5 +144,4 @@ function loadMore() {
         }
     });
 }
-
 

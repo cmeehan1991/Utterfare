@@ -1,5 +1,36 @@
 <?php 
 	
+	$action = filter_input(INPUT_POST, 'action');
+	
+	switch($action){
+		case 'getTermsData': 
+			getTermsData();
+			break;
+		default:break;
+	}
+	
+	function getTermsData(){
+		$terms = array();
+		
+		include 'DbConnection.php';
+		$sql = "SELECT TERM, TERM_COUNT FROM SEARCH_TERMS WHERE TERM != '' ORDER BY TERM_COUNT DESC LIMIT 5";
+		$stmt = $conn->prepare($sql);
+		$stmt->execute();
+		$stmt->setFetchMode(PDO::FETCH_ASSOC);
+		
+		$num_rows = $stmt->rowCount();
+		
+		if($num_rows > 0){
+			while($results = $stmt->fetch()){
+				$terms[$results['TERM']] = $results['TERM_COUNT'];
+			}
+			echo json_encode($terms);
+		}else{
+			echo null;
+		}
+
+	}
+	
 	class SearchAnalytics{
 		
 		/*
@@ -32,10 +63,10 @@
 		
 		private function term_exists($term){
 			include 'DbConnection.php';
-			
+			$u_term = strtoupper($term);
 			$sql = "SELECT TERM FROM SEARCH_TERMS WHERE TERM = :TERM";
 			$stmt = $conn->prepare($sql);
-			$stmt->bindParam(":TERM", strtoupper($term));
+			$stmt->bindParam(":TERM", $u_term);
 			$stmt->execute();
 			$row_count = $stmt->rowCount();
 			if($row_count > 0){
@@ -47,10 +78,10 @@
 		
 		private function update_term($term){
 			include 'DbConnection.php';
-			
+			$u_term = strtoupper($term);
 			$term_count_sql = "SELECT TERM_COUNT FROM SEARCH_TERMS WHERE TERM = :TERM";
 			$term_count_stmt = $conn->prepare($term_count_sql);
-			$term_count_stmt->bindParam(":TERM", strtoupper($term));
+			$term_count_stmt->bindParam(":TERM", $u_term);
 			$term_count_stmt->execute();
 			$term_count_stmt->setFetchMode(PDO::FETCH_ASSOC);
 			
@@ -128,11 +159,11 @@
 			$stmt->setFetchMode(PDO::FETCH_ASSOC);
 			
 			$num_rows = $stmt->rowCount();
-			if($num_rows > 0){
+			if($num_rows > 0 && ($results['MAX'] != null && $results['MIN'] != null)){
 				$results = $stmt->fetch();
-				echo $results['MAX'] . '/'.$results['MIN'];
+				return $results['MAX'] . '/'.$results['MIN'];
 			}else{
-				echo 'N/A';
+				return 'N/A';
 			}
 		}
 		
@@ -150,7 +181,7 @@
 				while ($results = $stmt->fetch()){
 					$count += $results['SEARCH_COUNT'];
 				}
-				echo $count/$num_rows;
+				echo round($count/$num_rows, 3);
 			}else{
 				echo "N/A";
 			}
@@ -159,7 +190,7 @@
 		
 		public function get_top_terms(){
 			include 'DbConnection.php';
-			$sql = "SELECT if(TERM != ' ', TERM, '') as 'TERM', TERM_COUNT FROM SEARCH_TERMS ORDER BY TERM_COUNT DESC LIMIT 5";
+			$sql = "SELECT  TERM, TERM_COUNT FROM SEARCH_TERMS WHERE TERM != '' ORDER BY TERM_COUNT DESC LIMIT 5";
 			$stmt = $conn->prepare($sql);
 			$stmt->execute();
 			$stmt->setFetchMode(PDO::FETCH_ASSOC);
@@ -168,7 +199,8 @@
 			
 			if($num_rows > 0){
 				while($results = $stmt->fetch()){
-					echo "<li>" . $results['TERM'] . "</li>";
+					
+					echo "<li>" . substr($results['TERM'], 0, 1) . strtolower(substr($results['TERM'],1)) . "</li>";
 				};
 			}else{
 				echo "N/A";

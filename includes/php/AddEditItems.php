@@ -19,6 +19,8 @@ switch ($action) {
     case "addImage":
         addImage();
         break;
+    case "deleteItem":
+    	deleteItem();
     default:
         break;
 }
@@ -83,7 +85,7 @@ function addImage() {
     // Save the file as
     
     $directory = dirname(getcwd(), 2);    
-    $file_path = $_SESSION['DATA_TABLE'] . '_images/' . $_SESSION['ID'] . "_" . $item_id . ".png";
+    $file_path = "images/" . $_SESSION['DATA_TABLE'] . '_images/' . $_SESSION['COMPANY_ID'] . "_" . $item_id . ".png";
     if (imagepng($png_image, $directory . '/' . $file_path) == true) {
         echo "image saved";
     } else {
@@ -121,7 +123,7 @@ function addNewItem() {
     $data_table = $_SESSION['DATA_TABLE'] . "_items";
 
     // Customer ID
-    $customer_id = $_SESSION['ID'];
+    $customer_id = $_SESSION['COMPANY_ID'];
 
     $sql = "INSERT INTO $data_table (COMPANY_ID, ITEM_NAME, ITEM_DESCRIPTION) VALUES (:ID, :NAME, :DESCRIPTION)";
     try {
@@ -148,7 +150,7 @@ function getItems() {
 
     $offset = filter_input(INPUT_POST, 'offset');
     $limit = filter_input(INPUT_POST, 'limit');
-    $customer_id = $_SESSION["ID"];
+    $customer_id = $_SESSION["COMPANY_ID"];
     $data_table = $_SESSION['DATA_TABLE'] . "_items"; // This is only the prefix ###ST 
 
     $sql = "SELECT ID, ITEM_NAME, ITEM_DESCRIPTION, ITEM_IMAGE FROM $data_table WHERE COMPANY_ID = :CUSTOMER_ID ORDER BY ITEM_NAME ASC LIMIT $limit OFFSET $offset ";
@@ -160,6 +162,7 @@ function getItems() {
     $num_rows = $stmt->rowCount();
 
     if ($num_rows > 0):
+    	$i = 0;
         while ($results = $stmt->fetch()):
             ?>
             <tr class="<?php echo $results["ID"]; ?>" onclick="return editItem(<?php echo $results["ID"] ?>)">
@@ -183,7 +186,7 @@ function getPages() {
 
     $items_per_page = filter_input(INPUT_POST, 'itemsPerPage');
     $data_table = $_SESSION["DATA_TABLE"] . "_items";
-    $customer_id = $_SESSION["ID"];
+    $customer_id = $_SESSION["COMPANY_ID"];
 
     $sql = "SELECT ID FROM $data_table WHERE COMPANY_ID = :CUSTOMER_ID";
     $stmt = $conn->prepare($sql);
@@ -194,13 +197,34 @@ function getPages() {
     if ($num_rows > 0) {
         $count = 1;
         $total_pages = ceil($num_rows / $items_per_page);
-        echo "<nav aria-label='Page navigation'>";
+        echo "<nav class='mx-auto' aria-label='Page navigation'>";
         echo "<ul class='pagination'>";
         while ($count < $total_pages + 1) {
-            echo "<li onclick='return getPage(".$count.")' data-page='" . $count . "'><a href='#'>" . $count . "</a></li>";
+            echo "<li class='page-item' onclick='return getPage(".$count.")' data-page='" . $count . "'><a class='page-link' href='#'>" . $count . "</a></li>";
             $count++;
         }
         echo "</ul>";
         echo "</nav>";
     }
+    
 }
+
+function deleteItem(){
+    include 'DbConnection.php';
+    
+    $item_id = filter_input(INPUT_POST, 'itemId');
+    
+    $data_table = $_SESSION['DATA_TABLE'] . "_items";
+    $sql = "DELETE FROM $data_table WHERE ID = :id";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(":id", $item_id);
+    $stmt->execute();
+    $num_rows = $stmt->rowCount();
+    
+    if($num_rows > 0){
+	    echo true;
+    }else{
+	    echo false;
+    }
+}
+

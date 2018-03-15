@@ -3,7 +3,10 @@ var offset = "0";
 var page = "1";
 var ppp = null;
 $(document).ready(function () {
-    getItems();
+	var currPathName = window.location.pathname;
+	if(currPathName == '/addEditItems.php' || currPathName == '/addEditItems'){
+		getItems();
+	}
     var newItemNumber = 1;
     $('.addItemButton').on('click', function () {
         addItem(newItemNumber++);
@@ -20,15 +23,41 @@ function editItem(className) {
     var itemDescription = $("." + className + "-item-description").html();
     $("." + className).removeAttr("onclick");
     $("." + className + "-item-image").append("<input type='file' name='itemImage' value='" + itemName + "'/>");
-    $("." + className + "-item-name").html("<input type='text' name='itemName' value='" + itemName + "'/>");
-    $("." + className + "-item-description").html("<textarea cols='80' name='itemDescription'>" + itemDescription + "</textarea>");
-    $("." + className).append("<td><button onclick='return applyChanges(" + className + ")'>Apply</button></td>");
+    $("." + className + "-item-name").html("<input type='text' name='itemName' value='" + itemName + "' class='itemNameInput'/>");
+    $("." + className + "-item-description").html("<textarea cols='30' name='itemDescription' class='itemDescriptionInput'>" + itemDescription + "</textarea>");
+    $("." + className).append("<td class='actions'><button onclick='return applyChanges(" + className + ")'><i class='glyphicon glyphicon-check'></i>Apply</button><br/><button onclick='return deleteItem(" + className + ")'><i class='glyphicon glyphicon-trash'></i>Delete</button></td>");
     return false;
+}
+
+function deleteItem(itemId){
+	var conf = confirm("Are you sure you want to delete that item? This action cannot be undone.");
+	if(conf == true){
+		var data = {
+			action: "deleteItem",
+			"itemId": itemId
+		};
+		
+		$.ajax({
+			data: data,
+			url: "includes/php/AddEditItems.php",
+			type: "post", 
+			success: function(results){
+				if(results == true){
+					getItems();
+					showSnackbar("Item Successfully Deleted", "long");
+				}else{
+					console.log(results);
+					showSnackbar("Error Removing Item", "long");
+				}
+			},error: function(error){
+				showSnackbar("Error removing item.", "short");
+			}
+		});
+	}
 }
 
 function applyChanges(itemID) {
     var itemImage = $("input[name='itemImage']").prop('files')[0];
-    console.log(itemImage);
     var itemName = $('input[name="itemName"]').val();
     var itemDescription = $('textarea[name="itemDescription"]').val();
 
@@ -45,8 +74,8 @@ function applyChanges(itemID) {
         success: function (results) {
             console.log("Results: " + results);
             if (itemImage !== null) {
-                console.log('Uploading Image');
                 uploadImage(itemID, itemImage);
+                showSnackbar("Changes Saved", "short");
             }
         }
     });

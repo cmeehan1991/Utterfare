@@ -1,3 +1,38 @@
 .operating-hours-table tr td{
     padding:5px;
 }
+
+.page-count{
+	display:block;
+	margin-left:auto;
+	margin-right:auto;
+	width:100%;
+}
+
+.page-count--page-separator{
+	display:inline-block;
+	content:" ";
+	height:1px;
+	width:40px;
+	margin:10px;
+	background:#000000;
+}
+
+.page-count--page-number{
+	display:inline;
+	
+}
+
+.page-count--page-number>a{
+	color:var(--PrimaryColor);
+	border:1px solid var(--DarkPrimaryColor);
+	border-radius:50%;
+	margin:5px;
+	padding:5px 10px;
+}
+
+.page-count--page-number>a:hover, .page-count--page-number.active>a{
+	text-decoration: none;
+	background-color:var(--DarkPrimaryColor);
+	color:var(--TextColor);
+}

@@ -1,133 +1,103 @@
 <?php
 session_start();
 include 'header.php';
+mainHeader(); 
 ?>
-<!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
-<html>
-    <head>
-        <!-- Google Analytics-->
-
-        <script>
-            (function (i, s, o, g, r, a, m) {
-            i['GoogleAnalyticsObject'] = r;
-            i[r] = i[r] || function () {
-            (i[r].q = i[r].q || []).push(arguments)
-            }, i[r].l = 1 * new Date();
-            a = s.createElement(o),
-                    m = s.getElementsByTagName(o)[0];
-            a.async = 1;
-            a.src = g;
-            m.parentNode.insertBefore(a, m)
-            })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
-            ga('create', 'UA-74857924-3', 'auto');
-            ga('send', 'pageview');
-            ga('set', 'userId', {{USER_ID}}); // Set the user ID using signed-in user_id.
-
-        </script>
-
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name='description' content='Utterfare is the premier search application for your food cravings. If you are having a craving for something specific, are new to the area, or just want to change things up some, then this is the right application for you.'>
-        <meta name='keyworkds' content='food, drink, cravings, date night, lunch, dinner, supper, breakfast, brunch, menu, restaurant'>
-        <meta name='author' content='CBM Web Development'>
-        <!--JQuery-->
-        <script src="includes/jquery/jquery-3.1.1.min.js" type="text/javascript"></script>
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
-        
-        <!--Angular-->
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
-
-        <!-- Google API-->
-        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script> 
-
-        <!--Bootstrap-->
-        <link href="includes/bootstrap/bootstrap.min.css" rel="stylesheet" type="text/css"/>
-        <script src="includes/bootstrap/bootstrap.min.js" type="text/javascript"></script>
-
-        <!--Styles and Scripts-->
-        <link href="includes/css/main.css" rel="stylesheet" type="text/css"/>
-        <script src="includes/js/VendorSignIn.js" type="text/javascript"></script>
-        <link href="includes/css/registrationStyle.css" rel="stylesheet" type="text/css"/>
-        <script src="includes/js/VendorRegistration.js" type="text/javascript"></script>
-
-        <title>Registration | Utterfare</title>
-    </head>
-    <body>
-        <?php mainHeader(); ?>
         <div class="container-fluid">
+	        <div class="row">
+		        <div class="col-md-3 mx-auto">
+			        <div class="page-count"></div>
+		        </div>
+	        </div>
             <div class="row">
-                <div class="col-xs-12 col-md-8 col-md-offset-2"> 
-                    <form name="registrationform" onsubmit="return registerCompany()">
-                        <fieldset>
-                            <legend>General Information</legend>
+                <div class="col-xs-12 col-md-8 mx-auto"> 
+                    <form name="registrationform" onsubmit="return registerCompany()" class="registrationForm">
+                        <fieldset id="generalInformation" data-page="1" active>
+	                        <legend>User Information</legend>
                             <div class="row">
-                                <div class="col-xs-12 col-sm-6 col-md-3">
-                                    <label for="company_name">Company Name</label><br/>
-                                    <input type="text" name="company_name" required/>
+                                <div class="col-md-6 mx-auto">
+	                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+	                                    <label for="company_name" class="mdl-textfield__label">Company Name</label>
+	                                    <input type="text" name="company_name" class="mdl-textfield__input" required/>
+	                                </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-6 col-md-3">
-                                    <label for="username">Username</label><br/>
-                                    <input type="text" name="username" required/>
+                            </div>
+                             <div class="row">
+                                <div class="col-md-6 mx-auto">
+	                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+	                                    <label for="username" class="mdl-textfield__label">Username</label>
+	                                    <input type="text" name="username" class="mdl-textfield__input" required/>
+	                                </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-6 col-md-3">
-                                    <label for="password">Password</label><br/>
-                                    <input type="password" name="password" onkeyup="return validatePassword()" required/>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mx-auto">
+	                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+	                                    <label for="password" class="mdl-textfield__label">Password</label>
+	                                    <input type="password" name="password" class="mdl-textfield__input" required/>
+	                                </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-6 col-md-3">
-                                    <label for="confirm_password">Confirm Password</label><br/>
-                                    <input type="password" name="confirm_password" onkeyup="return validatePassword()" required/>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mx-auto">
+	                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+	                                    <label for="confirm_password" class="mdl-textfield__label">Confirm Password</label>
+	                                    <input type="password" name="confirm_password" class="mdl-textfield__input confirm-password-input" required/>
+	                                </div>
                                 </div>
+                            </div>
+                            <div class="row">
+	                            <div class="col-md-6 ml-auto">
+		                            <button type="button" class="mdl-button mdl-button--flat mdl-button--ripple next--contact-information" data-page="next">Next: Contact Information <i class="fa fa-chevron-right"></i></button>
+	                            </div>
                             </div>
                         </fieldset>
-                        <fieldset>
+                        <fieldset id="contactInformation" data-page="2">
                             <legend>Contact Information</legend>
                             <div class="row">
-                                <div class="col-xs-12 col-sm-6 col-md-3">
-                                    <label for="first_name">First Name</label><br/>
-                                    <input type="text" name="first_name"/>
+                                <div class="col-xs-12 col-md-6 mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                    <label for="first_name" class="mdl-textfield__label">First Name</label>
+                                    <input type="text" name="first_name" class="mdl-textfield__input"/>
                                 </div>
-                                <div class="col-xs-12 col-sm-6 col-md-3">
-                                    <label for="last_name">Last Name</label><br/>
-                                    <input type="text" name="last_name"/>
+                                <div class="col-xs-12 col-md-6 mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                    <label for="last_name" class="mdl-textfield__label">Last Name</label>
+                                    <input type="text" name="last_name" class="mdl-textfield__input"/>
                                 </div>
-                                <div class="col-xs-12 col-sm-6 col-md-3">
-                                    <label for="email">Email</label><br/>
-                                    <input type="email" name="email"/>
+                                <div class="col-xs-12 col-md-6 mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                    <label for="email"  class="mdl-textfield__label">Email</label>
+                                    <input type="email" name="email" class="mdl-textfield__input"/>
                                 </div>
-                                <div class="col-xs-12 col-sm-6 col-md-3">
-                                    <label for="phone">Phone</label><br/>
-                                    <input type="tel" name="phone"/>
+                                <div class="col-xs-12 col-sm-6 col-md-6 mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                    <label for="phone" class="mdl-textfield__label">Phone</label>
+                                    <input type="tel" name="phone" class="mdl-textfield__input"/>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-xs-12 col-sm-6 col-md-3">
-                                    <label for="street_address">Street Address</label><br/>
-                                    <input type="text" name="street_address" required/>
+                                <div class="col-xs-12 col-sm-6 col-md-6 mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                    <label for="street_address" class="mdl-textfield__label">Street Address</label>
+                                    <input type="text" name="street_address" class="mdl-textfield__input" required/>
                                 </div>
-                                <div class="col-xs-12 col-sm-6 col-md-3">
-                                    <label for="building_number">Building/Suite/Apt.</label><br/>
-                                    <input type="text" name="building_number"/>
+                                <div class="col-xs-12 col-sm-6 col-md-6 mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                    <label for="building_number" class="mdl-textfield__label">Building/Suite/Apt.</label>
+                                    <input type="text" name="building_number" class="mdl-textfield__input"/>
                                 </div>
-                                <div class="col-xs-12 col-sm-6 col-md-3">
-                                    <label for="city">City</label><br/>
-                                    <input type="text" name="city" required/>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-6 mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                    <label for="city" class="mdl-textfield__label">City</label>
+                                    <input type="text" name="city"  class="mdl-textfield__input" required/>
                                 </div>
-                                <div class="col-xs-12 col-sm-6 col-md-3">
+                                <div class="col-xs-12 col-sm-12 col-md-6 mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                                     <script>
-            $(document).ready(function(){
-            $("select[name='state']").select2();
-            $("select[name='country']").select2();
-            $("select[name='web-prefix']").select2();
-            });
+							        $(document).ready(function(){
+							            $("select[name='state']").select2({width:'100%', placeholder: "Select a state", allowClear: false});
+							            $("select[name='country']").select2({width:'100%', placeholder: "Select a country"});
+							            $("select[name='web-prefix']").select2({width:'fit-content'});
+							        });
                                     </script>
-                                    <label for="state">State</label><br/>
-                                    <select name="state" required>
+                                    <select name="state" placeholder="state"required>
+	                                    <option></option>
+	                                    <option value="N/A">N/A</option>
                                         <option value="AL">Alabama</option>
                                         <option value="AK">Alaska</option>
                                         <option value="AZ">Arizona</option>
@@ -189,13 +159,13 @@ and open the template in the editor.
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-sm-6 col-md-3">
-                                    <label for="zip">Zip</label><br/>
-                                    <input type="text" name="zip" required/>
+                                <div class="col-sm-12 col-md-6  mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                    <label for="zip" class="mdl-textfield__label">Zip</label>
+                                    <input type="text" name="zip" class="mdl-textfield__input"required/>
                                 </div>
-                                <div class="col-sm-6 col-md-3">
-                                    <label for="country">Country</label><br/>
+                                <div class="col-sm-12 col-md-6  mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                                     <select name="country" required>
+	                                    <option></option>
                                         <option value="AFG">Afghanistan</option>
                                         <option value="ALA">Åland Islands</option>
                                         <option value="ALB">Albania</option>
@@ -272,7 +242,7 @@ and open the template in the editor.
                                         <option value="FJI">Fiji</option>
                                         <option value="FIN">Finland</option>
                                         <option value="FRA">France</option>
-                                        <option value="GUF">French Guiana</option>
+                                        <option value="Gmdl">French Guiana</option>
                                         <option value="PYF">French Polynesia</option>
                                         <option value="ATF">French Southern Territories</option>
                                         <option value="GAB">Gabon</option>
@@ -431,7 +401,7 @@ and open the template in the editor.
                                         <option value="UKR">Ukraine</option>
                                         <option value="ARE">United Arab Emirates</option>
                                         <option value="GBR">United Kingdom</option>
-                                        <option value="USA">United States</option>
+                                        <option value="USA" selected="true">United States</option>
                                         <option value="UMI">United States Minor Outlying Islands</option>
                                         <option value="URY">Uruguay</option>
                                         <option value="UZB">Uzbekistan</option>
@@ -448,68 +418,51 @@ and open the template in the editor.
                                     </select>
                                 </div>
                             </div>
+                            <div class="row">
+	                            <div class="col-md-3 mr-auto">
+		                            <button type="button" class="mdl-button mdl-button--flat mdl-button--ripple" data-page="previous"><i class="fa fa-chevron-left"></i> Previous: User Information</button>
+	                            </div>
+	                            <div class="col-md-3 ml-auto">
+		                            <button type="button" class="mdl-button mdl-button--flat mdl-button--ripple" data-page="next">Next: Company Information <i class="fa fa-chevron-right"></i></button>
+	                            </div>
+                            </div>
                         </fieldset>
-                        <fieldset>
+                        <fieldset id="companyInformation" data-page="3">
                             <legend>Company Information</legend>
                             <div class="row">
-                                <div class="col-xs-12 col-sm-6 col-md-3">
-                                    <label for="company_name">Company Name</label><br/>
-                                    <input type="text" name="company_name"/>
-                                </div>
-                                <div class="col-xs-12 col-sm-6 col-md-3">
-                                    <label for="">Franchise</label><br/>
-                                    <input name="franchise" value="yes" type="radio"/> Yes 
-                                    <input type="radio" name="franchise" value="no" /> No
-                                </div>
-                                <div class="col-xs-12 col-sm-6 col-md-3">
-                                    <label for="number_of_employees">No. of Employees</label><br/>
-                                    <input type="text" name="number_of_employees"/>
-                                </div>
-                                <div class="col-xs-12 col-sm-6 col-md-3">
-                                    <label for="url">Web URL</label><br/>
-                                    <select name="web-prefix">
-                                        <option value="https://">https://</option>
-                                        <option value="http://">http://</option>
-                                    </select>
-                                    <input type="text" name="url"/>
+                                <div class="col-xs-12 col-sm-12 col-md-6 mx-auto mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                    <label for="company_name" class="mdl-textfield__label">Company Name</label>
+                                    <input type="text" name="company_name" class="mdl-textfield__input"/>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-xs-12 col-sm-12 col-md-12">
-                                    <table class="operating-hours-table" width="100%">
-                                        <thead>
-                                            <tr>
-                                                <td colspan="8" align="center"><label>Hours of Operation</label></td>
-                                            </tr>
-                                            <tr>
-                                                <td><label></label></td>
-                                                <td><label>Sunday</label></td>
-                                                <td><label>Monday</label></td>
-                                                <td><label>Tuesday</label></td>
-                                                <td><label>Wednesday</label></td>
-                                                <td><label>Thursday</label></td>
-                                                <td><label>Friday</label></td>
-                                                <td><label>Saturday</label></td>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td><label>Open</label></td><td><input type="time" name="sunday_open"/></td><td><input type="time" name="monday_open"/></td><td><input type="time" name="tuesday_open"/></td><td><input type="time" name="wednesday_open"/></td> <td><input type="time" name="thursday_open"/></td> <td><input type="time" name="friday_open"/></td> <td><input type="time" name="saturday_open"/></td>
-                                            </tr>
-                                            <tr>
-                                                <td><label>Close</label></td><td><input type="time" name="sunday_close"/></td><td><input type="time" name="monday_close"/></td><td><input type="time" name="tuesday_close"/></td> <td><input type="time" name="wednesday_close"/></td> <td><input type="time" name="thursday_close"/></td> <td><input type="time" name="friday_close"/></td> <td><input type="time" name="saturday_close"/></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                <div class="col-xs-12 col-sm-12 col-md-6 mx-auto mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                    <label for="">Franchise </label><br/>
+                                    <input name="franchise" value="yes" type="radio"/> Yes 
+                                    <input type="radio" name="franchise" value="no" checked="checked" /> No
                                 </div>
                             </div>
-                        </fieldset>
-                        <div clas="row">
-                            <div class="col-md-12" align="right">
-                                <button type="submit"><i class="glyphicon glyphicon-check"></i>Register</button>
-                                <button type="reset"><i class="glyphicon glyphicon-remove"></i>Cancel</button>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-6 mx-auto mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                    <label for="number_of_employees" class="mdl-textfield__label">No. of Employees</label>
+                                    <input type="text" name="number_of_employees" class="mdl-textfield__input"/>
+                                </div>
                             </div>
-                        </div>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-6 mx-auto mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                    <label for="url" class="mdl-textfield__label">Web URL</label>
+                                    <input type="text" name="url" class="mdl-textfield__input"/>
+                                </div>
+                            </div>
+                            <div class="row">
+	                            <div class="col-md-3 mx-auto">
+		                            <button type="button" class="mdl-button mdl-js-button mdl-button--flat mdl-button--ripple-effect" data-page="previous"><i class="fa fa-chevron-left"></i> Previous: User Information</button>
+	                            </div>
+	                            <div class="col-md-3 mx-auto">
+		                            <button type="submit" class="mdl-button mdl-js-button mdl-button--flat mdl-button--ripple-effect">Register <i class="fa fa-check-square-o"></i></button>
+	                            </div>
+                            </div>
+                        </fieldset>
                     </form>
                 </div>
             </div>

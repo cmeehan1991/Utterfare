@@ -1,5 +1,5 @@
 .currentItems{
-    width:100%;
+	table-layout: fixed;
 }
 
 .currentItems thead tr.table-heading td{
@@ -11,3 +11,22 @@
 .currentItems__body tr td{
     padding:5px !important;
 }
+
+.currentItems__body tr:nth-child(even), .currentItems__body tr:nth-child(even) td{
+	background:#ccc;
+	cursor:pointer;
+}
+
+.currentItems__body tr:nth-child(even) td.actions{
+	background:#fff;
+	width:fit-content;
+}
+
+.currentItems__body tr td:first-child{
+	width:100px !important;
+}
+
+.itemNameInput, .itemDescriptionInput{
+	width:100%;
+}
+
