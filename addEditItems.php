@@ -11,7 +11,7 @@ include 'header.php';
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-12">
-                <table class='currentItems'>
+                <table class='currentItems' width="100%">
                     <thead>
                         <tr><td align="left"><label for="limit">Items per Page:</label>
                                 <select name="limit" onchange="return getItems()">
@@ -21,13 +21,17 @@ include 'header.php';
                                     <option value="">View All</option>
                                 </select>
                             </td>
-                            <td colspan="2" align="right"><button type='button' class="addItemButton"><i class="glyphicon glyphicon-plus-sign"></i>Add Item</button> <button type='button' class="saveChangesButton"><i class="glyphicon glyphicon-saved"></i>Save Changes</button>
+                            <td colspan="2" align="right">
+	                            <input id="fileupload" type="file" hidden="true" accept=".csv"/>
+	                            <button type="file" class="uploadMenuButton mdl-button mdl-js-button mdl-js-ripple-effect" onclick="return uploadMenuItems();"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Upload Menu Items</button>
+	                            <button type='button' class="addItemButton mdl-button mdl-js-button mdl-js-ripple-effect "><i class="fa fa-plus-circle" aria-hidden="true"></i> Add Item</button> 
+	                            <button type='button' class="saveChangesButton mdl-button mdl-js-button mdl-js-ripple-effect"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save Changes</button>
                             
                         </tr>
                         <tr class="table-heading">
-                            <td align="center">Image</td>
-                            <td align="center">Name</td>
-                            <td align="center">Description</td>
+                            <td align="left" width="15%">Image</td>
+                            <td align="left" width="35%">Name</td>
+                            <td align="left" width="50%">Description</td>
                         </tr>
                     </thead>
                     <tbody class="currentItems__body">

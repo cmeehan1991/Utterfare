@@ -2,6 +2,10 @@
 session_start();
 
 $action = filter_input(INPUT_POST, 'action');
+foreach($_POST as $key => $value){
+	echo $key . ":" . $value;
+}
+echo $action;
 
 switch ($action) {
     case "pagination":
@@ -21,8 +25,24 @@ switch ($action) {
         break;
     case "deleteItem":
     	deleteItem();
+    	break;
+    case "uploadMenuFile":
+    	uploadMenuFile();
+    	break;
     default:
         break;
+}
+
+function uploadMenuFile(){
+	$csv_file = $_FILES['file']['tmp_name'];
+	$handle = fopen($csv_file, "r");
+	if($csv_file){
+		$data = fgetcsv($handle);
+		while($data != false){
+			var_dump($data);
+		}
+	}
+	echo json_encode("Hello, world");
 }
 
 function updateItem() {

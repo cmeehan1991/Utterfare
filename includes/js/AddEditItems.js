@@ -16,7 +16,44 @@ $(document).ready(function () {
         saveChanges();
     });
 
+
+
 });
+
+/*
+* Handle menu item file upload
+*/
+function uploadMenuItems(){
+	$('#fileupload').trigger('click');
+	$("#fileupload").change(function(){
+		var file = $(this).prop('files')[0];
+		if(file){
+			saveMenuItems(file);
+		}
+	});
+	return false;
+}
+
+function saveMenuItems(file){
+	
+	var fileData = {
+		'action': 'uploadMenuFile',
+		'file': file
+	};
+		
+	$.ajax({
+		method: 'post', 
+		url: 'includes/php/AddEditItems.php', 
+		data: fileData,
+		success:function(response){
+			console.log("Response: " + response);
+		},
+		error: function(error){
+			console.log("Error: ");
+			console.log(error);
+		}
+	});
+}
 
 function editItem(className) {
     var itemName = $("." + className + "-item-name").html();
@@ -40,7 +77,7 @@ function deleteItem(itemId){
 		$.ajax({
 			data: data,
 			url: "includes/php/AddEditItems.php",
-			type: "post", 
+			method: "post", 
 			success: function(results){
 				if(results == true){
 					getItems();

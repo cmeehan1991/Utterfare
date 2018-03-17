@@ -43,7 +43,7 @@ function signIn(){
         success:function(results){
 	        console.log(results);
             if(results === "success"){
-                window.location.href="https://www.utterfare.com/userHome.php";
+                window.location="userHome.php";
             }else{
 	            console.log("Results: " + results);
             }
