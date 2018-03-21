@@ -4,7 +4,8 @@
         <li><a href="addEditItems.php">Add/Edit Items</a></li>
         <li><a href="">View Statistics</a></li>
         <hr>
-        <li><a href="">Contact Support</a></li>
+        <li><a href="companyInformation.php">Company Information</a></li>
+        <!--<li><a href="">Contact Support</a></li>-->
         <li><a href="?signout=true">Log Out</a></li>
     </ul>
 </div>

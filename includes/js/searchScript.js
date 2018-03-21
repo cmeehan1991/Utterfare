@@ -5,19 +5,45 @@ var offset = '0';
 $(document).ready(function () {
     $('.loadmore-button').hide();
     $('.navbar-normal').hide();
+    
+    $(window).on('load', function(){ 
+	   var queryString = window.location.search;
+	   if(queryString){ 
+		   var queryStringArr = window.location.search.split("&");
+		   var parameters = new Array();
+		   $.each(queryStringArr, function(k,v){
+			  var item = decodeURIComponent(v.split("=")[1]);
+			  parameters.push(item)
+		   });
+		   var location = parameters[0];
+		   var terms = parameters[1];
+		   var limit = parameters[2];
+		   var page = parameters[3];
+		   var distance = parameters[4];
+		   var offset = parameters[5];
+		   var newLimit = limit * page;
+		   $('.searchInput').val(terms);
+		   performSearch(terms, location, distance, page, newLimit, 0);
+	   }
+    });
+    console.log(window.location);
 });
 
 // Save the current search parameters and run the search again
 
-$(window).unload(function(){
-	var terms = $('.searchInput').val();
-	var location = null;
-    if ($('.locationLink').is(":visible")) {
-        location = $('.locationLink').data('location');
-    } else {
-        location = $(".locationInput").val();
-    }
-    var distance = $('.distance').val();
+$(window).on("unload", function(){
+	if(window.location.pathname === '/utterfare/'){
+		var terms = $('.searchInput').val();
+		var location = null;
+	    if ($('.locationLink').is(":visible")) {
+	        location = $('.locationLink').data('location');
+	    } else {
+	        location = $(".locationInput").val();
+	    }
+	    var distance = $('.distance').val();
+	    var limit = "";
+	}
+
 });
 
 function authorized(terms, location, distance) {
@@ -49,41 +75,51 @@ function formSearch() {
 
     // Check if all of the inputs have been filled
     if (authorized(terms, location, distance) === true) {
-        var data = {
-            'location': location,
-            'terms': terms,
-            'limit': limit,
-            'page': page,
-            'distance': distance,
-            'offset': offset
-        };
-
-        $.ajax({
-            url: 'includes/php/search.php',
-            data: data,
-            method: 'post',
-            success: function (results) {
-                if (results !== "No Results") {
-                    $('.results').html(results);
-                    $('.page-title').hide();
-                    $('.navbar-normal').show();
-                    $('.navbar-presearch').hide();
-                    $('.loadmore-button').show();
-                } else {
-                    $('.results').html("We're afraid that nothing was returned for your search. Please try something else!");
-                }
-            }, error: function (jqXHR, error, errorThrown) {
-                console.log('error');
-                console.log(jqXHR);
-                console.log(error);
-                console.log(errorThrown);
-            }
-        });
-    } else {
+		performSearch(terms, location, distance, page, limit, offset);    
+	} else {
         console.log('false');
         $('.results').html('Please be sure to fill out the location, distance, and search parameters');
     }
     return false;
+}
+
+/*
+* Perform the search based on the passed values
+*/
+function performSearch(terms, location, distance, page, limit, offset){
+	$('.loader').show();
+	var data = {
+		'location': location,
+		'terms': terms,
+		'limit': limit,
+		'page': page,
+		'distance': distance,
+		'offset': offset
+	};
+	
+	$.ajax({
+		url: 'includes/php/search.php',
+		data: data,
+		method: 'post',
+		success: function (results) {
+		    $('.loader').hide();
+		    if (results !== "No Results") {
+				var parameters = $.param(data, true);
+				var newUrl = window.location.protocol + '//' + window.location.host + window.location.pathname + "?" + parameters;
+		        window.history.pushState({path:newUrl}, '', newUrl);
+		        $('.results').html("");
+		        $('.results').append(results);
+		        $('.page-title').hide();
+		        $('.navbar-normal').show();
+		        $('.navbar-presearch').hide();
+		        $('.loadmore-button').show();
+		    } else {
+		        $('.results').html("We're afraid that nothing was returned for your search. Please try something else!");
+		    }
+		}, error: function (jqXHR, error, errorThrown) {
+		    $('.loader').hide();
+		}
+	});
 }
 
 function loadMore() {
@@ -101,37 +137,6 @@ function loadMore() {
     }
 
     var distance = $('.distance').val();
-
-    console.log(distance);
-    var data = {
-        'location': location,
-        'terms': terms,
-        'limit': limit,
-        'page': page,
-        'distance': distance,
-        'offset': offset
-    };
-    $.ajax({
-        url: 'includes/php/search.php',
-        data: data,
-        method: 'post',
-        success: function (results) {
-            if (results !== "No Results") {
-                $('.results').append(results);
-                $('.page-title').hide();
-                $('.navbar-normal').show();
-                    $('.navbar-presearch').hide();
-                $('loadmore-button').show();
-            } else {
-                $('.loadmore-button').hide();
-            }
-        }, error: function (jqXHR, error, errorThrown) {
-            console.log('error');
-            console.log(jqXHR);
-            console.log(error);
-            console.log(errorThrown);
-        }
-    });
-}
-
+		performSearch(terms, location, distance, page, limit, offset)
+   }
 

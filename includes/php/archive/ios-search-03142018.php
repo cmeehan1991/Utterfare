@@ -7,7 +7,7 @@ $page = filter_input(INPUT_POST, 'page');
 $offset = filter_input(INPUT_POST, 'offset');
 $distance = filter_input(INPUT_POST, 'distance');
 $type = "Mobile";
-$platform = "Android";
+$platform = "iOS";
 
 if (isset($terms)) {
     getResults($location, $distance, $terms);
@@ -176,14 +176,12 @@ function getResults($location, $distance, $terms) {
 	$loop = 0;
     foreach ($search_terms as $new_terms) {
 	    if($loop > 0){
-		    
 		    $joiner = 'OR';
 	    }
-        $parameters_one .= "$joiner $items_one.ITEM_NAME = '$new_terms' OR $items_one.ITEM_DESCRIPTION = '$new_terms' OR $items_one.COMPANY_ID = (SELECT COMPANY_ID FROM $customer_one WHERE $customer_one.COMPANY_NAME = '$$new_terms') OR $customer_one.COMPANY_NAME = '$new_terms'  OR $items_one.ITEM_DESCRIPTION LIKE '%" . $new_terms . "%' OR $items_one.ITEM_NAME LIKE '%" . $new_terms . "%' OR $customer_one.COMPANY_NAME LIKE '%" . $new_terms . "%' ";
+        $parameters_one .= "$joiner $items_one.ITEM_NAME = '$new_terms' OR $items_one.ITEM_DESCRIPTION = '$new_terms' OR $items_one.COMPANY_ID = (SELECT COMPANY_ID FROM $customer_one WHERE $customer_one.COMPANY_NAME = '$new_terms') OR $customer_one.COMPANY_NAME = '$new_terms'  OR $items_one.ITEM_DESCRIPTION LIKE '%" . $new_terms . "%' OR $items_one.ITEM_NAME LIKE '%" . $new_terms . "%' OR $customer_one.COMPANY_NAME LIKE '%" . $new_terms . "%' ";
         $parameters_two .= "$joiner $items_two.ITEM_DESCRIPTION LIKE '%" . $new_terms . "%' OR $items_two.ITEM_NAME LIKE '%" . $new_terms . "%' OR $customer_two.COMPANY_NAME LIKE '%" . $new_terms . "%' ";
 		$parameters_three .= "$joiner $items_three.ITEM_DESCRIPTION LIKE '%" . $new_terms . "%' OR $items_three.ITEM_NAME LIKE '%" . $new_terms . "%' OR $customer_three.COMPANY_NAME LIKE '%" . $new_terms . "%' ";
-		$parameters_three .= "$joiner $items_three.ITEM_DESCRIPTION LIKE '%" . $new_terms . "%' OR $items_three.ITEM_NAME LIKE '%" . $new_terms . "%' OR $customer_three.COMPANY_NAME LIKE '%" . $new_terms . "%' ";
-
+		
 		$loop++;
     }
 
@@ -229,9 +227,10 @@ function getResults($location, $distance, $terms) {
 	        }
         }       
 						
-        $num_words = count($search_terms);
+         $num_words = count($search_terms);
         foreach ($sorted_results as &$result) {
             $result['rank'] = 100;
+            $key_words = " " . preg_replace('/\s+/', '^', preg_replace('/[[:punct:]]/', ' ', strtoupper(' ' . $result['KEYWORDS'] . ' ')));
             $item_description = " " . preg_replace('/\s+/', '^', preg_replace('/[[:punct:]]/', ' ', strtoupper(' ' . $result['DESCRIPTION'] . ' ')));
             $customer_name = " " . preg_replace('/\s+/', '^', preg_replace('/[[:punct:]]/', ' ', strtoupper(' ' . $result['COMPANY'] . ' ')));
             $item_name = " " . preg_replace('/\s+/', '^', preg_replace('/[[:punct:]]/', ' ', strtoupper(' ' . $result['NAME'] . ' ')));
@@ -291,21 +290,22 @@ function getResults($location, $distance, $terms) {
                 $counter++;
             }
         }
-        usort($sorted_results, 'rankItems');
+        usort($sorted_results, 'rankItems');        
         $counter = 0;
-        $android_results = array();
+        $ios_results = array();
         foreach ($sorted_results as &$result) {
+	        $result['DISTANCE'] = strval(round($result['DISTANCE'], 2));
             $image = $result['PHOTO_DIRECTORY'];
             if(strpos($image, "images") == false || $image == null) {
-	            if(strpos(get_headers("https://www.utterfare.com/images/profile_pictures/" . md5($result['COMPANY_ID']) . ".png")[0], '200 OK') > -1){
-		            $result['IMAGE_URL'] = "https://www.utterfare.com/images/profile_pictures/" . md5($result['COMPANY_ID']) . ".png";
+	            if(strpos(get_headers("https://www.utterfare.com/images/profile_pictures/" . md5($result['COMPANY_ID']))[0], '200 OK') > -1){
+		            $result['IMAGE_URL'] = "https://www.utterfare.com/images/profile_pictures/" . md5($result['COMPANY_ID']);
 	            }else{
 		            $result['IMAGE_URL'] = "https://www.utterfare.com/images/290sc_images/emptyplate.png";
 	            }
             } else {
                 $result['IMAGE_URL'] = $result['PHOTO_DIRECTORY'];
             }
-            array_push($android_results, $result);
+            array_push($ios_results, $result);
         }
         echo json_encode($sorted_results);
         
