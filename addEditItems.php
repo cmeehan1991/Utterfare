@@ -10,8 +10,15 @@ include 'header.php';
 <div class="main">
     <div class="container-fluid">
         <div class="row">
+	        <div class='row'>
+		        <div class="col-md-12">
+			        <div class="error-message">
+				        
+			        </div>
+		        </div>
+	        </div>
             <div class="col-md-12">
-                <table class='currentItems' width="100%">
+                <table class='currentItems'>
                     <thead>
                         <tr><td align="left"><label for="limit">Items per Page:</label>
                                 <select name="limit" onchange="return getItems()">
@@ -29,8 +36,8 @@ include 'header.php';
                             
                         </tr>
                         <tr class="table-heading">
-                            <td align="left" width="15%">Image</td>
-                            <td align="left" width="35%">Name</td>
+                            <td align="left" width="10%">Image</td>
+                            <td align="left" width="45%">Name</td>
                             <td align="left" width="50%">Description</td>
                         </tr>
                     </thead>
@@ -48,6 +55,8 @@ include 'header.php';
     </div>
 </div>
 <div id="snackbar"></div>
+<div id="error-toast" class="mdl-js-snackbar mdl-snackbar"><div class="mdl-snackbar__text"></div><button class="mdl-snackbar__action" type="button"></button></div>
+<input type="file" onchange="return setImage();"/>
 </div>
 </body>
 </html>

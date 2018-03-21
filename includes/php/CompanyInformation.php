@@ -97,12 +97,13 @@ class Company_Information{
 
 		}
 		
-		$direcotry = dirname(getcwd(), 2);
-		$file_path = '/images/profile_pictures/' . md5($_SESSION['COMPANY_ID']) . '.png';
-		$png_image;
-		if (imagepng($png_image, $direcotry . $file_path) == true) {
-			$item_image_url = "https://www.utterfare.com" . $file_path;
-			echo $item_image_url;
+		$directory = dirname(getcwd(), 2);
+		if(!file_exists($directory . '/images/profile_pictures/' . $_SESSION['DATA_TABLE'] .'_profiles')){
+			mkdir($directory . '/images/profile_pictures/' . $_SESSION['DATA_TABLE'] .'_profiles');
+		}
+		$file_path = 'images/profile_pictures/' . $_SESSION['DATA_TABLE'] . '_profiles/' . md5($_SESSION['COMPANY_ID']) . '.png';
+		if (imagepng($png_image, $directory . '/' . $file_path) == true) {
+			$item_image_url = $file_path;
 			$sql = "UPDATE $data_table SET PROFILE_PICTURE = :PROFILE_PICTURE WHERE ID = :ID";
 			$stmt = $conn->prepare($sql);
 			$stmt->bindParam(":PROFILE_PICTURE", $item_image_url);

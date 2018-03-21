@@ -26,20 +26,23 @@ $(document).ready(function () {
 		   performSearch(terms, location, distance, page, newLimit, 0);
 	   }
     });
+    console.log(window.location);
 });
 
 // Save the current search parameters and run the search again
 
 $(window).on("unload", function(){
-	var terms = $('.searchInput').val();
-	var location = null;
-    if ($('.locationLink').is(":visible")) {
-        location = $('.locationLink').data('location');
-    } else {
-        location = $(".locationInput").val();
-    }
-    var distance = $('.distance').val();
-    var limit = "";
+	if(window.location.pathname === '/utterfare/'){
+		var terms = $('.searchInput').val();
+		var location = null;
+	    if ($('.locationLink').is(":visible")) {
+	        location = $('.locationLink').data('location');
+	    } else {
+	        location = $(".locationInput").val();
+	    }
+	    var distance = $('.distance').val();
+	    var limit = "";
+	}
 
 });
 
@@ -104,6 +107,7 @@ function performSearch(terms, location, distance, page, limit, offset){
 				var parameters = $.param(data, true);
 				var newUrl = window.location.protocol + '//' + window.location.host + window.location.pathname + "?" + parameters;
 		        window.history.pushState({path:newUrl}, '', newUrl);
+		        $('.results').html("");
 		        $('.results').append(results);
 		        $('.page-title').hide();
 		        $('.navbar-normal').show();

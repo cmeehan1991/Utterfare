@@ -31,6 +31,7 @@ function updateCompanyInformation(){
 
 function updateProfilePicture(){
 	var image = $('.profile-picture__upload').prop('files')[0];
+	//setProfilePreview();
 	var data = new FormData();
 	data.append("action", "updateProfilePicture");
 	data.append("picture", image);
@@ -43,10 +44,9 @@ function updateProfilePicture(){
         contentType: false,
         processData: false,
 		success:function(data){
-			console.log(data);
-			$('.profile-picture').removeAttr('src').attr('src', data);
+			$('.profile-picture').attr('src', data + "?ver=" + String(Math.random()));
 			$(".profile-picture").css('background-color', 'transparent');
-			$('.profile-picture__upload').reset();
+			$('.profile-picture__upload').val('');
 			showSnackbar('Image successfully uploaded.', 'long');
 		}, error: function(error){
 			showSnackbar('Error uploading image', 'long');

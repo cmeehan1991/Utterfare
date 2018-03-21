@@ -30,3 +30,12 @@
 	width:100%;
 }
 
+.item-image{
+	min-width:150px;
+	max-width:150px;
+	width:150px;
+	min-height: 150px;
+	max-height: 150px;
+	height:150px;
+}
+
