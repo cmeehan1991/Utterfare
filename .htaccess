@@ -1,10 +1,10 @@
 DirectoryIndex index.php index.html
+Options -Indexes
 
-<IfModule mod_rewrite.c>
-RewriteEngine On
-RewriteBase /
-RewriteRule ^index\.php$ - [L]
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule . /index.php [L]
-</IfModule>
+RewriteEngine 	On # Turn on the rewriting engine
+RewriteCond		%{REQUEST_FILENAME} !-f
+RewriteCond		%{REQUEST_FILENAME} !-d
+#Redirect		301 localhost/utterfare/index.php		/search/ [R]
+
+RewriteRule		^([^\.]+)$			$1.php 		[L]
+RewriteRule		^([^/.]+)$			$1/$2.php 	[L]

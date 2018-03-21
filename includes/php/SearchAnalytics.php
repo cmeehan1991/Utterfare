@@ -159,8 +159,8 @@
 			$stmt->setFetchMode(PDO::FETCH_ASSOC);
 			
 			$num_rows = $stmt->rowCount();
+			$results = $stmt->fetch();
 			if($num_rows > 0 && ($results['MAX'] != null && $results['MIN'] != null)){
-				$results = $stmt->fetch();
 				return $results['MAX'] . '/'.$results['MIN'];
 			}else{
 				return 'N/A';
