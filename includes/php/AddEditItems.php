@@ -2,7 +2,6 @@
 session_start();
 
 $action = filter_input(INPUT_POST, 'action');
-
 switch ($action) {
     case "pagination":
         getPages();
@@ -19,8 +18,89 @@ switch ($action) {
     case "addImage":
         addImage();
         break;
+    case "deleteItem":
+    	deleteItem();
+    	break;
+    case "uploadMenuFile":
+    	uploadMenuFile();
+    	break;
     default:
         break;
+}
+
+function uploadMenuFile(){
+	$error_message = null;
+	$existing_items = null;
+	$csv_file = $_FILES['file']['tmp_name'];
+	$handle = fopen($csv_file, "r");
+	$item_images = array();
+	$item_names = array();
+	$item_descriptions = array();
+	if($csv_file){
+		$flag = true;
+		fgetcsv($handle);
+		while(($data = fgetcsv($handle, 10000, ',')) != false){
+			if($flag){$flag = false;}
+			array_push($item_names, $data[0]);
+			array_push($item_descriptions, $data[1]);
+		}
+		$validateEntries = validateEntries($item_names);
+		if($validateEntries != "Error" && count($validateEntries) < 1){
+			$i = 0;
+			foreach($item_names as $item_name){
+				addNewItem($item_name, $item_descriptions[$i]);
+			}
+		}else{
+			if($validateEntries == "Error"){
+				$error_message = "Error validating the entries";
+			}else{
+				$existing_items = $validateEntries;
+			}
+		}
+	}	
+	else{
+		array_push($file_data, "None");
+	}
+	
+	if($error_message){
+		echo json_encode(array("Error" => $error_message));
+		return;
+	}
+	
+	if($existing_items){
+		echo json_encode(array("Existing" => $existing_items));
+		return;	
+	}	
+	
+	echo json_encode(array("Success" => "Items Successfully Uploaded"));
+	
+	die();
+}
+
+/*
+* Check to see if the items already exist based on the name
+*/
+function validateEntries($item_names){
+	include 'DbConnection.php';
+	$items_data_table = strtolower($_SESSION['DATA_TABLE']) . "_items";
+	$sql = "SELECT ID FROM $items_data_table WHERE ITEM_NAME = :ITEM_NAME AND COMPANY_ID = :COMPANY_ID";
+	$existing_items = array();
+	try{
+		foreach($item_names as $item_name){
+			$stmt = $conn->prepare($sql);
+			$stmt->bindParam(":ITEM_NAME", $item_name);
+			$stmt->bindParam(":COMPANY_ID", $_SESSION['COMPANY_ID']);
+			$stmt->execute();
+			$num_rows = $stmt->rowCount();
+			if($num_rows > 0){
+				array_push($existing_items, $item_name);
+			}	
+		}
+	}catch(Exception $ex){
+		$existing_items = "Error";
+	}
+	
+	return $existing_items;
 }
 
 function updateItem() {
@@ -83,7 +163,7 @@ function addImage() {
     // Save the file as
     
     $directory = dirname(getcwd(), 2);    
-    $file_path = $_SESSION['DATA_TABLE'] . '_images/' . $_SESSION['ID'] . "_" . $item_id . ".png";
+    $file_path = "images/" . $_SESSION['DATA_TABLE'] . '_images/' . $_SESSION['COMPANY_ID'] . "_" . $item_id . ".png";
     if (imagepng($png_image, $directory . '/' . $file_path) == true) {
         echo "image saved";
     } else {
@@ -110,18 +190,18 @@ function addImage() {
     }
 }
 
-function addNewItem() {
+function addNewItem($item_name, $item_description) {
     include 'DbConnection.php';
 
-    $item_name = filter_input(INPUT_POST, 'itemName');
-    $item_description = filter_input(INPUT_POST, 'itemDescription');
-    $item_image = $_FILES['itemImage']['name'];
+    $item_name = isset($item_name) ? $item_name : filter_input(INPUT_POST, 'itemName');
+    $item_description = isset($item_description) ? $item_description : filter_input(INPUT_POST, 'itemDescription');
+   // $item_image = $_FILES['itemImage']['name'];
 
     // Data table for  the items
     $data_table = $_SESSION['DATA_TABLE'] . "_items";
 
     // Customer ID
-    $customer_id = $_SESSION['ID'];
+    $customer_id = $_SESSION['COMPANY_ID'];
 
     $sql = "INSERT INTO $data_table (COMPANY_ID, ITEM_NAME, ITEM_DESCRIPTION) VALUES (:ID, :NAME, :DESCRIPTION)";
     try {
@@ -129,43 +209,58 @@ function addNewItem() {
         $stmt->bindParam(":ID", $customer_id);
         $stmt->bindParam(":NAME", $item_name);
         $stmt->bindParam(":DESCRIPTION", $item_description);
-        $stmt->execute();
-
+		$stmt->execute();
+		
         $num_rows = $stmt->rowCount();
 
         if ($num_rows > 0) {
-            echo $conn->lastInsertId();
+            return $conn->lastInsertId();
         } else {
-            echo "fail";
+            return "fail";
         }
     } catch (Exception $ex) {
-        echo $ex->getMessage();
+        return $ex->getMessage();
     }
 }
 
 function getItems() {
     include 'DbConnection.php';
 
-    $offset = filter_input(INPUT_POST, 'offset');
-    $limit = filter_input(INPUT_POST, 'limit');
-    $customer_id = $_SESSION["ID"];
+    $offset = isset($_POST['offset']) ? filter_input(INPUT_POST, 'offset') : null;
+    $limit = isset($_POST['limit']) ? filter_input(INPUT_POST, 'limit') : null;
+    $customer_id = $_SESSION["COMPANY_ID"];
     $data_table = $_SESSION['DATA_TABLE'] . "_items"; // This is only the prefix ###ST 
 
-    $sql = "SELECT ID, ITEM_NAME, ITEM_DESCRIPTION, ITEM_IMAGE FROM $data_table WHERE COMPANY_ID = :CUSTOMER_ID ORDER BY ITEM_NAME ASC LIMIT $limit OFFSET $offset ";
+    $sql = "SELECT ID, ITEM_NAME, ITEM_DESCRIPTION, ITEM_IMAGE FROM $data_table WHERE COMPANY_ID = :CUSTOMER_ID ORDER BY ITEM_NAME ASC"; 
+    if($limit != null){
+	    $sql .= " LIMIT $limit";
+	}
+	if($limit != null){
+		$sql .= " OFFSET $offset ";
+	}
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(":CUSTOMER_ID", $customer_id);
     $stmt->execute();
     $stmt->setFetchMode(PDO::FETCH_ASSOC);
-
     $num_rows = $stmt->rowCount();
 
     if ($num_rows > 0):
+    	$i = 0;
         while ($results = $stmt->fetch()):
             ?>
-            <tr class="<?php echo $results["ID"]; ?>" onclick="return editItem(<?php echo $results["ID"] ?>)">
-                <td class="<?php echo $results["ID"]; ?>-item-image"><img src="<?php echo $results['ITEM_IMAGE']; ?>" alt="<?php echo $results['ITEM_IMAGE']; ?>" style="width:100px;"/></td>
-                <td class="<?php echo $results["ID"]; ?>-item-name"><?php echo $results["ITEM_NAME"]; ?></td>
-                <td class="<?php echo $results["ID"]; ?>-item-description"><?php echo $results["ITEM_DESCRIPTION"]; ?></td>
+            <tr class="<?php echo $results["ID"]; ?>" onclick="return editItem(<?php echo $results["ID"] ?>)" >
+	            <td class="<?php echo $results["ID"]; ?>-item-image" width="10%">
+	            <?php
+		        $item_image = $results['ITEM_IMAGE'];
+		       	if($item_image != null && strpos(get_headers($item_image)[0], '200 OK') > -1): 
+		       	?>
+		       	 <img src="<?php echo $results['ITEM_IMAGE']; ?>" alt="<?php echo $results['ITEM_NAME']; ?>" style="width:150px; height:150px;background:#d3d3d3;"/>
+		       	<?php else: ?>
+		       	 <img src="" alt="<?php echo $results['ITEM_NAME']; ?>" class="item-image" style="min-width:150px; min-height:150px;background:#d3d3d3;"/>
+		       	<?php endif; ?>
+               </td>
+                <td class="<?php echo $results["ID"]; ?>-item-name" width="40%"><?php echo $results["ITEM_NAME"]; ?></td>
+                <td class="<?php echo $results["ID"]; ?>-item-description" width="50%"><?php echo $results["ITEM_DESCRIPTION"]; ?></td>
             </tr>
             <?php
         endwhile;
@@ -183,7 +278,7 @@ function getPages() {
 
     $items_per_page = filter_input(INPUT_POST, 'itemsPerPage');
     $data_table = $_SESSION["DATA_TABLE"] . "_items";
-    $customer_id = $_SESSION["ID"];
+    $customer_id = $_SESSION["COMPANY_ID"];
 
     $sql = "SELECT ID FROM $data_table WHERE COMPANY_ID = :CUSTOMER_ID";
     $stmt = $conn->prepare($sql);
@@ -195,12 +290,33 @@ function getPages() {
         $count = 1;
         $total_pages = ceil($num_rows / $items_per_page);
         echo "<nav aria-label='Page navigation'>";
-        echo "<ul class='pagination'>";
+        echo "<ul class='pagination d-inline-flex'>";
         while ($count < $total_pages + 1) {
-            echo "<li onclick='return getPage(".$count.")' data-page='" . $count . "'><a href='#'>" . $count . "</a></li>";
+            echo "<li class='page-item' onclick='return getPage(".$count.")' data-page='" . $count . "'><a class='page-link' href='#'>" . $count . "</a></li>";
             $count++;
         }
         echo "</ul>";
         echo "</nav>";
     }
+    
 }
+
+function deleteItem(){
+    include 'DbConnection.php';
+    
+    $item_id = filter_input(INPUT_POST, 'itemId');
+    
+    $data_table = $_SESSION['DATA_TABLE'] . "_items";
+    $sql = "DELETE FROM $data_table WHERE ID = :id";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(":id", $item_id);
+    $stmt->execute();
+    $num_rows = $stmt->rowCount();
+    
+    if($num_rows > 0){
+	    echo true;
+    }else{
+	    echo false;
+    }
+}
+

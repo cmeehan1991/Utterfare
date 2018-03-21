@@ -43,9 +43,7 @@ function isNumeric(input){
 function geolocation() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(showPosition);
-    } else {
-        console.log("Geolocation is not supported by this browser");
-    }
+    } 
 }
 
 function showPosition(position) {
@@ -61,19 +59,16 @@ function codeLatLng(lat, lng) {
     var latLng = new google.maps.LatLng(lat, lng);
     geocoder.geocode({'latLng': latLng}, function (results, status) {
         if (status === google.maps.GeocoderStatus.OK) {
-            if (results[1]) {
-                $('.locationLink').text(results[0].address_components[2].long_name + ", " + results[0].address_components[5].short_name + " " + results[0].address_components[7].long_name);
-                $('.locationLink').data('location', results[0].address_components[7].long_name);
+	        if (results[0]) {
+                $('.locationLink').html("<i class='fa fa-map-marker' aria-hidden='true'></i>" + results[0].formatted_address);
+                $('.locationLink').attr('data-location', results[0].formatted_address);
             }
-        } else {
-            console.log('No Results Found');
         }
     });
 }
 
 
 function changeLocation() {
-    console.log('Change Location Clicked');
     $('.locationInput').show();
     $('.locationLink').hide();
     var city = $('.locationLink').text().split(',');

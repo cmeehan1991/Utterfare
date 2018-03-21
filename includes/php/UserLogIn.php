@@ -17,13 +17,14 @@ function login($username, $password){
     $stmt->bindParam(':USERNAME', $username);
     $stmt->bindParam(":PASSWORD", $password);
     $stmt->execute();
+    
     $stmt->setFetchMode(PDO::FETCH_ASSOC);
     
     $num_rows = $stmt->rowCount();
-    
     if($num_rows > 0){
-        $results = $stmt->fetch();
-        getUserInfo($results["ID"], $results["DATA_TABLE"], $results["COMPANY_ID"]);
+        $results = $stmt->fetchAll();
+        $result = $results[0];
+        getUserInfo($result["ID"], $result["DATA_TABLE"], $result["COMPANY_ID"]);
     }else{
         echo "None";
     }
@@ -32,9 +33,9 @@ function login($username, $password){
 function getUserInfo($user_id, $data_table, $company_id){
     include 'DbConnection.php';
     $cust_info_table = strtolower($data_table) .'_customer';
-    $sql = "SELECT ID, COMPANY_NAME, PRIMARY_ADDRESS, SECONDARY_ADDRESS, CITY, STATE, ZIP, PRIMARY_PHONE, COMPANY_URL, PRIMARY_CONTACT, PRIMARY_EMAIL, KEYWORDS FROM $cust_info_table WHERE ID = :ID";
+    $sql = "SELECT ID, COMPANY_NAME, PRIMARY_ADDRESS, SECONDARY_ADDRESS, CITY, STATE, ZIP, PRIMARY_PHONE, COMPANY_URL, PRIMARY_CONTACT, PRIMARY_EMAIL, KEYWORDS, PROFILE_PICTURE FROM $cust_info_table WHERE ID = :COMPANY_ID";
     $stmt = $conn->prepare($sql);
-    $stmt->bindParam(":ID", $company_id);
+    $stmt->bindParam(':COMPANY_ID', $company_id);
     $stmt->execute();
     $stmt->setFetchMode(PDO::FETCH_ASSOC);
     
@@ -42,7 +43,7 @@ function getUserInfo($user_id, $data_table, $company_id){
     
     if($num_rows > 0){
         while($results = $stmt->fetch()){
-            $_SESSION['ID'] = $results['ID'];
+            $_SESSION['COMPANY_ID'] = $results['ID'];
             $_SESSION['PRIMARY_ADDRESS'] = $results['PRIMARY_ADDRESS'];
             $_SESSION['SECONDARY_ADDRESS'] = $results['SECONDARY_ADDRESS'];
             $_SESSION['CITY'] = $results['CITY'];
@@ -54,6 +55,9 @@ function getUserInfo($user_id, $data_table, $company_id){
             $_SESSION['EMAIL'] = $results['PRIMARY_EMAIL'];
             $_SESSION['KEYWORDS'] = $results['KEYWORDS'];
             $_SESSION['DATA_TABLE'] = strtolower($data_table);
+            $_SESSION['COMPANY_NAME'] = $results['COMPANY_NAME'];
+            $_SESSION['USER_ID'] = $user_id;
+            $_SESSION['PROFILE_PICTURE'] = $results['PROFILE_PICTURE'];
             echo "success"; 
         }
     }else{
