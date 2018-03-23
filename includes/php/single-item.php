@@ -28,7 +28,6 @@
 			foreach($results as &$result){
 				$image = $result['IMAGE'];
 		        if(strpos($image, "images") == false || $image == null) {
-			            if(strpos($image, "images") == false || $image == null) {
 		            if(strpos(get_headers("https://www.utterfare.com/images/profile_pictures/" . $result['DATA_TABLE'] . "_profiles/" . md5($result['COMPANY_ID']) .".png")[0], '200 OK') > -1){
 		                $result['IMAGE_URL'] = "https://www.utterfare.com/images/profile_pictures/" . $result['DATA_TABLE'] . "_profiles/" . md5($result['COMPANY_ID']) . ".png";
 	                }else{
