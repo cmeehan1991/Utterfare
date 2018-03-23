@@ -1,11 +1,11 @@
 <?php
 include 'SearchAnalytics.php';
-$terms =  filter_input(INPUT_POST, 'terms');
-$location = filter_input(INPUT_POST, 'location');
-$limit =   filter_input(INPUT_POST, 'limit');
-$page = filter_input(INPUT_POST, 'page');
-$offset = filter_input(INPUT_POST, 'offset');
-$distance = filter_input(INPUT_POST, 'distance');
+$terms =  'Shrimp';// filter_input(INPUT_POST, 'terms');
+$location = '103 S. Antioch Ave, Elon, Nc'; //filter_input(INPUT_POST, 'location');
+$limit =   '10'; //filter_input(INPUT_POST, 'limit');
+$page = '2'; //filter_input(INPUT_POST, 'page');
+$offset = '10'; //filter_input(INPUT_POST, 'offset');
+$distance = '15'; //filter_input(INPUT_POST, 'distance');
 $type = "Mobile";
 $platform = "iOS";
 
@@ -76,7 +76,6 @@ function getDataTables($location, $distance) {
 	        $obj = json_decode($json, true);
 	        $lat = $obj['results'][0]['geometry']['location']['lat'];
 	        $lng = $obj['results'][0]['geometry']['location']['lng'];
-	        $GLOBALS['zip'] = $zipcode;
 	        $GLOBALS['lat'] = $lat;
 	        $GLOBALS['lng'] = $lng;
 	    }
@@ -136,6 +135,9 @@ function getResults($location, $distance, $terms) {
     $offset = $GLOBALS['offset'];
 
     // Set the datatable names
+    $datatable_one = null;
+    $datatable_two = null;
+    $datatable_three = null;
     if ($data_tables[1] != 'blank_customer') {
         $customer_one = $data_tables[1] . '_customer';
         $items_one = $data_tables[1] . '_items';
@@ -159,6 +161,7 @@ function getResults($location, $distance, $terms) {
     $pattern = "/\ band | that | or | this | or | because | want | of | with | |[^a-zA-Z0-9]+\b/i";
     $sterile_terms = explode(" ", preg_replace($pattern, '/', $terms));
 
+	$sterilized_string = null;
     foreach ($sterile_terms as $sterilized) {
         $sterilized_string .= $sterilized;
     }
@@ -166,23 +169,31 @@ function getResults($location, $distance, $terms) {
     $search_terms = array_diff(explode('/', $sterilized_string), ['']);
 
 	$loop = 0;
+	$parameters_one = null;
+	$parameters_two = null;
+	$parameters_three = null;
     foreach ($search_terms as $new_terms) {
+	    $joiner = null;
 	    if($loop > 0){
 		    $joiner = 'OR';
 	    }
         $parameters_one .= "$joiner $items_one.ITEM_NAME = '$new_terms' OR $items_one.ITEM_DESCRIPTION = '$new_terms' OR $items_one.COMPANY_ID = (SELECT COMPANY_ID FROM $customer_one WHERE $customer_one.COMPANY_NAME = '$new_terms') OR $customer_one.COMPANY_NAME = '$new_terms'  OR $items_one.ITEM_DESCRIPTION LIKE '%" . $new_terms . "%' OR $items_one.ITEM_NAME LIKE '%" . $new_terms . "%' OR $customer_one.COMPANY_NAME LIKE '%" . $new_terms . "%' ";
-        $parameters_two .= "$joiner $items_two.ITEM_DESCRIPTION LIKE '%" . $new_terms . "%' OR $items_two.ITEM_NAME LIKE '%" . $new_terms . "%' OR $customer_two.COMPANY_NAME LIKE '%" . $new_terms . "%' ";
-		$parameters_three .= "$joiner $items_three.ITEM_DESCRIPTION LIKE '%" . $new_terms . "%' OR $items_three.ITEM_NAME LIKE '%" . $new_terms . "%' OR $customer_three.COMPANY_NAME LIKE '%" . $new_terms . "%' ";
-		
+        if($datatable_two){
+	        $parameters_two .= "$joiner $items_two.ITEM_DESCRIPTION LIKE '%" . $new_terms . "%' OR $items_two.ITEM_NAME LIKE '%" . $new_terms . "%' OR $customer_two.COMPANY_NAME LIKE '%" . $new_terms . "%' ";
+	    }
+	       
+	    if($datatable_three){
+			$parameters_three .= "$joiner $items_three.ITEM_DESCRIPTION LIKE '%" . $new_terms . "%' OR $items_three.ITEM_NAME LIKE '%" . $new_terms . "%' OR $customer_three.COMPANY_NAME LIKE '%" . $new_terms . "%' ";
+		}
 		$loop++;
     }
 
-    $sql = "SELECT $items_one.ID AS 'ITEM_ID', ''" . $datatable_one. "' as 'DATA_TABLE', $customer_one.LATITUDE AS 'LATITUDE', $customer_one.LONGITUDE AS 'LONGITUDE', $items_one.COMPANY_ID AS 'COMPANY_ID', $customer_one.COMPANY_NAME AS 'COMPANY', $items_one.ITEM_NAME AS 'NAME', $items_one.ITEM_IMAGE AS 'PHOTO_DIRECTORY', $items_one.ID AS 'ID', DEGREES((ACOS(SIN(RADIANS($lat))*SIN(RADIANS($customer_one.LATITUDE))+ COS(RADIANS($lat))*COS(RADIANS($customer_one.LATITUDE))*COS(RADIANS(($customer_one.LONGITUDE)-($lng)))))) * 60 * 1.1515 AS 'DISTANCE' FROM $items_one JOIN $customer_one ON $customer_one.ID = $items_one.COMPANY_ID WHERE ($parameters_one) AND DEGREES((ACOS(SIN(RADIANS($lat))*SIN(RADIANS($customer_one.LATITUDE))+ COS(RADIANS($lat))*COS(RADIANS($customer_one.LATITUDE))*COS(RADIANS(($customer_one.LONGITUDE)-($lng)))))) * 60 * 1.1515 <= $distance";
+    $sql = "SELECT $items_one.ID AS 'ITEM_ID', $items_one.ITEM_DESCRIPTION as 'DESCRIPTION', '" . $datatable_one. "' as 'DATA_TABLE', $customer_one.LATITUDE AS 'LATITUDE', $customer_one.LONGITUDE AS 'LONGITUDE', $items_one.COMPANY_ID AS 'COMPANY_ID', $customer_one.COMPANY_NAME AS 'COMPANY', $items_one.ITEM_NAME AS 'NAME', $items_one.ITEM_IMAGE AS 'PHOTO_DIRECTORY', $items_one.ID AS 'ID', DEGREES((ACOS(SIN(RADIANS($lat))*SIN(RADIANS($customer_one.LATITUDE))+ COS(RADIANS($lat))*COS(RADIANS($customer_one.LATITUDE))*COS(RADIANS(($customer_one.LONGITUDE)-($lng)))))) * 60 * 1.1515 AS 'DISTANCE' FROM $items_one JOIN $customer_one ON $customer_one.ID = $items_one.COMPANY_ID WHERE ($parameters_one) AND DEGREES((ACOS(SIN(RADIANS($lat))*SIN(RADIANS($customer_one.LATITUDE))+ COS(RADIANS($lat))*COS(RADIANS($customer_one.LATITUDE))*COS(RADIANS(($customer_one.LONGITUDE)-($lng)))))) * 60 * 1.1515 <= $distance";
     if ($data_tables[2] != 'blank_customer') {
-        $sql .= " UNION ALL SELECT $items_two.ID AS 'ITEM_ID', '" . $datatable_two. "' as 'DATA_TABLE', $customer_two.LATITUDE AS 'LATITUDE', $customer_two.LONGITUDE AS 'LONGITUDE', $items_two.COMPANY_ID AS 'COMPANY_ID', $customer_two.COMPANY_NAME AS 'COMPANY', $items_two.ITEM_NAME AS 'NAME', $items_two.ITEM_IMAGE AS 'PHOTO_DIRECTORY', $items_two.ID AS 'ID', DEGREES((ACOS(SIN(RADIANS($lat))*SIN(RADIANS($customer_two.LATITUDE))+ COS(RADIANS($lat))*COS(RADIANS($customer_two.LATITUDE))*COS(RADIANS(($customer_two.LONGITUDE)-($lng)))))) * 60 * 1.1515 AS 'DISTANCE' FROM $items_two JOIN $customer_two ON $customer_two.ID = $items_two.COMPANY_ID WHERE ($parameters_one) AND DEGREES((ACOS(SIN(RADIANS($lat))*SIN(RADIANS($customer_two.LATITUDE))+ COS(RADIANS($lat))*COS(RADIANS($customer_two.LATITUDE))*COS(RADIANS(($customer_two.LONGITUDE)-($lng)))))) * 60 * 1.1515 <= $distance";
+        $sql .= " UNION ALL SELECT $items_two.ID AS 'ITEM_ID', $items_two.ITEM_DESCRIPTION as 'DESCRIPTION', '" . $datatable_two. "' as 'DATA_TABLE', $customer_two.LATITUDE AS 'LATITUDE', $customer_two.LONGITUDE AS 'LONGITUDE', $items_two.COMPANY_ID AS 'COMPANY_ID', $customer_two.COMPANY_NAME AS 'COMPANY', $items_two.ITEM_NAME AS 'NAME', $items_two.ITEM_IMAGE AS 'PHOTO_DIRECTORY', $items_two.ID AS 'ID', DEGREES((ACOS(SIN(RADIANS($lat))*SIN(RADIANS($customer_two.LATITUDE))+ COS(RADIANS($lat))*COS(RADIANS($customer_two.LATITUDE))*COS(RADIANS(($customer_two.LONGITUDE)-($lng)))))) * 60 * 1.1515 AS 'DISTANCE' FROM $items_two JOIN $customer_two ON $customer_two.ID = $items_two.COMPANY_ID WHERE ($parameters_one) AND DEGREES((ACOS(SIN(RADIANS($lat))*SIN(RADIANS($customer_two.LATITUDE))+ COS(RADIANS($lat))*COS(RADIANS($customer_two.LATITUDE))*COS(RADIANS(($customer_two.LONGITUDE)-($lng)))))) * 60 * 1.1515 <= $distance";
     }
     if ($data_tables[3] != 'blank_customer') {
-        $sql .= " UNION ALL SELECT $items_three.ID AS 'ITEM_ID', '" . $datatable_three. "' as 'DATA_TABLE', $customer_three.LATITUDE AS 'LATITUDE', $customer_three.LONGITUDE AS 'LONGITUDE', $items_three.COMPANY_ID AS 'COMPANY_ID', $customer_three.COMPANY_NAME AS 'COMPANY', $items_three.ITEM_NAME AS 'NAME', $items_three.ITEM_IMAGE AS 'PHOTO_DIRECTORY', $items_three.ID AS 'ID', DEGREES((ACOS(SIN(RADIANS($lat))*SIN(RADIANS($customer_three.LATITUDE))+ COS(RADIANS($lat))*COS(RADIANS($customer_three.LATITUDE))*COS(RADIANS(($customer_three.LONGITUDE)-($lng)))))) * 60 * 1.1515 AS 'DISTANCE' FROM $items_three JOIN $customer_three ON $customer_three.ID = $items_three.COMPANY_ID WHERE ($parameters_one) AND DEGREES((ACOS(SIN(RADIANS($lat))*SIN(RADIANS($customer_three.LATITUDE))+ COS(RADIANS($lat))*COS(RADIANS($customer_three.LATITUDE))*COS(RADIANS(($customer_three.LONGITUDE)-($lng)))))) * 60 * 1.1515 <= $distance";
+        $sql .= " UNION ALL SELECT $items_three.ID AS 'ITEM_ID', $items_three.ITEM_DESCRIPTION as 'DESCRIPTION', '" . $datatable_three. "' as 'DATA_TABLE', $customer_three.LATITUDE AS 'LATITUDE', $customer_three.LONGITUDE AS 'LONGITUDE', $items_three.COMPANY_ID AS 'COMPANY_ID', $customer_three.COMPANY_NAME AS 'COMPANY', $items_three.ITEM_NAME AS 'NAME', $items_three.ITEM_IMAGE AS 'PHOTO_DIRECTORY', $items_three.ID AS 'ID', DEGREES((ACOS(SIN(RADIANS($lat))*SIN(RADIANS($customer_three.LATITUDE))+ COS(RADIANS($lat))*COS(RADIANS($customer_three.LATITUDE))*COS(RADIANS(($customer_three.LONGITUDE)-($lng)))))) * 60 * 1.1515 AS 'DISTANCE' FROM $items_three JOIN $customer_three ON $customer_three.ID = $items_three.COMPANY_ID WHERE ($parameters_one) AND DEGREES((ACOS(SIN(RADIANS($lat))*SIN(RADIANS($customer_three.LATITUDE))+ COS(RADIANS($lat))*COS(RADIANS($customer_three.LATITUDE))*COS(RADIANS(($customer_three.LONGITUDE)-($lng)))))) * 60 * 1.1515 <= $distance";
     } 
     
     $sql .= " ORDER BY DISTANCE limit 10 OFFSET $offset";
@@ -221,20 +232,18 @@ function getResults($location, $distance, $terms) {
 						
          $num_words = count($search_terms);
         foreach ($sorted_results as &$result) {
-            $result['rank'] = 100;
+             $result['rank'] = 100;
             $item_description = " " . preg_replace('/\s+/', '^', preg_replace('/[[:punct:]]/', ' ', strtoupper(' ' . $result['DESCRIPTION'] . ' ')));
             $customer_name = " " . preg_replace('/\s+/', '^', preg_replace('/[[:punct:]]/', ' ', strtoupper(' ' . $result['COMPANY'] . ' ')));
             $item_name = " " . preg_replace('/\s+/', '^', preg_replace('/[[:punct:]]/', ' ', strtoupper(' ' . $result['NAME'] . ' ')));
             $customer_distance = $result['DISTANCE'];
             $counter = 0;
-            $name_match = 0;
             while ($counter < $num_words) {
             	$name_match = 0;
                 $search_word = $search_terms[$counter];
                 // Ranks the word based on number of matches with the name
                 foreach(explode('^', $item_name) as $i_name){
 	                
-	                //echo $name_match;
 	                if ( in_array($i_name, array_map('strtoupper',$search_terms))) {
 	                    $name_match += 1;
 	
