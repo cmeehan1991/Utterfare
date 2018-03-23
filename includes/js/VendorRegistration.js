@@ -154,6 +154,22 @@ function registerCompany() {
     return false;
 }
 
+function registrationNotification(email){
+	var data = "action=registrationNotification";
+	data += "&email=" + email;
+	
+	$.ajax({
+		data:data,
+		url: "includes/php/VendorRegistration.php",
+		method: 'post',
+		success:function(response){
+			console.log(response);
+		},
+		error: function(error){
+			console.log(error);
+		}
+	});
+}
 
 function validateUsername(username){
 	var unameInput = $('input[name="username"]');
@@ -177,7 +193,7 @@ function validateUsername(username){
 				$(submitButton).attr('disabled', false);
 			}
 		}
-	})
+	});
 }
 
 

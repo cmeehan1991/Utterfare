@@ -419,6 +419,19 @@ mainHeader();
                                 </div>
                             </div>
                             <div class="row">
+                                <div class="col-md-12 mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                    <label for="role" class="mdl-textfield__label">Role</label>
+                                     <select name="role" required>
+	                                     <option value="Employee">Employee</option>
+	                                     <option value="Manager">Manager</option>
+	                                     <option value="Owner/Co-Owner">Owner/Co-Owner</option>
+	                                     <option value="Legal Representative">Legal Representative</option>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 col-md-6 mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                    <label for="certify"><input type="checkbox" name="certify" value="certified" required>I certify that I am either a legal representative of or am authorized by the proper authority to manage content for this vendor.</label>
+                                </div>
+                            </div>
+                            <div class="row">
 	                            <div class="col-md-3 mr-auto">
 		                            <button type="button" class="mdl-button mdl-button--flat mdl-button--ripple" data-page="previous"><i class="fa fa-chevron-left"></i> Previous: User Information</button>
 	                            </div>
