@@ -36,8 +36,7 @@ host('dev')
 	->stage('dev')
 	->user('cmeehan')
 	->port('2222')
-    ->set('deploy_path', '/home1/cmeehan/public_html/ufdev')
-    ->set('shared_files', []);    
+    ->set('deploy_path', '/home1/cmeehan/public_html/ufdev');
     
 host('production')
 	->hostname('utterfare.com')
