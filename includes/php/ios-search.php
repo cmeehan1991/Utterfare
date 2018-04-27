@@ -1,11 +1,11 @@
 <?php
 include 'SearchAnalytics.php';
-$terms =  'Shrimp';// filter_input(INPUT_POST, 'terms');
-$location = '103 S. Antioch Ave, Elon, Nc'; //filter_input(INPUT_POST, 'location');
-$limit =   '10'; //filter_input(INPUT_POST, 'limit');
-$page = '2'; //filter_input(INPUT_POST, 'page');
-$offset = '10'; //filter_input(INPUT_POST, 'offset');
-$distance = '15'; //filter_input(INPUT_POST, 'distance');
+$terms =  'Shrimp and grits'; //filter_input(INPUT_POST, 'terms');
+$location = '32.229041:-80.740269'; //filter_input(INPUT_POST, 'location');
+$limit =   filter_input(INPUT_POST, 'limit');
+$page = filter_input(INPUT_POST, 'page');
+$offset = '0'; //filter_input(INPUT_POST, 'offset');
+$distance = '2'; //filter_input(INPUT_POST, 'distance');
 $type = "Mobile";
 $platform = "iOS";
 
@@ -83,7 +83,7 @@ function getDataTables($location, $distance) {
     
     // Get the closest city within x miles of the location
 
-    $sql = "SELECT DISTINCT DATA_TABLE FROM zips WHERE (ACOS(SIN(radians($lat))*SIN(radians(LATITUDE))+ COS(radians($lat))*COS(radians(LATITUDE))*COS(radians(LONGITUDE)-radians($lng)))*3443.89849) <= $distance limit 3";
+    $sql = "SELECT SQL_CACHE DISTINCT DATA_TABLE FROM zips WHERE (ACOS(SIN(radians($lat))*SIN(radians(LATITUDE))+ COS(radians($lat))*COS(radians(LATITUDE))*COS(radians(LONGITUDE)-radians($lng)))*3443.89849) <= $distance limit 3";
     $stmt = $conn->prepare($sql);
     $stmt->execute();
     $stmt->setFetchMode(PDO::FETCH_ASSOC);
@@ -138,23 +138,24 @@ function getResults($location, $distance, $terms) {
     $datatable_one = null;
     $datatable_two = null;
     $datatable_three = null;
-    if ($data_tables[1] != 'blank_customer') {
+    if ($data_tables['1'] != 'blank_customer') {
         $customer_one = $data_tables[1] . '_customer';
         $items_one = $data_tables[1] . '_items';
         $datatable_one = $data_tables[1];
     }
 
-    if ($data_tables[2] != 'blank_customer') {
+    if ($data_tables['2'] != 'blank_customer') {
         $customer_two = $data_tables[2] . '_customer';
         $items_two = $data_tables[2] . '_items';
         $datatable_two = $data_tables[2];
     }
 
-    if ($data_tables[3] != 'blank_customer') {
+    if ($data_tables['3'] != 'blank_customer') {
         $customer_three = $data_tables[3] . '_customer';
         $items_three = $data_tables[3] . '_items';
         $datatable_three = $data_tables[3];
     }
+    
 
 
     // Remove all unwanted words from the search terms
@@ -188,21 +189,19 @@ function getResults($location, $distance, $terms) {
 		$loop++;
     }
 
-    $sql = "SELECT $items_one.ID AS 'ITEM_ID', $items_one.ITEM_DESCRIPTION as 'DESCRIPTION', '" . $datatable_one. "' as 'DATA_TABLE', $customer_one.LATITUDE AS 'LATITUDE', $customer_one.LONGITUDE AS 'LONGITUDE', $items_one.COMPANY_ID AS 'COMPANY_ID', $customer_one.COMPANY_NAME AS 'COMPANY', $items_one.ITEM_NAME AS 'NAME', $items_one.ITEM_IMAGE AS 'PHOTO_DIRECTORY', $items_one.ID AS 'ID', DEGREES((ACOS(SIN(RADIANS($lat))*SIN(RADIANS($customer_one.LATITUDE))+ COS(RADIANS($lat))*COS(RADIANS($customer_one.LATITUDE))*COS(RADIANS(($customer_one.LONGITUDE)-($lng)))))) * 60 * 1.1515 AS 'DISTANCE' FROM $items_one JOIN $customer_one ON $customer_one.ID = $items_one.COMPANY_ID WHERE ($parameters_one) AND DEGREES((ACOS(SIN(RADIANS($lat))*SIN(RADIANS($customer_one.LATITUDE))+ COS(RADIANS($lat))*COS(RADIANS($customer_one.LATITUDE))*COS(RADIANS(($customer_one.LONGITUDE)-($lng)))))) * 60 * 1.1515 <= $distance";
+    $sql = "SELECT SQL_CACHE $items_one.ID AS 'ITEM_ID', $items_one.ITEM_DESCRIPTION as 'DESCRIPTION', '" . $datatable_one. "' as 'DATA_TABLE', $customer_one.LATITUDE AS 'LATITUDE', $customer_one.LONGITUDE AS 'LONGITUDE', $items_one.COMPANY_ID AS 'COMPANY_ID', $customer_one.COMPANY_NAME AS 'COMPANY', $items_one.ITEM_NAME AS 'NAME', $items_one.ITEM_IMAGE AS 'PHOTO_DIRECTORY', $items_one.ID AS 'ID', DEGREES((ACOS(SIN(RADIANS($lat))*SIN(RADIANS($customer_one.LATITUDE))+ COS(RADIANS($lat))*COS(RADIANS($customer_one.LATITUDE))*COS(RADIANS(($customer_one.LONGITUDE)-($lng)))))) * 60 * 1.1515 AS 'DISTANCE' FROM $items_one JOIN $customer_one ON $customer_one.ID = $items_one.COMPANY_ID WHERE ($parameters_one) AND DEGREES((ACOS(SIN(RADIANS($lat))*SIN(RADIANS($customer_one.LATITUDE))+ COS(RADIANS($lat))*COS(RADIANS($customer_one.LATITUDE))*COS(RADIANS(($customer_one.LONGITUDE)-($lng)))))) * 60 * 1.1515 <= $distance";
     if ($data_tables[2] != 'blank_customer') {
-        $sql .= " UNION ALL SELECT $items_two.ID AS 'ITEM_ID', $items_two.ITEM_DESCRIPTION as 'DESCRIPTION', '" . $datatable_two. "' as 'DATA_TABLE', $customer_two.LATITUDE AS 'LATITUDE', $customer_two.LONGITUDE AS 'LONGITUDE', $items_two.COMPANY_ID AS 'COMPANY_ID', $customer_two.COMPANY_NAME AS 'COMPANY', $items_two.ITEM_NAME AS 'NAME', $items_two.ITEM_IMAGE AS 'PHOTO_DIRECTORY', $items_two.ID AS 'ID', DEGREES((ACOS(SIN(RADIANS($lat))*SIN(RADIANS($customer_two.LATITUDE))+ COS(RADIANS($lat))*COS(RADIANS($customer_two.LATITUDE))*COS(RADIANS(($customer_two.LONGITUDE)-($lng)))))) * 60 * 1.1515 AS 'DISTANCE' FROM $items_two JOIN $customer_two ON $customer_two.ID = $items_two.COMPANY_ID WHERE ($parameters_one) AND DEGREES((ACOS(SIN(RADIANS($lat))*SIN(RADIANS($customer_two.LATITUDE))+ COS(RADIANS($lat))*COS(RADIANS($customer_two.LATITUDE))*COS(RADIANS(($customer_two.LONGITUDE)-($lng)))))) * 60 * 1.1515 <= $distance";
+        $sql .= " UNION ALL SELECT $items_two.ID AS 'ITEM_ID', $items_two.ITEM_DESCRIPTION as 'DESCRIPTION', '" . $datatable_two. "' as 'DATA_TABLE', $customer_two.LATITUDE AS 'LATITUDE', $customer_two.LONGITUDE AS 'LONGITUDE', $items_two.COMPANY_ID AS 'COMPANY_ID', $customer_two.COMPANY_NAME AS 'COMPANY', $items_two.ITEM_NAME AS 'NAME', $items_two.ITEM_IMAGE AS 'PHOTO_DIRECTORY', $items_two.ID AS 'ID', DEGREES((ACOS(SIN(RADIANS($lat))*SIN(RADIANS($customer_two.LATITUDE))+ COS(RADIANS($lat))*COS(RADIANS($customer_two.LATITUDE))*COS(RADIANS(($customer_two.LONGITUDE)-($lng)))))) * 60 * 1.1515 AS 'DISTANCE' FROM $items_two JOIN $customer_two ON $customer_two.ID = $items_two.COMPANY_ID WHERE ($parameters_two) AND DEGREES((ACOS(SIN(RADIANS($lat))*SIN(RADIANS($customer_two.LATITUDE))+ COS(RADIANS($lat))*COS(RADIANS($customer_two.LATITUDE))*COS(RADIANS(($customer_two.LONGITUDE)-($lng)))))) * 60 * 1.1515 <= $distance";
     }
     if ($data_tables[3] != 'blank_customer') {
-        $sql .= " UNION ALL SELECT $items_three.ID AS 'ITEM_ID', $items_three.ITEM_DESCRIPTION as 'DESCRIPTION', '" . $datatable_three. "' as 'DATA_TABLE', $customer_three.LATITUDE AS 'LATITUDE', $customer_three.LONGITUDE AS 'LONGITUDE', $items_three.COMPANY_ID AS 'COMPANY_ID', $customer_three.COMPANY_NAME AS 'COMPANY', $items_three.ITEM_NAME AS 'NAME', $items_three.ITEM_IMAGE AS 'PHOTO_DIRECTORY', $items_three.ID AS 'ID', DEGREES((ACOS(SIN(RADIANS($lat))*SIN(RADIANS($customer_three.LATITUDE))+ COS(RADIANS($lat))*COS(RADIANS($customer_three.LATITUDE))*COS(RADIANS(($customer_three.LONGITUDE)-($lng)))))) * 60 * 1.1515 AS 'DISTANCE' FROM $items_three JOIN $customer_three ON $customer_three.ID = $items_three.COMPANY_ID WHERE ($parameters_one) AND DEGREES((ACOS(SIN(RADIANS($lat))*SIN(RADIANS($customer_three.LATITUDE))+ COS(RADIANS($lat))*COS(RADIANS($customer_three.LATITUDE))*COS(RADIANS(($customer_three.LONGITUDE)-($lng)))))) * 60 * 1.1515 <= $distance";
+        $sql .= " UNION ALL SELECT $items_three.ID AS 'ITEM_ID', $items_three.ITEM_DESCRIPTION as 'DESCRIPTION', '" . $datatable_three. "' as 'DATA_TABLE', $customer_three.LATITUDE AS 'LATITUDE', $customer_three.LONGITUDE AS 'LONGITUDE', $items_three.COMPANY_ID AS 'COMPANY_ID', $customer_three.COMPANY_NAME AS 'COMPANY', $items_three.ITEM_NAME AS 'NAME', $items_three.ITEM_IMAGE AS 'PHOTO_DIRECTORY', $items_three.ID AS 'ID', DEGREES((ACOS(SIN(RADIANS($lat))*SIN(RADIANS($customer_three.LATITUDE))+ COS(RADIANS($lat))*COS(RADIANS($customer_three.LATITUDE))*COS(RADIANS(($customer_three.LONGITUDE)-($lng)))))) * 60 * 1.1515 AS 'DISTANCE' FROM $items_three JOIN $customer_three ON $customer_three.ID = $items_three.COMPANY_ID WHERE ($parameters_three) AND DEGREES((ACOS(SIN(RADIANS($lat))*SIN(RADIANS($customer_three.LATITUDE))+ COS(RADIANS($lat))*COS(RADIANS($customer_three.LATITUDE))*COS(RADIANS(($customer_three.LONGITUDE)-($lng)))))) * 60 * 1.1515 <= $distance";
     } 
     
     $sql .= " ORDER BY DISTANCE limit 10 OFFSET $offset";
-    
     $stmt = $conn->prepare($sql);
     $stmt->execute();
     $stmt->setFetchMode(PDO::FETCH_ASSOC);
     $num_rows = $stmt->rowCount();
-    
     
     if ($num_rows > 0) {
         $results = $stmt->fetchAll();
@@ -296,7 +295,7 @@ function getResults($location, $distance, $terms) {
         foreach ($sorted_results as &$result) {
 	        $result['DISTANCE'] = strval(round($result['DISTANCE'], 2));
             $image = $result['PHOTO_DIRECTORY'];
-            if(strpos($image, "images") == false || $image == null) {
+            if(strpos($image, "\/images\/") == false || $image == null) {
 	            if(strpos(get_headers("https://www.utterfare.com/images/profile_pictures/" . $result['DATA_TABLE'] . "_profiles/" . md5($result['COMPANY_ID']) .".png")[0], '200 OK') > -1){
 	                $result['IMAGE_URL'] = "https://www.utterfare.com/images/profile_pictures/" . $result['DATA_TABLE'] . "_profiles/" . md5($result['COMPANY_ID']) . ".png";
                 }else{
