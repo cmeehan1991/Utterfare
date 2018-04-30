@@ -9,7 +9,7 @@ set('application', 'Utterfare');
 // Project repository
 set('repository', 'https://github.com/cmeehan1991/Utterfare');
 
-//set('use_relative_symlinks', false);
+set('use_relative_symlinks', false);
 
 set('ssh_multiplexing', true);
 
@@ -61,6 +61,11 @@ task('pwd', function(){
 	writeln("Current dir: $result");
 });
 
+task('move_to_live', function(){
+	run('cp -af public_html/ufdev/current/. /home1/cmeehan/public_html/ufdev/');
+});
+
+
 desc('Deploy your project');
 task('deploy', [
     'deploy:info',
@@ -70,7 +75,6 @@ task('deploy', [
     'deploy:update_code',
     'deploy:shared',
     'deploy:writable',
-    'deploy:vendors',
     'deploy:clear_paths',
     'deploy:symlink',
     'deploy:unlock',
@@ -80,3 +84,5 @@ task('deploy', [
 
 // [Optional] If deploy fails automatically unlock.
 after('deploy:failed', 'deploy:unlock');
+
+after('cleanup', 'move_to_live');

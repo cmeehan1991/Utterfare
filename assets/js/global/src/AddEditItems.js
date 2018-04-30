@@ -3,10 +3,6 @@ var offset = "0";
 var page = "1";
 var ppp = null;
 
-
-
-
-
 $(document).ready(function () {
 	var currPathName = window.location.pathname;
     var newItemNumber = 1;

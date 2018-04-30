@@ -15,7 +15,7 @@ $(document).ready(function () {
 			  var item = decodeURIComponent(v.split("=")[1]);
 			  parameters.push(item)
 		   });
-		   var location = parameters[0];
+		   var location = getLatLng(parameters[0]);
 		   var terms = parameters[1];
 		   var limit = parameters[2];
 		   var page = parameters[3];
@@ -26,7 +26,6 @@ $(document).ready(function () {
 		   performSearch(terms, location, distance, page, newLimit, 0);
 	   }
     });
-    console.log(window.location);
 });
 
 // Save the current search parameters and run the search again
@@ -75,6 +74,8 @@ function formSearch() {
 
     // Check if all of the inputs have been filled
     if (authorized(terms, location, distance) === true) {
+	    location = getLatLng(location);
+	    console.log(location);
 		performSearch(terms, location, distance, page, limit, offset);    
 	} else {
         console.log('false');
@@ -135,8 +136,25 @@ function loadMore() {
     } else {
         location = $(".locationInput").val();
     }
+    
 
     var distance = $('.distance').val();
 		performSearch(terms, location, distance, page, limit, offset)
-   }
+}
+
+function getLatLng(location){
+	var geocoder = new google.maps.Geocoder();
+	var latLng = location;
+	geocoder.geocode({'address' : location}, function(results, status){
+		if(status === 'OK'){
+			console.log(results.geometry.location);
+			var lat = results[0].geometry.location.latitude;
+			var lng = results[0].geometry.location.longitude;
+			latLng = lat + '+' + lng;
+			console.log(latLng);
+		}
+	});
+	
+	return latLng;
+}
 

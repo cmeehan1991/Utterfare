@@ -1,7 +1,7 @@
 archived
 includes/php/error_log
-<<<<<<< HEAD
 images/
-=======
-/images/
->>>>>>> origin/master
+node_modules/
+deploy.php
+.htaccess
+

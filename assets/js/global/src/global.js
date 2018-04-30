@@ -12,4 +12,5 @@ function showSnackbar(message, length){
 	setTimeout(function(){
 		x.className = x.className.replace("show");
 	}, length);
+	console.log('the watch worked');
 }

@@ -41,9 +41,10 @@
 		<meta property="og:description"        content="Utterfare is a restaurant menu item search engine. Simply allow the app to get your location or manually enter you location, then search for whatever food you are in the mood for and browse the results." />
 		<meta property="og:image"              content="https://www.utterfare.com/Utterfare%20Base%20Logo%20White%20-%20Banner.png" />
 		<meta property="fb:app_id"			   content="529030024149485"/>
-        <!--required scripts-->
-        <script src="includes/jquery/jquery-3.1.1.min.js" type="text/javascript"></script>
-		
+		<!-- jQuery -->
+        <script src="assets/js/global/dist/min/jquery-3.1.1.min.js" type="text/javascript"></script>
+        
+        
         <!-- Google maps API-->
         <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCfPuT0e1aszJ7ac7ePqH9qHwcxaQAxvsk"></script> 
 
@@ -63,15 +64,21 @@
 		<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
 
         <!--Styles and Scripts-->
+        
+        
+        <link href="assets/styles/css/dist/min/allstyles.min.css" type="text/css">		
+        <script src="assets/js/global/dist/min/allscripts.min.js" type="text/javascript"></script>
+        
+        <!--<link href="assets/styles/css/dist/min/allstyles.min.css" type="text/css">
         <link href="includes/css/home.css" rel="stylesheet" type="text/css"/>
         <link href="includes/css/main.css" rel="stylesheet" type="text/css"/>        
         <link href="includes/css/userMain.css" rel="stylesheet" type="text/css"/>
         <link href="includes/css/addEditItems.css" rel="stylesheet" type="text/css"/>
         <link href="includes/css/companyInformation.css" rel="stylesheet" type="text/css"/>
-        <link href="includes/css/registrationStyle.css" rel="stylesheet" type="text/css"/>
+        <link href="includes/css/registrationStyle.css" rel="stylesheet" type="text/css"/>-->
         <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
         
-        <script src="includes/js/global.js" type="text/javascript"></script>
+        <!--<script src="includes/js/global.js" type="text/javascript"></script>
         <script src="includes/js/script.js" type="text/javascript"></script>
         <script src="includes/js/searchScript.js" type="text/javascript"></script>
         <script src="includes/js/locationScript.js" type="text/javascript"></script>
@@ -79,7 +86,7 @@
         <script src="includes/js/companyInformation.js" type="text/javascript"></script>
         <script src="includes/js/companyInformation.js" type="text/javascript"></script>
         <script src="includes/js/VendorRegistration.js" type="text/javascript"></script>
-        <script src="includes/js/VendorSignIn.js" type="text/javascript"></script>
+        <script src="includes/js/VendorSignIn.js" type="text/javascript"></script>-->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
         
 		<title>Utterfare&trade;</title>
@@ -91,7 +98,7 @@ function mainHeader() { ?>
 	<nav class="navbar navbar-light bg-light">
 	    <a class="navbar-brand" href="index">Utterfare</a>
 	    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-	    	<img src="includes/img/fast-food-99180_640.png" alt="" width="25px" height="25px"/>
+	    	<img src="assets/img/fast-food-99180_640.png" alt="" width="25px" height="25px"/>
 	    </button>
 	    <div class="collapse navbar-collapse" id="navbarSupportedContent">
 	        <ul class="navbar-nav ml-auto">
