@@ -24,7 +24,7 @@ module.exports = function(grunt){
 		},
 		watch: {
 			scripts: {
-				files:['assets/js/global/src/*.js'],
+				files:['assets/js/global/src/*.js', 'assets/styles/css/src/*.css'],
 				tasks: ['uglify', 'cssmin'],
 				options: {
 					spawn: false,
@@ -39,5 +39,8 @@ module.exports = function(grunt){
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	
 	// Default task(s)
-	grunt.registerTask('default', ['uglify', 'cssmin']);
+	grunt.registerTask('minify-js', ['uglify']);
+	grunt.registerTask('minify-css', ['cssmin']);
+	grunt.registerTask('minify-all', ['uglify', 'cssmin']);
+	grunt.registerTask('watch', ['watch'])
 };

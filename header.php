@@ -63,20 +63,19 @@
 		<!--Font Awesome 4.7.0-->
 		<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
 
-        <!--Styles and Scripts-->
-        
-        
-        <link href="assets/styles/css/dist/min/allstyles.min.css" type="text/css">		
+        <!--Styles and Scripts-->    
+        <link type="text/css" rel="stylesheet"  href="assets/styles/css/dist/min/allstyles.min.css" />    
         <script src="assets/js/global/dist/min/allscripts.min.js" type="text/javascript"></script>
-        
-        <!--<link href="assets/styles/css/dist/min/allstyles.min.css" type="text/css">
-        <link href="includes/css/home.css" rel="stylesheet" type="text/css"/>
-        <link href="includes/css/main.css" rel="stylesheet" type="text/css"/>        
-        <link href="includes/css/userMain.css" rel="stylesheet" type="text/css"/>
-        <link href="includes/css/addEditItems.css" rel="stylesheet" type="text/css"/>
-        <link href="includes/css/companyInformation.css" rel="stylesheet" type="text/css"/>
-        <link href="includes/css/registrationStyle.css" rel="stylesheet" type="text/css"/>-->
         <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+        
+                
+        <!--<link href="assets/styles/css/src/home.css" rel="stylesheet" type="text/css"/>
+        <link href="assets/styles/css/src/main.css" rel="stylesheet" type="text/css"/>        
+        <link href="assets/styles/css/src/userMain.css" rel="stylesheet" type="text/css"/>
+        <link href="assets/styles/css/src/addEditItems.css" rel="stylesheet" type="text/css"/>
+        <link href="assets/styles/css/src/companyInformation.css" rel="stylesheet" type="text/css"/>
+        <link href="assets/styles/css/src/registrationStyle.css" rel="stylesheet" type="text/css"/>-->
         
         <!--<script src="includes/js/global.js" type="text/javascript"></script>
         <script src="includes/js/script.js" type="text/javascript"></script>
@@ -87,7 +86,6 @@
         <script src="includes/js/companyInformation.js" type="text/javascript"></script>
         <script src="includes/js/VendorRegistration.js" type="text/javascript"></script>
         <script src="includes/js/VendorSignIn.js" type="text/javascript"></script>-->
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
         
 		<title>Utterfare&trade;</title>
 <?php
