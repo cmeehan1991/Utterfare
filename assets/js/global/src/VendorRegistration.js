@@ -108,7 +108,7 @@ function pages(){
 }
 
 function keylisteners(){	
-	if($('form[name=registrationForm]').indexOf() > -1){
+	if($('form[name=registrationForm]')[0] > -1){
 		$('input[name=username]').keyup(function(){
 			var username = $(this).val();
 			validateUsername(username);

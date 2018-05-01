@@ -1,17 +1,18 @@
 $(document).ready(function(){
 	topTermsChart();
+	searchCountChart();
 });
 
 function topTermsChart(){
 	var data = {
 		action: 'getTermsData'
-	}
+	};
 	$.ajax({
 		data: data, 
 		method: 'post', 
 		url: 'includes/php/SearchAnalytics.php',
 		success: function(response){
-			drawChart('topTermsContainer','Top Search Terms','doughnut', response);
+			drawChart('topTermsChart','Top 5 Search Terms','doughnut', response);
 		},
 		error:function(){
 			console.log('error');
@@ -19,38 +20,53 @@ function topTermsChart(){
 	});
 }
 
-function drawChart(container, title, chartType, response){
-	/*var count = [];
-	var terms = [];
-	$.each(JSON.parse(response), function(index, term){
-		count.push(term);
-		terms.push(index);
-	});
+function searchCountChart(){
+	console.log("Here");	var data = {
+		action: 'getSearchCount'
+	};
 	
-	console.log(count[0]);
-	
-	var chart = new CanvasJS.Chart(container, {
-		animation: true, 
-		title:{
-			text:title, 
-			horizontalAlignment: "center",
+	$.ajax({
+		data: data, 
+		method: 'post', 
+		url: 'includes/php/SearchAnalytics.php',
+		success: function(response){
+			drawChart('searchCountChart','Search Appearances','bar', response);
 		},
-		data: [{
-			type:chartType,
-			startAngle: 60, 
-			//innerRadius:60,
-			indexLabelFontSize: 17,
-			percentFormatString: "#0,##################",
-			indexLabel: "{label}",
-			toolTipContent: "<b>{label}:</b> {y}",
-			dataPoints:[
-				{y: count[0], label: terms[0]},
-				{y: count[1], label: terms[1]},
-				{y: count[2], label: terms[2]},
-				{y: count[3], label: terms[3]},
-				{y: count[4], label: terms[4]},
-			]			
-		}]
-	});
-	chart.render();*/
+		error:function(){
+			console.log('error');
+		}
+	})
 }
+
+function drawChart(container, title, chartType, response){
+	var label = [];
+	var count = [];
+	var totalCount = 0;
+	console.log(response);
+	$.each(JSON.parse(response), function(term, total){
+		label.push(term);
+		count.push(parseInt(total));
+		totalCount += total;
+	});
+	
+	var ctx = $("#" + container);
+	var myChart = new Chart(ctx, {
+	    type: chartType,
+	    data: {
+	        labels: label,
+	        datasets: [{
+	            label: title, 
+	            data: count, 
+	            
+	            backgroundColor: [
+                'rgba(2,136,209, 1.0)',
+                'rgba(2,136,209, 0.80)',
+                'rgba(2,136,209, 0.60)',
+                'rgba(2,136,209, 0.40)',
+                'rgba(2,136,209, 0.20)',
+            ],
+	        }],
+	        
+	    },
+	});
+} 

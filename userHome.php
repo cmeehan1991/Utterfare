@@ -5,8 +5,6 @@ include 'includes/php/SearchAnalytics.php';
 $search_analytics = new SearchAnalytics();
 userHeader("Home");
 ?>
-<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
-<script src="includes/js/jquery.searchAnalytics.js" type="text/javascript"></script>
 <div class="main">
     <div class="container-fluid" align="center">
         <form>
@@ -14,7 +12,10 @@ userHeader("Home");
                 <legend>User Information</legend>
                 <div class="row">
 	                <div class="col-xs-12 col-md-4">
-		                <div id="topTermsContainer" style="height: 370px; width: 100%;"></div>
+		                <canvas id="topTermsChart"></canvas>
+	                </div>
+	                <div class="col-md-6">
+		                <canvas id="searchCountChart"></canvas>
 	                </div>
                 </div>
                 <div class="row"  >

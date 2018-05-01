@@ -72,28 +72,10 @@
         <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
         
-                
-        <!--<link href="assets/styles/css/src/home.css" rel="stylesheet" type="text/css"/>
-        <link href="assets/styles/css/src/main.css" rel="stylesheet" type="text/css"/>        
-        <link href="assets/styles/css/src/userMain.css" rel="stylesheet" type="text/css"/>
-        <link href="assets/styles/css/src/addEditItems.css" rel="stylesheet" type="text/css"/>
-        <link href="assets/styles/css/src/companyInformation.css" rel="stylesheet" type="text/css"/>
-        <link href="assets/styles/css/src/registrationStyle.css" rel="stylesheet" type="text/css"/>-->
-        
-        <!--<script src="includes/js/global.js" type="text/javascript"></script>
-        <script src="includes/js/script.js" type="text/javascript"></script>
-        <script src="includes/js/searchScript.js" type="text/javascript"></script>
-        <script src="includes/js/locationScript.js" type="text/javascript"></script>
-        <script src="includes/js/AddEditItems.js" type="text/javascript"></script>
-        <script src="includes/js/companyInformation.js" type="text/javascript"></script>
-        <script src="includes/js/companyInformation.js" type="text/javascript"></script>
-        <script src="includes/js/VendorRegistration.js" type="text/javascript"></script>
-        <script src="includes/js/VendorSignIn.js" type="text/javascript"></script>-->
-        
         <!-- reCaptcha -->
         <script src='https://www.google.com/recaptcha/api.js'></script>
 
-		<title>Utterfare&trade;</title>
+		<title>Utterfare</title>
 <?php
 
 function mainHeader() { ?>
