@@ -20,7 +20,7 @@ function topTermsChart(){
 }
 
 function drawChart(container, title, chartType, response){
-	var count = [];
+	/*var count = [];
 	var terms = [];
 	$.each(JSON.parse(response), function(index, term){
 		count.push(term);
@@ -52,5 +52,5 @@ function drawChart(container, title, chartType, response){
 			]			
 		}]
 	});
-	chart.render();
+	chart.render();*/
 }

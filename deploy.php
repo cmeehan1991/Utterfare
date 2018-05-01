@@ -46,10 +46,6 @@ host('production')
     ->set('deploy_path', '/home1/cmeehan/public_html')
     ->set('shared_files', []);    
     
-    
-/*host('utterfare.com')
-	->stage('dev')
-	->set('deploy_path', '/var/www/public_html/ufdev');*/
 // Tasks
 
 task('test', function(){
@@ -61,8 +57,12 @@ task('pwd', function(){
 	writeln("Current dir: $result");
 });
 
-task('move_to_live', function(){
+task('move_to_live_dev', function(){
 	run('cp -af public_html/ufdev/current/. /home1/cmeehan/public_html/ufdev/');
+});
+
+task('move_to_live_production', function(){
+	run('cp -af public_html/releases/6/. /home1/cmeehan/public_html/');
 });
 
 
@@ -85,4 +85,4 @@ task('deploy', [
 // [Optional] If deploy fails automatically unlock.
 after('deploy:failed', 'deploy:unlock');
 
-after('cleanup', 'move_to_live');
+after('cleanup', 'move_to_live_production');

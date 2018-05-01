@@ -13,42 +13,39 @@ $(window).keydown(function(event){
 	});
 </script>
         <div class="container-fluid">
-	        <div class="row">
-		        <div class="col-md-3 mx-auto">
+	        <div class="row justify-content-center">
+		        <div class="col-md-3 text-center">
 			        <div class="page-count"></div>
 		        </div>
-	        </div>
+			</div>                        
+			<div class="row">
+				<div class="col-md-10 mx-auto" align="center">
+					<div class="loader" style="display:none;"><i class="fa fa-spinner fa-spin fa-5x" aria-hidden="true"></i></div>
+				</div>
+			</div>
             <div class="row">
-                <div class="col-xs-12 col-md-8 mx-auto"> 
+                <div class="col-xs-12 col-md-8 mx-auto "> 
                     <form name="registrationform" onsubmit="return registerCompany()" class="registrationForm">
                         <fieldset id="generalInformation" data-page="1" active>
-	                        <legend>User Information</legend>
-                            <div class="row">
-                                <div class="col-md-6 mx-auto">
-	                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-	                                    <label for="company_name" class="mdl-textfield__label">Company Name</label>
-	                                    <input type="text" name="company_name" class="mdl-textfield__input" required/>
-	                                </div>
-                                </div>
-                            </div>
-                             <div class="row">
-                                <div class="col-md-6 mx-auto">
+	                        <legend style="text-align:center;">User Information</legend>
+	                        <div class="row justify-content-center">
+                                <div class="col-md-3 text-center">
 	                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 	                                    <label for="username" class="mdl-textfield__label">Username</label>
 	                                    <input type="text" name="username" class="mdl-textfield__input" required/>
 	                                </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-md-6 mx-auto">
+                            <div class="row justify-content-center">
+                                <div class="col-md-3 text-center">
 	                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 	                                    <label for="password" class="mdl-textfield__label">Password</label>
 	                                    <input type="password" name="password" class="mdl-textfield__input" required/>
 	                                </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-md-6 mx-auto">
+                            <div class="row justify-content-center">
+                                <div class="col-md-3 text-center">
 	                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 	                                    <label for="confirm_password" class="mdl-textfield__label">Confirm Password</label>
 	                                    <input type="password" name="confirm_password" class="mdl-textfield__input confirm-password-input" required/>
@@ -57,12 +54,48 @@ $(window).keydown(function(event){
                             </div>
                             <div class="row">
 	                            <div class="col-md-6 ml-auto">
-		                            <button type="button" class="mdl-button mdl-button--flat mdl-button--ripple next--contact-information" data-page="next">Next: Contact Information <i class="fa fa-chevron-right"></i></button>
+		                            <button type="button" class="mdl-button mdl-button--flat mdl-button--ripple next--contact-information" data-page="next" data-pagenumber="2">Next: Contact Information<i class="fa fa-chevron-right"></i></button>
 	                            </div>
                             </div>
+                        </fieldset> 
+                        <fieldset id="companyInformation" data-page="2">
+                            <legend style="text-align:center;">Company Information</legend>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-6 mx-auto mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                    <label for="company_name" class="mdl-textfield__label">Company Name</label>
+                                    <input type="text" name="company_name" class="mdl-textfield__input"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-6 mx-auto mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                    <label for="">Franchise? </label>
+                                    <input name="franchise" value="yes" type="radio"/> Yes 
+                                    <input type="radio" name="franchise" value="no" checked="checked" /> No
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-6 mx-auto mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                    <label for="number_of_employees" class="mdl-textfield__label">No. of Employees</label>
+                                    <input type="text" name="number_of_employees" class="mdl-textfield__input"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-6 mx-auto mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                    <label for="url" class="mdl-textfield__label">Web URL</label>
+                                    <input type="text" name="url" class="mdl-textfield__input"/>
+                                </div>
+                            </div>
+                            <div class="row">
+	                            <div class="col-md-3 mr-auto">
+		                            <button type="button" class="mdl-button mdl-button--flat mdl-button--ripple" data-page="previous" data-pagenumber="1"><i class="fa fa-chevron-left"></i> Previous: User Information</button>
+	                            </div>
+	                            <div class="col-md-3 ml-auto">
+		                            <button type="button" class="mdl-button mdl-button--flat mdl-button--ripple next--company-information" data-page="next" data-pagenumber="3">Next: Company Information<i class="fa fa-chevron-right"></i></button>
+	                        </div>
+                            </div>
                         </fieldset>
-                        <fieldset id="contactInformation" data-page="2">
-                            <legend>Contact Information</legend>
+                        <fieldset id="contactInformation" data-page="3">
+                            <legend style="text-align:center;">Contact Information</legend>
                             <div class="row">
                                 <div class="col-xs-12 col-md-6 mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                                     <label for="first_name" class="mdl-textfield__label">First Name</label>
@@ -97,13 +130,6 @@ $(window).keydown(function(event){
                                     <input type="text" name="city"  class="mdl-textfield__input" required/>
                                 </div>
                                 <div class="col-xs-12 col-sm-12 col-md-6 mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                    <script>
-							        $(document).ready(function(){
-							            $("select[name='state']").select2({width:'100%', placeholder: "Select a state", allowClear: false});
-							            $("select[name='country']").select2({width:'100%', placeholder: "Select a country"});
-							            $("select[name='web-prefix']").select2({width:'fit-content'});
-							        });
-                                    </script>
                                     <select name="state" placeholder="state"required>
 	                                    <option></option>
 	                                    <option value="N/A">N/A</option>
@@ -429,61 +455,31 @@ $(window).keydown(function(event){
                             </div>
                             <div class="row">
                                 <div class="col-md-12 mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                    <label for="role" class="mdl-textfield__label">Role</label><br/>
+                                    <label for="role">Role</label><br/>
                                      <select name="role" required>
 	                                     <option value="Employee">Employee</option>
 	                                     <option value="Manager">Manager</option>
 	                                     <option value="Owner/Co-Owner">Owner/Co-Owner</option>
 	                                     <option value="Legal Representative">Legal Representative</option>
+                                     </select>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-xs-12 col-sm-6 col-md-6 mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                    <label for="certify"><input type="checkbox" name="certify" value="certified" required>I certify that I am either a legal representative of or am authorized by the proper authority to manage content for this vendor.</label>
+                                <div class="col-xs-12 col-sm-12 col-md-12 mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                    <input type="checkbox" name="certify" value="certified" required> <label for="certify">I certify that I am either a legal representative of or am authorized by the proper authority to manage content for this vendor.</label>
                                 </div>
+                            </div>
+                            <div class="row">
+	                            <div class="col-md-3 mx-auto">
+		                            <div class="g-recaptcha" data-callback="recaptchaChecked" data-sitekey="6Lfi0SATAAAAAMmaw5sHzFrno6-O4xxQhRahwj8P"></div>
+	                            </div>
                             </div>
                             <div class="row">
 	                            <div class="col-md-3 mr-auto">
-		                            <button type="button" class="mdl-button mdl-button--flat mdl-button--ripple" data-page="previous"><i class="fa fa-chevron-left"></i> Previous: User Information</button>
-	                            </div>
-	                            <div class="col-md-3 ml-auto">
-		                            <button type="button" class="mdl-button mdl-button--flat mdl-button--ripple" data-page="next">Next: Company Information <i class="fa fa-chevron-right"></i></button>
-	                            </div>
-                            </div>
-                        </fieldset>
-                        <fieldset id="companyInformation" data-page="3">
-                            <legend>Company Information</legend>
-                            <div class="row">
-                                <div class="col-xs-12 col-sm-12 col-md-6 mx-auto mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                    <label for="company_name" class="mdl-textfield__label">Company Name</label>
-                                    <input type="text" name="company_name" class="mdl-textfield__input"/>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-xs-12 col-sm-12 col-md-6 mx-auto mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                    <label for="">Franchise </label><br/>
-                                    <input name="franchise" value="yes" type="radio"/> Yes 
-                                    <input type="radio" name="franchise" value="no" checked="checked" /> No
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-xs-12 col-sm-12 col-md-6 mx-auto mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                    <label for="number_of_employees" class="mdl-textfield__label">No. of Employees</label>
-                                    <input type="text" name="number_of_employees" class="mdl-textfield__input"/>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-xs-12 col-sm-6 mx-auto mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                    <label for="url" class="mdl-textfield__label">Web URL</label>
-                                    <input type="text" name="url" class="mdl-textfield__input"/>
-                                </div>
-                            </div>
-                            <div class="row">
-	                            <div class="col-md-3 mx-auto">
 		                            <button type="button" class="mdl-button mdl-js-button mdl-button--flat mdl-button--ripple-effect" data-page="previous"><i class="fa fa-chevron-left"></i> Previous: User Information</button>
 	                            </div>
-	                            <div class="col-md-3 mx-auto">
-		                            <button type="submit" class="mdl-button mdl-js-button mdl-button--flat mdl-button--ripple-effect">Register <i class="fa fa-check-square-o"></i></button>
+	                            <div class="col-md-3 ml-auto">
+		                            <button type="submit" class="mdl-button mdl-js-button mdl-button--flat mdl-button--ripple-effect next--submit-form" data-page="confirm">Register <i class="fa fa-check-square-o"></i></button>
 	                            </div>
                             </div>
                         </fieldset>

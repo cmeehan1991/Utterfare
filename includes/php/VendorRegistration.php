@@ -12,11 +12,14 @@ class VendorRegistration{
 		        break;
 		       case "registrationNotification":
 		       $this->registration_notification();
+		       case "validateUsername":
+		       $this->validateUsername();
 		       break;
 		    default:
 		        break;
 		}
 	}
+
 	
 	public function assignValues(){
 		$this->action = filter_input(INPUT_POST, 'action');
@@ -37,6 +40,26 @@ class VendorRegistration{
 		$this->data_table = $this->getDataTable($this->zip);
 	}
 	
+	private function validateUsername(){
+		include 'DbConnection.php';
+		
+		$username = filter_input(INPUT_POST, 'username');
+		
+		$sql = 'SELECT COUNT(ID) as TOTAL FROM VENDOR_LOGIN WHERE USERNAME = :USERNAME';
+		
+		$stmt = $conn->prepare($sql);
+		$stmt->bindParam(":USERNAME", $username);
+		$stmt->execute();
+		$stmt->setFetchMode(PDO::FETCH_ASSOC);
+		
+		$res = $stmt->fetch();
+		if($res['TOTAL'] > 0){
+			echo false;
+		}else{
+			echo true;
+		}
+	}
+	
 	/*
 	* Send a confirmation email to the new vendor
 	*/
@@ -55,9 +78,9 @@ class VendorRegistration{
 		$msg .= "<b>The Utterfare Team</b>";
 		$msg .= "<br/>";
 		$msg .= "<a href=\"https://www.utterfare.com\">Utterfare.com</a>";
-		$msg .= '<br/>':
+		$msg .= '<br/>';
 		$msg .= "<a href=\"mailto:vendor.services@utterfare.com\">vendor.services@utterfare.com</a>";
-		$msg .= '<br/>':
+		$msg .= '<br/>';
 		$msg .= "<a href=\"tel:3362600061\">(336) 260-0061</a>";
 		$msg .= "<br/>";
 		$msg .= "<img src=\"https://www.utterfare.com/images/Email%20Logo.png\" alt=\"Utterfare Logo\"/>";
@@ -71,8 +94,7 @@ class VendorRegistration{
 		$headers .= "From: listings@utterfare.com" . "\r\n";
 		
 		$send = mail($to, $subject, $msg, $headers);
-		$this->notify_listing();
-		die();		
+		$this->notify_listing();	
 	}
 	
 	/*
@@ -160,6 +182,7 @@ class VendorRegistration{
 	            // Also provide contact information in case there has been an error. 
 	            $results = $stmt->fetch();
 				$this->applyCompanyToUser($results["ID"], $this->last_key);
+				echo "exists";
 	        } else {
 	            $this->registerCompany();
 	        }
@@ -178,7 +201,7 @@ class VendorRegistration{
 	    include "DbConnection.php";
 	    // Get the latitude and longitude based on the address
 	    $address = str_replace(" ", "+",$this->street_address) . '+' . str_replace(" ", "*", $this->city) . '+' . $this->state . '+' . $this->zip . '+' . $this->country;
-	    $geocode = file_get_contents('https://maps.google.com/maps/api/geocode/json?address=' . $address . '&sensor=false');
+	    $geocode = file_get_contents('https://maps.google.com/maps/api/geocode/json?address=' . $address . '&sensor=false&key=AIzaSyDVThKX7yiVem3vU7457VYdZmDOM_EWW7k');
 	    $location_info = json_decode($geocode);
 	    $latitude = $location_info->results[0]->geometry->location->lat;
 	    $longitude = $location_info->results[0]->geometry->location->lng;
@@ -258,7 +281,7 @@ class VendorRegistration{
 	        $results = $stmt->fetch();
 	        return $results["DATA_TABLE"];
 	    } else {
-	        return null;
+	        return "No datatable";
 	    }
 	}	
 }

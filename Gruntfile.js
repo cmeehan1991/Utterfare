@@ -4,11 +4,12 @@ module.exports = function(grunt){
 		pkg: grunt.file.readJSON('package.json'),
 		uglify:{
 			options:{
-				banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
+				banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd HH:mm:ss") %> */\n'
 			},
-			build:{
-				src:'assets/js/global/src/*.js',
-				dest: 'assets/js/global/dist/min/allscripts.min.js'
+			combine: {
+				files:{
+					'assets/js/global/dist/min/allscripts.min.js':  ['assets/js/global/src/*.js']
+				},
 			},
 		},
 		cssmin:{
@@ -42,5 +43,5 @@ module.exports = function(grunt){
 	grunt.registerTask('minify-js', ['uglify']);
 	grunt.registerTask('minify-css', ['cssmin']);
 	grunt.registerTask('minify-all', ['uglify', 'cssmin']);
-	grunt.registerTask('watch', ['watch'])
+	grunt.registerTask('monitor', ['watch'])
 };

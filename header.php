@@ -62,6 +62,9 @@
 
 		<!--Font Awesome 4.7.0-->
 		<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+		
+		<!-- ChartJS -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js" type="text/javascript"></script>
 
         <!--Styles and Scripts-->    
         <link type="text/css" rel="stylesheet"  href="assets/styles/css/dist/min/allstyles.min.css" />    
@@ -87,6 +90,9 @@
         <script src="includes/js/VendorRegistration.js" type="text/javascript"></script>
         <script src="includes/js/VendorSignIn.js" type="text/javascript"></script>-->
         
+        <!-- reCaptcha -->
+        <script src='https://www.google.com/recaptcha/api.js'></script>
+
 		<title>Utterfare&trade;</title>
 <?php
 
