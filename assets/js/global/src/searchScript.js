@@ -79,10 +79,9 @@ function formSearch() {
     // Check if all of the inputs have been filled
     if (authorized(terms, location, distance) === true) {
 	    location = getLatLng(location);
-	    console.log(location);
 		performSearch(terms, location, distance, page, limit, offset);    
 	} else {
-        console.log('false');
+        //console.log('false');
         $('.results').html('Please be sure to fill out the location, distance, and search parameters');
     }
     return false;
@@ -112,8 +111,8 @@ function performSearch(terms, location, distance, page, limit, offset){
 				/*var parameters = $.param(data, true);
 				var newUrl = window.location.protocol + '//' + window.location.host + window.location.pathname + "?" + parameters;
 		        window.history.pushState({path:newUrl}, '', newUrl);*/ 
-		        console.log("results");
-		        $('.results').html("");
+		        //console.log("results");
+		        //$('.results').html("");
 		        $('.results').append(results);
 		        $('.page-title').hide();
 		        $('.navbar-normal').show();
@@ -152,11 +151,11 @@ function getLatLng(location){
 	var latLng = location;
 	geocoder.geocode({'address' : location}, function(results, status){
 		if(status === 'OK'){
-			console.log(results.geometry.location);
+			//console.log(results.geometry.location);
 			var lat = results[0].geometry.location.latitude;
 			var lng = results[0].geometry.location.longitude;
 			latLng = lat + '+' + lng;
-			console.log(latLng);
+			//console.log(latLng);
 		}
 	});
 	
