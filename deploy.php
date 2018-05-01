@@ -62,7 +62,7 @@ task('move_to_live_dev', function(){
 });
 
 task('move_to_live_production', function(){
-	run('cp -af public_html/releases/6/. /home1/cmeehan/public_html/');
+	run('cp -af public_html/current/. /home1/cmeehan/public_html/');
 });
 
 

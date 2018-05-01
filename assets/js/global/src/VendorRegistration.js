@@ -108,49 +108,51 @@ function pages(){
 }
 
 function keylisteners(){	
-	$('input[name=username]').keyup(function(){
-		var username = $(this).val();
-		validateUsername(username);
-	});	
+	if($('form[name=registrationForm]').indexOf() > -1){
+		$('input[name=username]').keyup(function(){
+			var username = $(this).val();
+			validateUsername(username);
+		});	
+		
+		$('.mdl-textfield__input[name=password]').keyup(function(){
+			// Make sure the password is the proper length
+			if($(this).val().length >= 8){
+				$(this).css('outline', '2px solid green');
+				$(this).css('border-bottom', '2px solid green');
+			}else{
+				$(this).css('outline', '2px solid red');
+				$(this).css('border-bottom', '2px solid red');
+			}
+		});
+		
+		$('.mdl-textfield__input[name=confirm_password]').keyup(function(){
+			// Confirm the passwords match. 
+			var confirmPassword = $(this).val();
+			var password = $('.mdl-textfield__input[name=password]').val();
+			if(confirmPassword === password){
+				$('.next--contact-information').fadeIn('fast');
+				$(this).css('outline', '2px solid green');
+				$(this).css('border-bottom', '2px solid green');
+			}else{
+				$('.next--contact-information').fadeOut('fast');
+				$(this).css('outline', '2px solid red');
+				$(this).css('border-bottom', '2px solid red');
+			}
+		});
 	
-	$('.mdl-textfield__input[name=password]').keyup(function(){
-		// Make sure the password is the proper length
-		if($(this).val().length >= 8){
-			$(this).css('outline', '2px solid green');
-			$(this).css('border-bottom', '2px solid green');
-		}else{
-			$(this).css('outline', '2px solid red');
-			$(this).css('border-bottom', '2px solid red');
-		}
-	});
 	
-	$('.mdl-textfield__input[name=confirm_password]').keyup(function(){
-		// Confirm the passwords match. 
-		var confirmPassword = $(this).val();
-		var password = $('.mdl-textfield__input[name=password]').val();
-		if(confirmPassword === password){
-			$('.next--contact-information').fadeIn('fast');
-			$(this).css('outline', '2px solid green');
-			$(this).css('border-bottom', '2px solid green');
-		}else{
-			$('.next--contact-information').fadeOut('fast');
-			$(this).css('outline', '2px solid red');
-			$(this).css('border-bottom', '2px solid red');
-		}
-	});
-	
-	
-	// Company Information
-	$('input[name=company_name]').keyup(function(){
-		var company_name = $(this).val();
-		console.log(company_name);
-		if(company_name.length > 0){
-			$('.next--company-information').fadeIn('fast');
-		}else{
-			
-			$('.next--company-information').hide();
-		}
-	});
+		// Company Information
+		$('input[name=company_name]').keyup(function(){
+			var company_name = $(this).val();
+			console.log(company_name);
+			if(company_name.length > 0){
+				$('.next--company-information').fadeIn('fast');
+			}else{
+				
+				$('.next--company-information').hide();
+			}
+		});
+	}
 }
 
 function setRegistrationPages(numPages){
