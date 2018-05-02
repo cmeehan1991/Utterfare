@@ -35,6 +35,8 @@ function validateLoginForm(){
 
 function signIn(){
     var data = $('form[name="loginForm"]').serialize();
+    data += "&action=sign_in";
+    
     console.log(data);
     $.ajax({
         url:"includes/php/UserLogIn.php",
@@ -52,4 +54,22 @@ function signIn(){
 	        console.log('error');
         }
     });
+}
+    
+function signOut(){
+	var data = {
+		action: 'sign_out'
+	};
+	$.ajax({
+		url: 'includes/php/UserLogIn.php',
+		data: data,
+		method: 'post', 
+		success:function(results){
+			console.log(results);
+			if(results){
+				window.location = 'login';
+			}
+		}
+	});
+	return true;
 }

@@ -8,9 +8,10 @@ class SearchAnalytics{
 				$this->get_terms_data();
 				break;
 			case 'getSearchCount':
-				session_start();
-				$company_id = $_SESSION['COMPANY_ID'];
-				$this->searchAppearances($company_id);
+				$this->search_appearances();
+				break;
+				case 'get_platforms':
+				$this->get_search_result_platform();
 				break;
 			default:break;
 		}
@@ -30,13 +31,38 @@ class SearchAnalytics{
 		
 		if($num_rows > 0){
 			while($results = $stmt->fetch()){
-				$terms[$results['TERM']] = $results['TERM_COUNT'];
+				$term = ucfirst(strtolower($results['TERM']));
+				$terms[$term] = $results['TERM_COUNT'];
 			}
-			echo json_encode($terms);
-		}else{
-			echo "NOTHING";
 		}
+		echo json_encode($terms);
 
+	}
+	
+	function get_search_result_platform(){
+		include 'DbConnection.php';
+		
+		session_start();
+		$vendor_id = $_SESSION['COMPANY_ID'];
+		$search_date = date('Y-m-d', strtotime('-7 days'));
+		
+		$sql = "SELECT COUNT(SEARCH_RESULTS.ID) AS 'TOTAL', SEARCH_INFORMATION.PLATFORM_TYPE AS 'PLATFORM' FROM SEARCH_RESULTS INNER JOIN SEARCH_INFORMATION ON SEARCH_RESULTS.SEARCH_ID = SEARCH_INFORMATION.ID WHERE SEARCH_RESULTS.SEARCH_DATE >= :SEARCH_DATE AND SEARCH_RESULTS.VENDOR_ID = :VENDOR_ID GROUP BY SEARCH_INFORMATION.PLATFORM_TYPE";
+		$stmt = $conn->prepare($sql);
+		$stmt->bindParam(":SEARCH_DATE", $search_date);
+		$stmt->bindParam(":VENDOR_ID", $vendor_id);
+		$stmt->execute();
+		$stmt->setFetchMode(PDO::FETCH_ASSOC);
+		
+		$num_rows = $stmt->rowCount();
+		$terms = array();
+		if($num_rows > 0){
+			while($results = $stmt->fetch()){
+				$terms[$results['PLATFORM']] = $results['TOTAL'];
+			}
+		}
+		echo json_encode($terms);
+		
+		
 	}
 	
 	/* 
@@ -57,9 +83,13 @@ class SearchAnalytics{
 	}
 	
 	
-	function searchAppearances($vendor_id){
+	function search_appearances(){
 		include 'DbConnection.php'; 
+		
+		session_start();
+		$vendor_id = $_SESSION['COMPANY_ID'];
 		$date = date('Y-m-d', strtotime('-7 days'));
+		
 		$sql = "SELECT COUNT(ID) AS 'TOTAL', DATE_FORMAT(SEARCH_DATE, '%M %d') AS 'SEARCH_DATE' FROM SEARCH_RESULTS WHERE VENDOR_ID = :VENDOR_ID AND SEARCH_DATE >= :DATE GROUP BY SEARCH_DATE ORDER BY SEARCH_DATE ASC";
 		$stmt = $conn->prepare($sql);
 		
@@ -68,9 +98,10 @@ class SearchAnalytics{
 		
 		$stmt->execute();
 		$stmt->setFetchMode(PDO::FETCH_ASSOC);
+		
 		$num_rows = $stmt->rowCount();
-		$terms = array();
-		if($num_rows){
+			$terms = array();
+		if($num_rows > 0){
 			while($results = $stmt->fetch()){
 				$terms[$results['SEARCH_DATE']] = $results['TOTAL'];
 			}
@@ -150,9 +181,10 @@ class SearchAnalytics{
 		include 'DbConnection.php';
 		
 		$insert_sql = "INSERT INTO SEARCH_TERMS (TERM, TERM_COUNT) VALUES(:TERM, 1)";
+		$term = strtoupper($term);
 		try{
 			$insert_stmt = $conn->prepare($insert_sql);
-			$insert_stmt->bindParam(":TERM", strtoupper($term));
+			$insert_stmt->bindParam(":TERM", $term);
 			$insert_stmt->execute();
 		}catch(Exception $ex){
 			echo "Insert Term Error: " .  $ex->getMessage();

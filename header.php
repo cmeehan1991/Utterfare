@@ -113,7 +113,7 @@ function userHeader($title) {
 	                <li class="nav-item"><a class="nav-link" href="userHome">Home</a></li>
 	                <li class="nav-item"><a class="nav-link" href="addEditItems">Add/Edit Items</a></li>
 	                <li class="nav-item"><a class="nav-link" href="companyInformation">Company Information</a></li>
-	                <li class="nav-item"><a class="nav-link" href="?signout=true">Log Out</a></li>
+	                <li class="nav-item"><a class="nav-link" href="" onclick="return signOut()">Log Out</a></li>
 	            </ul>
 			</div>
 		</nav>
