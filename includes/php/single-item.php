@@ -1,5 +1,5 @@
 <?php 
-	
+
 	$item_id = filter_input(INPUT_POST, 'item_id');
 	$data_table = filter_input(INPUT_POST, 'data_table');
 	
@@ -27,15 +27,15 @@
 			$results = $stmt->fetchAll();
 			foreach($results as &$result){
 				$image = $result['IMAGE'];
-	            if(strpos($image, "images") == false || $image == null) {
-		            if(strpos(get_headers("https://www.utterfare.com/images/profile_pictures/" . md5($result['COMPANY_ID']) . ".png")[0], '200 OK') > -1){
-			            $result['IMAGE_URL'] = "https://www.utterfare.com/images/profile_pictures/" . md5($result['COMPANY_ID']) . ".png";
-		            }else{
-			            $result['IMAGE_URL'] = "https://www.utterfare.com/images/290sc_images/emptyplate.png";
-		            }
+		        if(strpos($image, "\/images\/") == false || $image == null) {
+		            if(strpos(get_headers("https://www.utterfare.com/images/profile_pictures/" . $data_table . "_profiles/" . md5($result['COMPANY_ID']) .".png")[0], '200 OK') > -1){
+		                $result['IMAGE_URL'] = "https://www.utterfare.com/images/profile_pictures/" . $data_table . "_profiles/" . md5($result['COMPANY_ID']) . ".png";
+	                }else{
+		                $result['IMAGE_URL'] = "https://www.utterfare.com/images/placeholder.png";
+	                }
 	            } else {
 	                $result['IMAGE_URL'] = $result['IMAGE'];
-	            }		
+	            }
 	            array_push($res, $result);	
 			}
 		}

@@ -1,0 +1,221 @@
+[31-Mar-2018 13:58:29 America/Chicago] PHP Parse error:  syntax error, unexpected '$stmt' (T_VARIABLE) in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 94
+[31-Mar-2018 13:58:38 America/Chicago] PHP Parse error:  syntax error, unexpected 'else' (T_ELSE), expecting ',' or ';' in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 121
+[31-Mar-2018 13:58:48 America/Chicago] PHP Parse error:  syntax error, unexpected 'else' (T_ELSE) in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 121
+[02-Apr-2018 16:44:14 America/Chicago] PHP Warning:  PDOStatement::execute(): SQLSTATE[HY093]: Invalid parameter number: number of bound variables does not match number of tokens in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 102
+[02-Apr-2018 16:46:50 America/Chicago] PHP Fatal error:  Uncaught Error: Call to undefined method PDOStatement::lastInsertId() in /home1/cmeehan/public_html/includes/mobile/users/Users.php:110
+Stack trace:
+#0 /home1/cmeehan/public_html/includes/mobile/users/Users.php(14): Users->registerUser()
+#1 /home1/cmeehan/public_html/includes/mobile/users/Users.php(5): Users->init('new_user')
+#2 /home1/cmeehan/public_html/includes/mobile/users/Users.php(132): Users->__construct()
+#3 {main}
+  thrown in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 110
+[05-Apr-2018 13:28:18 America/Chicago] PHP Parse error:  syntax error, unexpected '$message' (T_VARIABLE) in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 86
+[05-Apr-2018 13:28:31 America/Chicago] PHP Parse error:  syntax error, unexpected '$message' (T_VARIABLE) in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 86
+[05-Apr-2018 13:28:39 America/Chicago] PHP Parse error:  syntax error, unexpected '}' in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 95
+[05-Apr-2018 13:28:46 America/Chicago] PHP Fatal error:  Uncaught Error: Call to undefined function notifyNewUser() in /home1/cmeehan/public_html/includes/mobile/users/Users.php:132
+Stack trace:
+#0 /home1/cmeehan/public_html/includes/mobile/users/Users.php(14): Users->registerUser()
+#1 /home1/cmeehan/public_html/includes/mobile/users/Users.php(5): Users->init('new_user')
+#2 /home1/cmeehan/public_html/includes/mobile/users/Users.php(151): Users->__construct()
+#3 {main}
+  thrown in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 132
+[05-Apr-2018 14:08:21 America/Chicago] PHP Catchable fatal error:  Object of class PDOStatement could not be converted to string in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 33
+[05-Apr-2018 14:10:13 America/Chicago] PHP Fatal error:  Uncaught Error: Call to a member function rowCount() on array in /home1/cmeehan/public_html/includes/mobile/users/Users.php:39
+Stack trace:
+#0 /home1/cmeehan/public_html/includes/mobile/users/Users.php(11): Users->signIn()
+#1 /home1/cmeehan/public_html/includes/mobile/users/Users.php(5): Users->init('log_in')
+#2 /home1/cmeehan/public_html/includes/mobile/users/Users.php(152): Users->__construct()
+#3 {main}
+  thrown in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 39
+[06-Apr-2018 15:45:04 America/Chicago] PHP Parse error:  syntax error, unexpected '}', expecting ',' or ';' in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 48
+[06-Apr-2018 15:45:17 America/Chicago] PHP Parse error:  syntax error, unexpected '}', expecting ',' or ';' in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 48
+[06-Apr-2018 15:45:30 America/Chicago] PHP Parse error:  syntax error, unexpected '$stmt' (T_VARIABLE) in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 80
+[06-Apr-2018 15:45:36 America/Chicago] PHP Parse error:  syntax error, unexpected '$stmt' (T_VARIABLE) in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 106
+[06-Apr-2018 15:45:45 America/Chicago] PHP Parse error:  syntax error, unexpected '$res' (T_VARIABLE) in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 107
+[06-Apr-2018 15:45:50 America/Chicago] PHP Parse error:  syntax error, unexpected '}', expecting ';' in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 111
+[06-Apr-2018 15:45:56 America/Chicago] PHP Parse error:  syntax error, unexpected 'sendResetCodeNotification' (T_STRING), expecting variable (T_VARIABLE) in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 120
+[06-Apr-2018 15:46:11 America/Chicago] PHP Parse error:  syntax error, unexpected '}', expecting ',' or ';' in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 158
+[06-Apr-2018 15:46:27 America/Chicago] PHP Fatal error:  Uncaught Error: Call to undefined function generate_code() in /home1/cmeehan/public_html/includes/mobile/users/Users.php:101
+Stack trace:
+#0 /home1/cmeehan/public_html/includes/mobile/users/Users.php(150): Users->setPasswordResetCode()
+#1 /home1/cmeehan/public_html/includes/mobile/users/Users.php(14): Users->resetPasswordRequest()
+#2 /home1/cmeehan/public_html/includes/mobile/users/Users.php(5): Users->init('reset_password_...')
+#3 /home1/cmeehan/public_html/includes/mobile/users/Users.php(295): Users->__construct()
+#4 {main}
+  thrown in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 101
+[06-Apr-2018 15:46:51 America/Chicago] PHP Fatal error:  Uncaught Error: Call to undefined function generate_code() in /home1/cmeehan/public_html/includes/mobile/users/Users.php:101
+Stack trace:
+#0 /home1/cmeehan/public_html/includes/mobile/users/Users.php(150): Users->setPasswordResetCode()
+#1 /home1/cmeehan/public_html/includes/mobile/users/Users.php(14): Users->resetPasswordRequest()
+#2 /home1/cmeehan/public_html/includes/mobile/users/Users.php(5): Users->init('reset_password_...')
+#3 /home1/cmeehan/public_html/includes/mobile/users/Users.php(295): Users->__construct()
+#4 {main}
+  thrown in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 101
+[06-Apr-2018 15:48:03 America/Chicago] PHP Fatal error:  Uncaught Error: Call to undefined function generate_code() in /home1/cmeehan/public_html/includes/mobile/users/Users.php:101
+Stack trace:
+#0 /home1/cmeehan/public_html/includes/mobile/users/Users.php(150): Users->setPasswordResetCode()
+#1 /home1/cmeehan/public_html/includes/mobile/users/Users.php(14): Users->resetPasswordRequest()
+#2 /home1/cmeehan/public_html/includes/mobile/users/Users.php(5): Users->init('reset_password_...')
+#3 /home1/cmeehan/public_html/includes/mobile/users/Users.php(295): Users->__construct()
+#4 {main}
+  thrown in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 101
+[06-Apr-2018 15:49:17 America/Chicago] PHP Fatal error:  Uncaught Error: Call to undefined function generate_code() in /home1/cmeehan/public_html/includes/mobile/users/Users.php:103
+Stack trace:
+#0 /home1/cmeehan/public_html/includes/mobile/users/Users.php(152): Users->setPasswordResetCode()
+#1 /home1/cmeehan/public_html/includes/mobile/users/Users.php(16): Users->resetPasswordRequest()
+#2 /home1/cmeehan/public_html/includes/mobile/users/Users.php(7): Users->init('reset_password_...')
+#3 /home1/cmeehan/public_html/includes/mobile/users/Users.php(297): Users->__construct()
+#4 {main}
+  thrown in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 103
+[06-Apr-2018 15:49:40 America/Chicago] PHP Fatal error:  Uncaught Error: Call to undefined function generateCode() in /home1/cmeehan/public_html/includes/mobile/users/Users.php:103
+Stack trace:
+#0 /home1/cmeehan/public_html/includes/mobile/users/Users.php(152): Users->setPasswordResetCode()
+#1 /home1/cmeehan/public_html/includes/mobile/users/Users.php(16): Users->resetPasswordRequest()
+#2 /home1/cmeehan/public_html/includes/mobile/users/Users.php(7): Users->init('reset_password_...')
+#3 /home1/cmeehan/public_html/includes/mobile/users/Users.php(297): Users->__construct()
+#4 {main}
+  thrown in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 103
+[06-Apr-2018 15:53:01 America/Chicago] PHP Parse error:  syntax error, unexpected '$i' (T_VARIABLE) in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 57
+[06-Apr-2018 15:53:15 America/Chicago] PHP Warning:  array_push() expects parameter 1 to be array, null given in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 59
+[06-Apr-2018 15:53:15 America/Chicago] PHP Warning:  array_push() expects parameter 1 to be array, null given in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 59
+[06-Apr-2018 15:53:15 America/Chicago] PHP Warning:  array_push() expects parameter 1 to be array, null given in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 59
+[06-Apr-2018 15:53:15 America/Chicago] PHP Warning:  array_push() expects parameter 1 to be array, null given in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 59
+[10-Apr-2018 14:51:44 America/Chicago] PHP Warning:  require(class.phpmailer.php): failed to open stream: No such file or directory in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 129
+[10-Apr-2018 14:51:44 America/Chicago] PHP Fatal error:  require(): Failed opening required 'class.phpmailer.php' (include_path='.:/opt/php70/lib/php') in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 129
+[10-Apr-2018 15:06:55 America/Chicago] PHP Fatal error:  Uncaught Error: Call to undefined method Users::sendTextMessage() in /home1/cmeehan/public_html/includes/mobile/users/Users.php:28
+Stack trace:
+#0 /home1/cmeehan/public_html/includes/mobile/users/Users.php(7): Users->init('send_text')
+#1 /home1/cmeehan/public_html/includes/mobile/users/Users.php(333): Users->__construct()
+#2 {main}
+  thrown in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 28
+[19-Apr-2018 10:15:55 America/Chicago] PHP Catchable fatal error:  Object of class PDOStatement could not be converted to string in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 289
+[19-Apr-2018 10:22:57 America/Chicago] PHP Parse error:  syntax error, unexpected '$response' (T_VARIABLE) in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 291
+[19-Apr-2018 10:38:09 America/Chicago] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'FROM USERS WHERE ID = '1'' at line 1 in /home1/cmeehan/public_html/includes/mobile/users/Users.php:94
+Stack trace:
+#0 /home1/cmeehan/public_html/includes/mobile/users/Users.php(94): PDOStatement->execute()
+#1 /home1/cmeehan/public_html/includes/mobile/users/Users.php(34): Users->setUser()
+#2 /home1/cmeehan/public_html/includes/mobile/users/Users.php(7): Users->init('set_user')
+#3 /home1/cmeehan/public_html/includes/mobile/users/Users.php(408): Users->__construct()
+#4 {main}
+  thrown in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 94
+[19-Apr-2018 10:41:42 America/Chicago] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'FROM USERS WHERE ID = '2'' at line 1 in /home1/cmeehan/public_html/includes/mobile/users/Users.php:94
+Stack trace:
+#0 /home1/cmeehan/public_html/includes/mobile/users/Users.php(94): PDOStatement->execute()
+#1 /home1/cmeehan/public_html/includes/mobile/users/Users.php(34): Users->setUser()
+#2 /home1/cmeehan/public_html/includes/mobile/users/Users.php(7): Users->init('set_user')
+#3 /home1/cmeehan/public_html/includes/mobile/users/Users.php(408): Users->__construct()
+#4 {main}
+  thrown in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 94
+[19-Apr-2018 10:49:38 America/Chicago] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'FROM USERS WHERE ID = '2'' at line 1 in /home1/cmeehan/public_html/includes/mobile/users/Users.php:94
+Stack trace:
+#0 /home1/cmeehan/public_html/includes/mobile/users/Users.php(94): PDOStatement->execute()
+#1 /home1/cmeehan/public_html/includes/mobile/users/Users.php(34): Users->setUser()
+#2 /home1/cmeehan/public_html/includes/mobile/users/Users.php(7): Users->init('set_user')
+#3 /home1/cmeehan/public_html/includes/mobile/users/Users.php(408): Users->__construct()
+#4 {main}
+  thrown in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 94
+[19-Apr-2018 10:50:53 America/Chicago] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'FROM USERS WHERE ID = '2'' at line 1 in /home1/cmeehan/public_html/includes/mobile/users/Users.php:94
+Stack trace:
+#0 /home1/cmeehan/public_html/includes/mobile/users/Users.php(94): PDOStatement->execute()
+#1 /home1/cmeehan/public_html/includes/mobile/users/Users.php(34): Users->setUser()
+#2 /home1/cmeehan/public_html/includes/mobile/users/Users.php(7): Users->init('set_user')
+#3 /home1/cmeehan/public_html/includes/mobile/users/Users.php(408): Users->__construct()
+#4 {main}
+  thrown in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 94
+[19-Apr-2018 10:52:36 America/Chicago] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'FROM USERS WHERE ID = '2'' at line 1 in /home1/cmeehan/public_html/includes/mobile/users/Users.php:94
+Stack trace:
+#0 /home1/cmeehan/public_html/includes/mobile/users/Users.php(94): PDOStatement->execute()
+#1 /home1/cmeehan/public_html/includes/mobile/users/Users.php(34): Users->setUser()
+#2 /home1/cmeehan/public_html/includes/mobile/users/Users.php(7): Users->init('set_user')
+#3 /home1/cmeehan/public_html/includes/mobile/users/Users.php(408): Users->__construct()
+#4 {main}
+  thrown in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 94
+[19-Apr-2018 11:40:04 America/Chicago] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'FROM USERS WHERE ID = '2'' at line 1 in /home1/cmeehan/public_html/includes/mobile/users/Users.php:94
+Stack trace:
+#0 /home1/cmeehan/public_html/includes/mobile/users/Users.php(94): PDOStatement->execute()
+#1 /home1/cmeehan/public_html/includes/mobile/users/Users.php(34): Users->setUser()
+#2 /home1/cmeehan/public_html/includes/mobile/users/Users.php(7): Users->init('set_user')
+#3 /home1/cmeehan/public_html/includes/mobile/users/Users.php(408): Users->__construct()
+#4 {main}
+  thrown in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 94
+[19-Apr-2018 11:40:48 America/Chicago] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'FROM USERS WHERE ID = '2'' at line 1 in /home1/cmeehan/public_html/includes/mobile/users/Users.php:94
+Stack trace:
+#0 /home1/cmeehan/public_html/includes/mobile/users/Users.php(94): PDOStatement->execute()
+#1 /home1/cmeehan/public_html/includes/mobile/users/Users.php(34): Users->setUser()
+#2 /home1/cmeehan/public_html/includes/mobile/users/Users.php(7): Users->init('set_user')
+#3 /home1/cmeehan/public_html/includes/mobile/users/Users.php(408): Users->__construct()
+#4 {main}
+  thrown in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 94
+[19-Apr-2018 11:43:46 America/Chicago] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'FROM USERS WHERE ID = '2'' at line 1 in /home1/cmeehan/public_html/includes/mobile/users/Users.php:94
+Stack trace:
+#0 /home1/cmeehan/public_html/includes/mobile/users/Users.php(94): PDOStatement->execute()
+#1 /home1/cmeehan/public_html/includes/mobile/users/Users.php(34): Users->setUser()
+#2 /home1/cmeehan/public_html/includes/mobile/users/Users.php(7): Users->init('set_user')
+#3 /home1/cmeehan/public_html/includes/mobile/users/Users.php(408): Users->__construct()
+#4 {main}
+  thrown in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 94
+[19-Apr-2018 11:44:23 America/Chicago] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'FROM USERS WHERE ID = '2'' at line 1 in /home1/cmeehan/public_html/includes/mobile/users/Users.php:94
+Stack trace:
+#0 /home1/cmeehan/public_html/includes/mobile/users/Users.php(94): PDOStatement->execute()
+#1 /home1/cmeehan/public_html/includes/mobile/users/Users.php(34): Users->setUser()
+#2 /home1/cmeehan/public_html/includes/mobile/users/Users.php(7): Users->init('set_user')
+#3 /home1/cmeehan/public_html/includes/mobile/users/Users.php(408): Users->__construct()
+#4 {main}
+  thrown in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 94
+[19-Apr-2018 11:55:12 America/Chicago] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'FROM USERS WHERE ID = '2'' at line 1 in /home1/cmeehan/public_html/includes/mobile/users/Users.php:94
+Stack trace:
+#0 /home1/cmeehan/public_html/includes/mobile/users/Users.php(94): PDOStatement->execute()
+#1 /home1/cmeehan/public_html/includes/mobile/users/Users.php(34): Users->setUser()
+#2 /home1/cmeehan/public_html/includes/mobile/users/Users.php(7): Users->init('set_user')
+#3 /home1/cmeehan/public_html/includes/mobile/users/Users.php(408): Users->__construct()
+#4 {main}
+  thrown in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 94
+[19-Apr-2018 11:56:10 America/Chicago] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'FROM USERS WHERE ID = '2'' at line 1 in /home1/cmeehan/public_html/includes/mobile/users/Users.php:94
+Stack trace:
+#0 /home1/cmeehan/public_html/includes/mobile/users/Users.php(94): PDOStatement->execute()
+#1 /home1/cmeehan/public_html/includes/mobile/users/Users.php(34): Users->setUser()
+#2 /home1/cmeehan/public_html/includes/mobile/users/Users.php(7): Users->init('set_user')
+#3 /home1/cmeehan/public_html/includes/mobile/users/Users.php(408): Users->__construct()
+#4 {main}
+  thrown in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 94
+[25-Apr-2018 13:42:09 America/Chicago] PHP Fatal error:  Uncaught Error: Call to undefined function notifyNewUser() in /home1/cmeehan/public_html/includes/mobile/users/Users.php:409
+Stack trace:
+#0 /home1/cmeehan/public_html/includes/mobile/users/Users.php(25): Users->registerUser()
+#1 /home1/cmeehan/public_html/includes/mobile/users/Users.php(7): Users->init('new_user')
+#2 /home1/cmeehan/public_html/includes/mobile/users/Users.php(428): Users->__construct()
+#3 {main}
+  thrown in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 409
+[25-Apr-2018 13:44:46 America/Chicago] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'USERNAME' cannot be null in /home1/cmeehan/public_html/includes/mobile/users/Users.php:399
+Stack trace:
+#0 /home1/cmeehan/public_html/includes/mobile/users/Users.php(399): PDOStatement->execute()
+#1 /home1/cmeehan/public_html/includes/mobile/users/Users.php(25): Users->registerUser()
+#2 /home1/cmeehan/public_html/includes/mobile/users/Users.php(7): Users->init('new_user')
+#3 /home1/cmeehan/public_html/includes/mobile/users/Users.php(428): Users->__construct()
+#4 {main}
+  thrown in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 399
+[25-Apr-2018 13:49:11 America/Chicago] PHP Fatal error:  Uncaught Error: Call to undefined function notifyNewUser() in /home1/cmeehan/public_html/includes/mobile/users/Users.php:409
+Stack trace:
+#0 /home1/cmeehan/public_html/includes/mobile/users/Users.php(25): Users->registerUser()
+#1 /home1/cmeehan/public_html/includes/mobile/users/Users.php(7): Users->init('new_user')
+#2 /home1/cmeehan/public_html/includes/mobile/users/Users.php(428): Users->__construct()
+#3 {main}
+  thrown in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 409
+[01-May-2018 17:33:01 America/Chicago] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'USERNAME' cannot be null in /home1/cmeehan/public_html/mobile/users/Users.php:399
+Stack trace:
+#0 /home1/cmeehan/public_html/mobile/users/Users.php(399): PDOStatement->execute()
+#1 /home1/cmeehan/public_html/mobile/users/Users.php(25): Users->registerUser()
+#2 /home1/cmeehan/public_html/mobile/users/Users.php(7): Users->init('new_user')
+#3 /home1/cmeehan/public_html/mobile/users/Users.php(428): Users->__construct()
+#4 {main}
+  thrown in /home1/cmeehan/public_html/mobile/users/Users.php on line 399
+[01-May-2018 17:34:14 America/Chicago] PHP Parse error:  syntax error, unexpected ',' in /home1/cmeehan/public_html/mobile/users/Users.php on line 383
+[14-May-2018 15:50:27 America/Chicago] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'EMAIL_ADDRESS' in 'field list' in /home1/cmeehan/public_html/includes/mobile/users/Users.php:57
+Stack trace:
+#0 /home1/cmeehan/public_html/includes/mobile/users/Users.php(57): PDOStatement->execute()
+#1 /home1/cmeehan/public_html/includes/mobile/users/Users.php(31): Users->getUser()
+#2 /home1/cmeehan/public_html/includes/mobile/users/Users.php(7): Users->init('get_user')
+#3 /home1/cmeehan/public_html/includes/mobile/users/Users.php(428): Users->__construct()
+#4 {main}
+  thrown in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 57
+[17-May-2018 14:20:57 America/Chicago] PHP Parse error:  syntax error, unexpected '$message' (T_VARIABLE) in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 365
+[17-May-2018 14:21:37 America/Chicago] PHP Parse error:  syntax error, unexpected '$message' (T_VARIABLE) in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 365
