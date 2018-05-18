@@ -10,10 +10,16 @@ class VendorRegistration{
 		    case "registerNewVendor":
 		        $this->addVendor();
 		        break;
+		       case "registrationNotification":
+		       $this->registration_notification();
+		       case "validateUsername":
+		       $this->validateUsername();
+		       break;
 		    default:
 		        break;
 		}
 	}
+
 	
 	public function assignValues(){
 		$this->action = filter_input(INPUT_POST, 'action');
@@ -30,9 +36,106 @@ class VendorRegistration{
 		$this->state = filter_input(INPUT_POST, "state");
 		$this->zip = filter_input(INPUT_POST, "zip");
 		$this->country = filter_input(INPUT_POST, "country");
-		$this->url = filter_input(INPUT_POST, "web-prefix") + filter_input(INPUT_POST, "url");
+		$this->url = filter_input(INPUT_POST, "url");
 		$this->data_table = $this->getDataTable($this->zip);
+	}
+	
+	private function validateUsername(){
+		include 'DbConnection.php';
+		
+		$username = filter_input(INPUT_POST, 'username');
+		
+		$sql = 'SELECT COUNT(ID) as TOTAL FROM VENDOR_LOGIN WHERE USERNAME = :USERNAME';
+		
+		$stmt = $conn->prepare($sql);
+		$stmt->bindParam(":USERNAME", $username);
+		$stmt->execute();
+		$stmt->setFetchMode(PDO::FETCH_ASSOC);
+		
+		$res = $stmt->fetch();
+		if($res['TOTAL'] > 0){
+			echo false;
+		}else{
+			echo true;
+		}
+	}
+	
+	/*
+	* Send a confirmation email to the new vendor
+	*/
+	private function registration_notification(){
+		$to = $this->email;
+		$subject = "Utterfare Vendor Registration Confirmation";
+		
+		$msg = "<html>";
+		$msg .="<head><title>Utterfare Vendor Registration Confirmation</title></head><body>";
+		$msg .= $this->first_name . ' ' . $this->last_name . ',';
+		$msg .= '<br/>';
+		$msg .= '<p>Welcome and thank you for registering as a vendor on Utterfare. Once you start entering in menu items you will become immediately visible on Utterfare searches in your area. Please take a moment to look around the vendor dashboard.</p>'; 
+		$msg .= "<p>If you need any assistance please contact us at <a href=\"mailto:vendor.services@utterfare.com\">vendor.services@utterare.com</a>. A representative from Utterfare will be contacting you shortly to help you get set up for the first time.</p>";
+		$msg .= "<p>If you did not sign up to be a vendor for Utterfare or think you should not be receiving this email please contact us immediately at <a href=\"mailto:listings@utterfare.com\">listings@utterare.com</a>.</p>";
+		$msg .= "Thank you,";
+		$msg .= "<b>The Utterfare Team</b>";
+		$msg .= "<br/>";
+		$msg .= "<a href=\"https://www.utterfare.com\">Utterfare.com</a>";
+		$msg .= '<br/>';
+		$msg .= "<a href=\"mailto:vendor.services@utterfare.com\">vendor.services@utterfare.com</a>";
+		$msg .= '<br/>';
+		$msg .= "<a href=\"tel:3362600061\">(336) 260-0061</a>";
+		$msg .= "<br/>";
+		$msg .= "<img src=\"https://www.utterfare.com/images/Email%20Logo.png\" alt=\"Utterfare Logo\"/>";
+		$msg .= "</body>";
+		$msg .= "</html>";
+		
+		$message = wordwrap($msg, 70);
+		
+		$headers = "MIME-Version: 1.0" . "\r\n";
+		$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+		$headers .= "From: listings@utterfare.com" . "\r\n";
+		
+		$send = mail($to, $subject, $msg, $headers);
+		$this->notify_listing();	
+	}
+	
+	/*
+	* Notify the Utterfare listings of the new registration
+	*/
+	private function notify_listing(){
+		$to = "listings@utterfare.com";
+		$subject = "New Vendor Registration Notificatoin";
+				
+		$msg = "<html>";
+		$msg .="<head><title>New Vendor Registration Notification</title></head><body>";
+		$msg .= "<p>" . $this->company_name . " has registered to be a vendor.</p>"; 
+		$msg .= "<br/><br/>";
+		$msg .= "<table><tbody>";
+		$msg .= "<tr>";
+		$msg .= "<td><b>Company Name:</b></td><td>" . $this->company_name . "</td>";
+		$msg .= "</tr><tr>";
+		$msg .= "<td><b>Contact Name:</b></td><td>" .  $this->first_name . ', ' . $this->last_name . "</td>";
+		$msg .= "</tr><tr>";
+		$msg .= "<td><b>Contact Email:</b></td><td>" . $this->email . "</td>";
+		$msg .= "</tr><tr>";
+		$msg .= "<td><b>Contact Phone:</b></td><td>" . $this->phone . "</td>";
+		$msg .= "</tr><tr>";
+		$msg .= "<td><b>Registration Date:</b></td><td>" . date('D,  F jS, Y G') . "</td>";
+		$msg .= "</tr><tr>";
+		$msg .= "<td><b>Location:</b></td><td>" . $this->city . ', ' . $this->state . "</td>";
+		$msg .= "</tr><tr>";
+		$msg .= "<td><b>Website URL:</b></td><td>" . $this->url . "</td>";
+		$msg .= "</tr>";
+		$msg .= "</tbody></table>";
+		$msg .= "</body>";
+		$msg .= "</html>";
+		
+		$message = wordwrap($msg, 70);
+		
+		$headers = "MIME-Version: 1.0" . "\r\n";
+		$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+		$headers .= "From: listings@utterfare.com" . "\r\n";
 
+		mail($to, $subject, $message, $headers);	
+		
 	}
 	
 	private function addVendor() {
@@ -79,6 +182,7 @@ class VendorRegistration{
 	            // Also provide contact information in case there has been an error. 
 	            $results = $stmt->fetch();
 				$this->applyCompanyToUser($results["ID"], $this->last_key);
+				echo "exists";
 	        } else {
 	            $this->registerCompany();
 	        }
@@ -97,7 +201,7 @@ class VendorRegistration{
 	    include "DbConnection.php";
 	    // Get the latitude and longitude based on the address
 	    $address = str_replace(" ", "+",$this->street_address) . '+' . str_replace(" ", "*", $this->city) . '+' . $this->state . '+' . $this->zip . '+' . $this->country;
-	    $geocode = file_get_contents('https://maps.google.com/maps/api/geocode/json?address=' . $address . '&sensor=false');
+	    $geocode = file_get_contents('https://maps.google.com/maps/api/geocode/json?address=' . $address . '&sensor=false&key=AIzaSyDVThKX7yiVem3vU7457VYdZmDOM_EWW7k');
 	    $location_info = json_decode($geocode);
 	    $latitude = $location_info->results[0]->geometry->location->lat;
 	    $longitude = $location_info->results[0]->geometry->location->lng;
@@ -142,6 +246,7 @@ class VendorRegistration{
 	        $stmt->execute();
 			$num_rows = $stmt->rowCount();
 	        if ($num_rows > 0) {
+	            $this->registration_notification();
 	            $_SESSION["COMPANY_ID"] = $company_id;
 	            $_SESSION["USER_ID"] = $user_id;            
 	            $_SESSION['PRIMARY_ADDRESS'] = $this->street_address;
@@ -176,7 +281,7 @@ class VendorRegistration{
 	        $results = $stmt->fetch();
 	        return $results["DATA_TABLE"];
 	    } else {
-	        return null;
+	        return "No datatable";
 	    }
 	}	
 }

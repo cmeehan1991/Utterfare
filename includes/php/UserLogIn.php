@@ -1,15 +1,27 @@
 <?php
-session_start();
-$username = filter_input(INPUT_POST, 'username');
-$password = md5(filter_input(INPUT_POST, 'password'));
 
-if($username != null && $password != null){
-    login($username, $password);
-}else{
-    echo "nothing";
+session_start();
+
+$action = filter_input(INPUT_POST, 'action');
+switch($action){
+	case 'sign_in': 
+	login();
+	break;
+	case 'sign_out': 
+	sign_out();
+	break;
+	default: break;
 }
 
-function login($username, $password){
+function sign_out(){
+	session_unset();
+	session_destroy();
+	die(true);
+}
+
+function login(){
+	$username = filter_input(INPUT_POST, 'username');
+	$password = md5(filter_input(INPUT_POST, 'password'));
     include 'DbConnection.php';
     
     $sql = "SELECT ID, DATA_TABLE, COMPANY_ID FROM VENDOR_LOGIN WHERE USERNAME = :USERNAME AND PASSWORD = :PASSWORD";

@@ -1,0 +1,6 @@
+[submodule "Utterfare"]
+	path = Utterfare
+	url = https://github.com/cmeehan1991/Utterfare
+[submodule "ufdev"]
+	path = ufdev
+	url = https://github.com/cmeehan1991/Utterfare

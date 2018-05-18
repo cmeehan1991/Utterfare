@@ -47,7 +47,7 @@ include_once("analyticstracking.php") ?>
                 </div>
                         <div class="row">
                             <div class="col-md-10 mx-auto" align="center">
-	                            <div class="loader"><i class="fa fa-spinner fa-spin" aria-hidden="true"></i></div>
+	                            <div class="loader" style="display:none;"><i class="fa fa-spinner fa-spin fa-5x" aria-hidden="true"></i></div>
                                 <div class="results"></div>
                             </div>
                         </div>
