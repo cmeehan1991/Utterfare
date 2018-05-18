@@ -1,11 +1,11 @@
 <?php
 include 'SearchAnalytics.php';
-$terms =  'Shrimp and grits'; //filter_input(INPUT_POST, 'terms');
-$location = '32.229041:-80.740269'; //filter_input(INPUT_POST, 'location');
+$terms =  filter_input(INPUT_POST, 'terms');
+$location = filter_input(INPUT_POST, 'location');
 $limit =   filter_input(INPUT_POST, 'limit');
 $page = filter_input(INPUT_POST, 'page');
-$offset = '0'; //filter_input(INPUT_POST, 'offset');
-$distance = '2'; //filter_input(INPUT_POST, 'distance');
+$offset = filter_input(INPUT_POST, 'offset');
+$distance = filter_input(INPUT_POST, 'distance');
 $type = "Mobile";
 $platform = "iOS";
 
