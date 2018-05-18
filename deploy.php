@@ -18,7 +18,7 @@ set('git_tty', true);
 
 set('git_recursive', true);
 
-set('branch', 'dev');
+set('branch', 'master');
 
 set('default_stage', 'dev');
 
