@@ -2,7 +2,7 @@
 
 class UserItems{
 	function __construct(){
-		$action = 'get_items'; //filter_input(INPUT_POST, 'action');
+		$action = filter_input(INPUT_POST, 'action');
 		$this->init($action);
 	}
 	
@@ -26,7 +26,7 @@ class UserItems{
 	private function getItems(){
 		include('../connection/DBConnection.php');	
 		
-		$user_id = '1'; //filter_input(INPUT_POST, 'user_id');
+		$user_id = filter_input(INPUT_POST, 'user_id');
 		$sql = "SELECT ID, ITEM_ID, ITEM_DATA_TABLE, ITEM_NAME, ITEM_IMAGE_URL FROM SAVED_ITEMS WHERE USER_ID = :USER_ID ORDER BY DATE_SAVED DESC";
 		
 		$stmt = $conn->prepare($sql);

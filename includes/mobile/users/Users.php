@@ -361,6 +361,7 @@ class Users{
 		
 		$message = "Thank you for signing up to use Utterfare. Your account has been successfully created. You can use your account to save and share menu items.";
 		$message .= "<br/><br/>";
+		$message .= "Please take a moment to <a href='https://www.utterfare.com/survey'>take this survey</a> and let us know how you found us.";
 		$message .= "Sincerely,";
 		$message .= "<br/>";
 		$message .= "The Utterfare Team";
@@ -383,10 +384,11 @@ class Users{
 		$city =  filter_input(INPUT_POST, 'city');
 		$state  = filter_input(INPUT_POST, 'state');
 		$email = filter_input(INPUT_POST, 'email');
+		$phone = filter_input(INPUT_POST, 'phone');
 		$date_registered = date("Y-m-d H:i:s");
 		
 		if(!$this->checkUserExists($username)){
-			$sql = "INSERT INTO USERS(USERNAME, PASSWORD, FIRST_NAME, LAST_NAME, CITY, STATE, EMAIL, DATE_REGISTERED) VALUES(:USERNAME, MD5(:PASSWORD), :FIRST_NAME, :LAST_NAME, :CITY, :STATE, :EMAIL, :DATE_REGISTERED)";
+			$sql = "INSERT INTO USERS(USERNAME, PASSWORD, FIRST_NAME, LAST_NAME, CITY, STATE, EMAIL, PHONE, DATE_REGISTERED) VALUES(:USERNAME, MD5(:PASSWORD), :FIRST_NAME, :LAST_NAME, :CITY, :STATE, :EMAIL, :PHONE, :DATE_REGISTERED)";
 			$stmt = $conn->prepare($sql);
 			$stmt->bindParam(":USERNAME", $username);
 			$stmt->bindParam(":PASSWORD", $password);
@@ -395,6 +397,7 @@ class Users{
 			$stmt->bindParam(":CITY", $city);
 			$stmt->bindParam(":STATE", $state);
 			$stmt->bindParam(":EMAIL", $email);
+			$stmt->bindParam(":PHONE", $phone);
 			$stmt->bindParam(":DATE_REGISTERED", $date_registered);
 			$stmt->execute();
 			

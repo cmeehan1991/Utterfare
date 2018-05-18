@@ -209,3 +209,13 @@ Stack trace:
 #4 {main}
   thrown in /home1/cmeehan/public_html/mobile/users/Users.php on line 399
 [01-May-2018 17:34:14 America/Chicago] PHP Parse error:  syntax error, unexpected ',' in /home1/cmeehan/public_html/mobile/users/Users.php on line 383
+[14-May-2018 15:50:27 America/Chicago] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'EMAIL_ADDRESS' in 'field list' in /home1/cmeehan/public_html/includes/mobile/users/Users.php:57
+Stack trace:
+#0 /home1/cmeehan/public_html/includes/mobile/users/Users.php(57): PDOStatement->execute()
+#1 /home1/cmeehan/public_html/includes/mobile/users/Users.php(31): Users->getUser()
+#2 /home1/cmeehan/public_html/includes/mobile/users/Users.php(7): Users->init('get_user')
+#3 /home1/cmeehan/public_html/includes/mobile/users/Users.php(428): Users->__construct()
+#4 {main}
+  thrown in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 57
+[17-May-2018 14:20:57 America/Chicago] PHP Parse error:  syntax error, unexpected '$message' (T_VARIABLE) in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 365
+[17-May-2018 14:21:37 America/Chicago] PHP Parse error:  syntax error, unexpected '$message' (T_VARIABLE) in /home1/cmeehan/public_html/includes/mobile/users/Users.php on line 365

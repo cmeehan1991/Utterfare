@@ -11,7 +11,7 @@ class Item_Search{
 		$this->terms = filter_input(INPUT_POST, 'terms');
 		$this->location = filter_input(INPUT_POST, 'location');
 		$this->GLOBALS['limit'] = filter_input(INPUT_POST, 'limit');
-		$this->page = filter_input(INPUT_POST, 'page');
+		$this->page = $this->offset == 0 ? 1 : $this->offset/25 + 1;// filter_input(INPUT_POST, 'page');
 		$this->offset = filter_input(INPUT_POST, 'offset');
 		$this->distance = filter_input(INPUT_POST, 'distance');
 		$this->type = "Desktop/Non-app";

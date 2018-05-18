@@ -4,3 +4,6 @@ images/
 node_modules/
 deploy.php
 .htaccess
+
+includes/php/DbConnection.php
+includes/mobile/connection/DBConnection.php
