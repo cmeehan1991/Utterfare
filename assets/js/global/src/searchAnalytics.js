@@ -1,7 +1,10 @@
 $(document).ready(function(){
-	topTermsChart();
-	searchCountChart();
-	platformChart();
+	var url = window.location.href;
+	if(url.indexOf('userHome') < -1){
+		topTermsChart();
+		searchCountChart();
+		platformChart();
+	}
 });
 
 function topTermsChart(){

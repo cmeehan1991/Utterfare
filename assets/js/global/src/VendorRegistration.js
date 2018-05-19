@@ -40,7 +40,6 @@ function navigationButtons(){
 	
 	$('.registrationPageLink').click(function(event){
 		event.preventDefault();
-		console.log('clicked');
 	});
 }
 
@@ -108,7 +107,7 @@ function pages(){
 }
 
 function keylisteners(){	
-	if($('form[name=registrationForm]')[0] > -1){
+	if($('form[name=registrationForm]')){
 		$('input[name=username]').keyup(function(){
 			var username = $(this).val();
 			validateUsername(username);
@@ -144,7 +143,6 @@ function keylisteners(){
 		// Company Information
 		$('input[name=company_name]').keyup(function(){
 			var company_name = $(this).val();
-			console.log(company_name);
 			if(company_name.length > 0){
 				$('.next--company-information').fadeIn('fast');
 			}else{
@@ -203,13 +201,11 @@ function validatePassword() {
 function registerCompany() {
     var data = "action=registerNewVendor";
     data += "&" + $('form[name="registrationform"]').serialize();
-    console.log(data);
 	$.ajax({
         data: data,
         url: "includes/php/VendorRegistration.php",
         method: "post",
         success: function (response) {
-	        console.log(response);
             if (response === "success") {
                 window.location.href = "userHome.php";
             } else if (response === "exists") {
@@ -259,7 +255,6 @@ function validateUsername(username){
 		url: "includes/php/VendorRegistration.php",
 		method: 'post', 
 		success:function(result){
-			console.log(result);
 			if(result == false){ 
 				$(unameInput).css('outline', '1px solid red');
 				$(submitButton).attr('disabled', true);				
