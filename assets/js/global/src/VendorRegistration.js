@@ -107,11 +107,10 @@ function pages(){
 }
 
 function keylisteners(){	
-	if($('form[name=registrationForm]')){
+	if($('form[name=registrationform]').index() > -1){
 		$('input[name=username]').keyup(function(){
 			var username = $(this).val();
 			validateUsername(username);
-			console.log('isValid');
 		});	
 		
 		$('.mdl-textfield__input[name=password]').keyup(function(){

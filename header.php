@@ -2,16 +2,16 @@
 <html>
 	<head>
 		<!-- Global site tag (gtag.js) - Google Analytics -->
-		<!--<script async src="https://www.googletagmanager.com/gtag/js?id=UA-74857924-3"></script>
+		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-74857924-3"></script>
 		<script>
 		  window.dataLayer = window.dataLayer || [];
 		  function gtag(){dataLayer.push(arguments);}
 		  gtag('js', new Date());
 		
 		  gtag('config', 'UA-74857924-3');
-		</script>-->
+		</script>
 		<!-- Facebook Pixel Code -->
-		<!--<script>
+		<script>
 		  !function(f,b,e,v,n,t,s)
 		  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
 		  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -24,7 +24,7 @@
 		  fbq('track', 'PageView');
 		  fbq('track', 'Search');
 		  
-		</script>-->
+		</script>
 		<noscript><img height="1" width="1" style="display:none"
 		  src="https://www.facebook.com/tr?id=777972905717661&ev=PageView&noscript=1"
 		/></noscript>
