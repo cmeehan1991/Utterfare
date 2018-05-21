@@ -107,7 +107,7 @@ function pages(){
 }
 
 function keylisteners(){	
-	console.log($('form[name=registrationForm]'));
+	console.log($('form[name=registrationForm]').index());
 	if($('form[name=registrationForm]')){
 		
 		$('input[name=username]').keyup(function(){
