@@ -1,6 +1,7 @@
 $(document).ready(function(){
 	var url = window.location.href;
-	if(url.indexOf('userHome') < -1){
+	console.log(url);
+	if(url.indexOf('userHome') > -1){
 		topTermsChart();
 		searchCountChart();
 		platformChart();

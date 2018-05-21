@@ -53,7 +53,9 @@ function uploadMenuItems(){
 	$("#fileupload").change(function(){
 		var file = $(this)[0].files[0];
 		if(file){
+			console.log("file");
 			saveMenuItems(file);
+			
 		}
 	});
 	return false;
@@ -74,6 +76,7 @@ function saveMenuItems(file){
 		processData: false,
 		method: 'post',  
 		success:function(response){
+			console.log(response);
 			var received = JSON.parse(response);
 			
 			if(received.Existing){

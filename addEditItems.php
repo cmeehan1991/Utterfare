@@ -4,17 +4,13 @@ if (!isset($_SESSION["USER_ID"])) {
     header("location:login.php");
 }
 include 'header.php';
-?>
-<!DOCTYPE html>
-<?php userHeader('Add Edit Items'); ?>
+userHeader('Add Edit Items'); ?>
 <div class="main">
     <div class="container-fluid">
         <div class="row">
 	        <div class='row'>
 		        <div class="col-md-12">
-			        <div class="error-message">
-				        
-			        </div>
+			        <div class="error-message"></div>
 		        </div>
 	        </div>
             <div class="col-md-12">
@@ -56,7 +52,6 @@ include 'header.php';
 </div>
 <div id="snackbar"></div>
 <div id="error-toast" class="mdl-js-snackbar mdl-snackbar"><div class="mdl-snackbar__text"></div><button class="mdl-snackbar__action" type="button"></button></div>
-<input type="file" onchange="return setImage();"/>
 </div>
 </body>
 </html>
