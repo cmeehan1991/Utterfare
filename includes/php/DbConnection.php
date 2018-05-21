@@ -1,6 +1,6 @@
 <?php
 $db_name = 'cmeehan_utterfare';
-$db_host = 'ns8139.hostgator.com'; //'localhost';
+$db_host = 'localhost';
 $db_user = 'cmeehan_dbsearch';
 $db_pass = 'Wadiver15!';
 
