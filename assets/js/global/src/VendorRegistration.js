@@ -107,7 +107,9 @@ function pages(){
 }
 
 function keylisteners(){	
+	console.log($('form[name=registrationForm]'));
 	if($('form[name=registrationForm]')){
+		
 		$('input[name=username]').keyup(function(){
 			var username = $(this).val();
 			validateUsername(username);
