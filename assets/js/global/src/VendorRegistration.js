@@ -111,6 +111,7 @@ function keylisteners(){
 		$('input[name=username]').keyup(function(){
 			var username = $(this).val();
 			validateUsername(username);
+			console.log('isValid');
 		});	
 		
 		$('.mdl-textfield__input[name=password]').keyup(function(){
