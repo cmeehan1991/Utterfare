@@ -39,9 +39,7 @@
 
 		</div>
 		<div class="col-md-6 map-column">
-			<iframe class="results-map" frameborder="0" style="border:0"
-src="https://www.google.com/maps/embed/v1/place?q=place_id:ChIJrRnTjtx5_IgRPSii63qm5Sw&key=AIzaSyBNOJbx_2Q5h8f0ONZ4Abf5ULE0w4B-VTc" allowfullscreen></iframe> 
-
+			<div id="map"></div>
 		</div>
 	</div>
 </div>

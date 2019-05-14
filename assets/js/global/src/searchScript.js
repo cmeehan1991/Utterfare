@@ -1,8 +1,10 @@
 var limit = 25;
 var page = 1;
 var offset = '0';
+var params={};
 
 $(document).ready(function () {
+
 	$('.loading-indicator--section').show();
 	$('.main').hide();
     $('.loadmore-button').hide();
@@ -10,9 +12,10 @@ $(document).ready(function () {
     
     
     $('.search-form__input').focusin(function(){
-	   showSuggestions();
-	   $('.search-form__input').attr('placeholder', 'Try Searching: Impossible Burger');
+		showSuggestions();
+		$('.search-form__input').attr('placeholder', 'Try Searching: Impossible Burger');
     });   
+    
 });
 
 $(document).mouseup(function(e){
@@ -44,16 +47,16 @@ function showSuggestions(){
 		
 		suggestions += "<li class='recent-searches--item'>Cheeseburger</li>";
 		
-		suggestions += "</ul>"
+		suggestions += "</ul>";
 	
-		$('.search-form__input').after(suggestions)
+		$('.search-form__input').after(suggestions);
 		
 		$('.change-location-button').click(function(){
 			changeLocation();
 		});
 		
 		$('.recent-searches li').on('click', function(){
-			removeSuggestions()
+			removeSuggestions();
 			$('.loading-indicator--section').show();
 			$('.main').hide();
 			$('.search-form__input').val($(this).text());
@@ -62,15 +65,11 @@ function showSuggestions(){
 			$('.loading-indicator--section').hide();
 		});
 		
-		$('.recent-searchs--item').click(function(e){
-			console.log($(this));
-		});
 	}
 }
 
 function changeLocation(){
-	console.log('modal toggle');
-	//$('#locationModal').modal('show');
+	$('#locationModal').modal('show');
 }
 
 /**
@@ -80,19 +79,15 @@ function getTopPicks(){
 	
 }
 
-
-
-
 /*
 * Populate the recommended items section
 */
 function getRecommendations(location){
-	console.log(location);
 	
 	var data = {
 		"action": "get_recommendations",
 		"location": location
-	}
+	};
 	
 	var recommendations = "<div class='carousel-item active'><div class='row'>";
 	
@@ -108,13 +103,13 @@ function getRecommendations(location){
 				
 				recommendations += '<div class="col-md-3 mx-auto">';
 				recommendations += '<div class="card recommendation">'; 
-				recommendations += '<img src="assets/img/mahi-mahi.jpg" class="card-img-top" alt="...">'
+				recommendations += '<img src="assets/img/mahi-mahi.jpg" class="card-img-top" alt="...">';
 				recommendations += '<div class="card-body">';
-				recommendations += '<div class="card-title"><h3>' + value['item_name'] + '</h3></div>';
+				recommendations += '<div class="card-title"><h3>' + value.item_name + '</h3></div>';
 				recommendations += '<div class="card-text">'; 
-				recommendations += '<i class="recommendation__location">' + value['vendor_address'] + "</i>";
-				recommendations += '<h4 class="recommendation__vendor">' + value['vendor_name'] + "</h4>";
-				recommendations += '<p>' + value['item_short_description'] + '</p>'; 
+				recommendations += '<i class="recommendation__location">' + value.vendor_address + "</i>";
+				recommendations += '<h4 class="recommendation__vendor">' + value.vendor_name + "</h4>";
+				recommendations += '<p>' + value.item_short_description + '</p>'; 
 				recommendations += '</div>'; // .card-text
 				recommendations += '</div>'; // .card-body
 				recommendations += '</div>'; // .recommendation
@@ -148,6 +143,8 @@ function getRecommendations(location){
 */
 function performSearch(terms, location, distance, page, limit, offset){
 	$('.loader').show();
+	$('.main').hide();
+	$('.results').hide();
 	var data = {
 		'action' : 'search',
 		'location': location,
@@ -158,8 +155,9 @@ function performSearch(terms, location, distance, page, limit, offset){
 		'offset': offset
 	};
 	
-	var display = '';
 	
+	var display = '';
+	var map;
 	$.ajax({
 		url: 'includes/php/search.php',
 		data: data,
@@ -172,7 +170,7 @@ function performSearch(terms, location, distance, page, limit, offset){
 				
 				display += '<div class="col-md-4">';
 
-				display += '<img src="' + result['primary_image'] + '" class="card-img" alt="...">';
+				display += '<img src="' + result.primary_image + '" class="card-img" alt="...">';
 				
 				display += "</div>";
 				
@@ -180,13 +178,13 @@ function performSearch(terms, location, distance, page, limit, offset){
 				
 				display += '<div class="card-body">';
 				
-				display += '<h3 class="card-title">' + result['item_name'] + '</h3>';
+				display += '<h3 class="card-title">' + result.item_name + '</h3>';
 
-				display += '<h4 class="card-title">' + result['vendor'] + '</h4>';
+				display += '<h4 class="card-title">' + result.vendor_name + '</h4>';
 									
 				display += '<p class="card-text"><small class="text-muted">Address</small></p>';
 				
-				display += '<p class="card-text">' + result['item_short_description'] + '</p>';					
+				display += '<p class="card-text">' + result.item_short_description + '</p>';					
 				
 				display += "</div></div>";
 				
@@ -200,14 +198,49 @@ function performSearch(terms, location, distance, page, limit, offset){
 		    $('.loading-indocator--section').hide();
 		}, 
 		complete: function(){
+			
+			map = new google.maps.Map(document.getElementById("map"),{
+				center: get_map_center(location),
+				zoom: 8,	
+			});
+			
+			
 			$('.results-list').html(display);
 			
 			$('.loading-indicator--section').hide();
 			
 			$('.results').show();
+			
+			var url = window.location.protocol + "//" + window.location.host + window.location.pathname+ "?action=search&terms=" + encodeURI(terms) + "&page=" + page + "&location=" + encodeURI(location);
+			window.history.pushState({path:url}, '', url);
+			
+			return false;
 		}
 	});
 }
+
+function initMap(){
+	
+}
+
+function get_map_center(address){
+	var encoded_address = encodeURI(address);
+
+	$.ajax({
+		url: 'https://maps.googleapis.com/maps/api/geocode/json?address=' + encoded_address + '&key=AIzaSyBNOJbx_2Q5h8f0ONZ4Abf5ULE0w4B-VTc',
+		datatype: 'json',
+		method: 'get',
+		success: function(response){
+			var lat = response.results[0].geometry.location.lat;
+			var lng = response.results[0].geometry.location.lng;
+			return {lat: lat, lng: lng};
+		}, 
+		error: function(error){
+			console.log(error);
+		}
+	});
+}
+
 
 function loadMore() {
     this.page += 1;
@@ -225,7 +258,7 @@ function loadMore() {
     
 
     var distance = $('.distance').val();
-		performSearch(terms, location, distance, page, limit, offset)
+		performSearch(terms, location, distance, page, limit, offset);
 }
 
 function getLatLng(location){

@@ -27,7 +27,9 @@
 /></noscript>
 <!-- End Facebook Pixel Code -->    
 
-<!-- Google maps API-->
- <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBNOJbx_2Q5h8f0ONZ4Abf5ULE0w4B-VTc" type="text/javascript"></script>
+
+<!-- Google Maps API --> 
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBNOJbx_2Q5h8f0ONZ4Abf5ULE0w4B-VTc" async defer></script>
+ 
 <!-- reCaptcha -->
 <script src='https://www.google.com/recaptcha/api.js'></script>
