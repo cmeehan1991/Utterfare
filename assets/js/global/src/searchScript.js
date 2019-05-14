@@ -6,48 +6,54 @@ $(document).ready(function () {
     $('.loadmore-button').hide();
     $('.navbar-normal').hide();
     
-   /* $(window).on('load', function(){ 
-		var queryString = window.location.search;
-		if(queryString){ 
-			var queryStringArr = window.location.search.split("&");
-			var parameters = new Array();
-			$.each(queryStringArr, function(k,v){
-			  var item = decodeURIComponent(v.split("=")[1]);
-			  parameters.push(item)
-			});
-			var type = parameters[0];
-			if(type === 'search'){
-				console.log('perform search');
-				var location = getLatLng(parameters[1]);
-				var terms = parameters[2];
-				var limit = parameters[3];
-				var page = parameters[4];
-				var distance = parameters[5];
-				var offset = parameters[6];
-				var newLimit = limit * page;
-				$('.searchInput').val(terms);
-				performSearch(terms, location, distance, page, newLimit, 0);
-			}
-		}
-    });*/
+    
+    $('.search-form__input').focusin(function(){
+	   showSuggestions();
+	   $('.search-form__input').attr('placeholder', 'Try Searching: Impossible Burger');
+    });
+       
+    
 });
 
-// Save the current search parameters and run the search again
-
-/*$(window).on("unload", function(){
-	if(window.location.pathname === '/utterfare/'){
-		var terms = $('.searchInput').val();
-		var location = null;
-	    if ($('.locationLink').is(":visible")) {
-	        location = $('.locationLink').data('location');
-	    } else {
-	        location = $(".locationInput").val();
-	    }
-	    var distance = $('.distance').val();
-	    var limit = "";
+$(document).mouseup(function(e){
+	var searchContainer = $('.search-form__input');
+	if(!searchContainer.is(e.target) && searchContainer.has(e.target).length === 0){
+		removeSuggestions();
 	}
+});
 
-});*/
+function removeSuggestions(){
+	$('.recent-searches').remove();
+	$('.search-form__input').attr('placeholder', 'Search');
+}
+
+function showSuggestions(){
+	if($('.recent-searches').length <= 0){
+		var suggestions = "<ul class='recent-searches'>";
+		
+		suggestions += "<li>" + $('.search-form__input').data('location') + "<br/><button type='button' class='btn btn-primary change-location-button'>Change Location</button></li>";
+		
+		suggestions += "<li>Cheeseburger</li>";
+		
+		suggestions += "</ul>"
+	
+		$('.search-form__input').after(suggestions)
+		
+		$('.change-location-button').click(function(){
+			console.log('clicked');
+			changeLocation();
+		});
+		
+		$('.recent-searches li').on('click', function(){
+			console.log('hello');
+		});
+	}
+}
+
+function changeLocation(){
+	console.log('modal toggle');
+	//$('#locationModal').modal('show');
+}
 
 function authorized(terms, location, distance) {
     var isValid = false;

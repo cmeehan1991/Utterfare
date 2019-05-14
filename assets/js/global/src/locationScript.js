@@ -4,6 +4,7 @@ $(document).ready(function () {
     $('.locationInput').on('keyup', function (e) {
         validateInput($(this).val(), e);
     });
+    
 
     locationLink = $('.locationLink');
     geolocation();
@@ -13,13 +14,6 @@ $(document).ready(function () {
 function validateInput(input, e) {
     var matchesNumber = input.match(/\d+/g);
     var matchesLetter = input.match(/^[a-zA-Z\s]+$/);
-    /*if(input.length == 5 && matchesLetter != null){
-        inputNotValid();
-    }else if(input.length < 5){
-        inputNotValid();
-    }else{
-        inputValid();
-    }*/
     inputValid();
 }
 
@@ -60,8 +54,13 @@ function codeLatLng(lat, lng) {
     geocoder.geocode({'latLng': latLng}, function (results, status) {
         if (status === google.maps.GeocoderStatus.OK) {
 	        if (results[0]) {
+
                 $('.locationLink').html("<i class='fa fa-map-marker' aria-hidden='true'></i>" + results[0].formatted_address);
-                $('.locationLink').attr('data-location', results[0].formatted_address);
+                
+                $('.locationLink').attr('data-location', '6 Kent Ct., Hilton Head Island, SC, 29926');
+                //$('.locationLink').attr('data-location', results[0].formatted_address);
+
+                $('.search-form__input').data('location', results[0].formatted_address);
             }
         }
     });

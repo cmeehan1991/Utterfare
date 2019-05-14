@@ -7,16 +7,16 @@ require 'recipe/common.php';
 set('application', 'Utterfare');
 
 // Project repository
-set('repository', 'https://github.com/cmeehan1991/Utterfare');
+set('repository', 'https://github.com/cmeehan1991/utterfare');
 
-set('use_relative_symlinks', false);
+set('use_relative_symlinks', true);
 
 set('ssh_multiplexing', true);
 
 // [Optional] Allocate tty for git clone. Default value is false.
-set('git_tty', true); 
+//set('git_tty', true); 
 
-set('git_recursive', true);
+set('git_recursive', false);
 
 set('branch', 'master');
 
