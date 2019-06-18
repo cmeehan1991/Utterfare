@@ -1,15 +1,23 @@
+var map;
+var userLocation;
+
 $(document).ready(function () {
-    $('.locationInput').hide();
-    $('.locationLink').html('Finding Location...');
-    $('.locationInput').on('keyup', function (e) {
-        validateInput($(this).val(), e);
-    });
-    
-
-    locationLink = $('.locationLink');
     geolocation();
-
 });
+
+function setManualSearchLocation(){
+	userLocation = $('input[name="location"]').val();
+	var distance = $('select[name="distance"]').val();
+	if(userLocation !== undefined && userLocation !== null){
+		$('.search-form__input').data('location', userLocation);
+		$('.search-form__input').data('distance', distance);
+		window.distance = distance;
+		window.getRecommendations(userLocation);
+	}
+	
+	$('#locationModal').modal('hide');
+	return false;
+}
 
 function validateInput(input, e) {
     var matchesNumber = input.match(/\d+/g);
@@ -41,7 +49,6 @@ function geolocation() {
 }
 
 function showPosition(position) {
-
     var lat = position.coords.latitude;
     var lng = position.coords.longitude;
 
@@ -58,14 +65,18 @@ function codeLatLng(lat, lng) {
                 $('.locationLink').html("<i class='fa fa-map-marker' aria-hidden='true'></i>" + results[0].formatted_address);       
                 //$('.locationLink').attr('data-location', results[0].formatted_address);
                 
-                //$('.search-form__input').data('location', results[0].formatted_address);
+               //$('.search-form__input').data('location', results[0].formatted_address);
                 $('.search-form__input').data('location', 'Hilton Head Island, SC 29926');
-                window.getRecommendations("Hilton Head Island, SC, 29926");
+                $('input[name="location"]').val('Hilton Head Island, SC 29926');
+                
+                if($('.results').is(":visible") === false){
+	                userLocation = "Hilton Head Island, SC, 29926";
+               		window.curateHomepageSections(userLocation);
+                }
             }
         }
     });
 }
-
 
 function changeLocation() {
     $('.locationInput').show();
