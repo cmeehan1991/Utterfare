@@ -31,10 +31,11 @@
 	list-style-type: none;
 	padding-left:0px !important;
 	position:absolute;
-	top:45px;
-	left:18px;
+	top:48px;
+	left:58px;
 	background-color:#ffffff;
 	z-index:100000;
+	
 }
 
 .recent-searches li{

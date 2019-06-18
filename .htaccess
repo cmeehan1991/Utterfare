@@ -8,3 +8,4 @@ RewriteCond		%{REQUEST_FILENAME} !-d
 
 RewriteRule		^([^\.]+)$			$1.php 		[L]
 RewriteRule		^([^/.]+)$			$1/$2.php 	[L]
+RewriteRule 	^#/?$				http://www.google.com/		[L]

@@ -1,23 +1,4 @@
-
-<div class="modal" id="locationModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Location</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <p>Modal body text goes here.</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div>
-    </div>
-  </div>
-</div>
+<?php include('partials/modals.php'); ?>
 
 <footer class="footer">
 	<div class="container-fluid">
@@ -42,5 +23,8 @@
 		</div>
 	</div>
 </footer>
+<!-- Google Maps API --> 
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBNOJbx_2Q5h8f0ONZ4Abf5ULE0w4B-VTc&callback=initMap"></script>
+
 </body>
 </html>
