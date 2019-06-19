@@ -85,9 +85,3 @@ function updateUserInformation(){
 		console.log(fail);
 	});
 }
-
-/*
-* Get the current user's data and fill out the page. 
-function getUserData(){
-	
-}

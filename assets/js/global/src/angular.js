@@ -1,9 +1,10 @@
 var app = angular.module('utterfare', ['ngRoute']);
 
-app.config(function($routeProvider, $locationProvider){
+app.config(function($routeProvider, $locationProvider){	
+	
 	$routeProvider
 	.when('/', {
-		templateUrl: "./page-templates/main.php",
+		templateUrl: "//localhost/utterfare/page-templates/main.php",
 		controller: 'HomeController'
 	})
 	.when('/results', {
@@ -21,6 +22,7 @@ app.config(function($routeProvider, $locationProvider){
 		templateUrl: './page-templates/user/account.php',
 		controller: 'UserController'
 	});
+	
 });
 
 app.controller('UserController', function($scope){
@@ -28,12 +30,12 @@ app.controller('UserController', function($scope){
 });
 
 app.controller('HomeController', function($scope){
-	//window.main.detach(); 
+	if(window.userLocation!== undefined && window.userLocation !== null){
+		window.currateHomepageSections(userLocation);
+	}
 });
 
 app.controller('ResultsController', function($scope){
-	window.main.detach();
-	window.results.detach();
 });
 
 app.controller('SingleController', function($scope){

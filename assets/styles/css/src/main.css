@@ -24,8 +24,8 @@
 }
 
 .recommendation img{
-	max-width:300px;
 	width:100%;
+	height:250px;
 }
 .loading-indicator--section .d-flex{
 	height:100vh;

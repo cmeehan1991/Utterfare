@@ -6,61 +6,7 @@
 	</div>
 	<div class="row">
 		<div class="col-md-10 mx-auto">
-			<div class="row">
-				<div class="col mx-auto">
-					<div class="card featured-item">
-						<img src="assets/img/shrimp-and-grits.jpg" class="card-img-top" alt="...">
-						<div class="card-body">
-							<div class="card-title">
-								<h3>Shrimp &amp; Grits</h3>
-							</div>
-							<div class="card-text">
-								<i class="featured-item__location">Hilton Head Island, SC</i><br/>
-								<strong class="featured-item__vendor">Some Restaurant</strong><br/>
-								<p class="featured-item__short-description">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent egestas, mi et tincidunt faucibus, massa massa bibendum sem, vel egestas sapien justo non turpis. Aliquam vestibulum lectus sem, et egestas nibh ultrices interdum. Quisque a.
-
-</p>
-								<button type="button" class="btn btn-light">More Info</button>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col mx-auto">
-					<div class="card featured-item">
-						<img src="assets/img/new-york-strip.jpg" class="card-img-top" alt="...">
-						<div class="card-body">
-							<div class="card-title">
-								<h3>New York Strip</h3>
-							</div>
-							<div class="card-text">
-								<i class="featured-item__location">Raleigh, NC</i> <br/>
-								<strong class="featured-item__vendor">Some Restaurant</strong><br/>
-								<p class="featured-item__short-description">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent egestas, mi et tincidunt faucibus, massa massa bibendum sem, vel egestas sapien justo non turpis. Aliquam vestibulum lectus sem, et egestas nibh ultrices interdum. Quisque a.
-
-</p>
-								<button type="button" class="btn btn-light">More Info</button>								
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col mx-auto">
-					<div class="card featured-item">
-						<img src="assets/img/mahi-mahi.jpg" class="card-img-top" alt="...">
-						<div class="card-body">
-							<div class="card-title">
-								<h3>Blackened Grilled Mahi Mahi</h3>
-							</div>
-							<div class="card-text">
-								<i class="featured-item__location">Clearwater, FL</i><br/>
-								<strong class="featured-item__vendor">Some Restaurant</strong><br/>
-								<p class="featured-item__short-description">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent egestas, mi et tincidunt faucibus, massa massa bibendum sem, vel egestas sapien justo non turpis. Aliquam vestibulum lectus sem, et egestas nibh ultrices interdum. Quisque a.
-
-</p>
-								<button type="button" class="btn btn-light">More Info</button>
-							</div>
-						</div>
-					</div>
-				</div> 
+			<div class="row featured-items-row--top-items">
 			</div><!-- Featured Items Row -->
 			
 			<!-- Recommendations -->

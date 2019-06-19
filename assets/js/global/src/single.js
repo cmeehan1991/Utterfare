@@ -1,6 +1,5 @@
-$(document).ready(function(){
-	console.log(window.user_id);
-});
+$(document).ready(function(){});
+
 function getSingleVendorItems(){
 	var items_section = $('.related-vendor-items');
 	items_section.detach();

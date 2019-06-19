@@ -147,7 +147,6 @@ function performSearch(terms, location, distance, page, limit, offset){
 	initMap(location);
 
 	// Run the search
-	console.log(data);
 	$.ajax({
 		url: window.search_url,
 		data: data,

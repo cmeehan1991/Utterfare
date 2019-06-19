@@ -19,10 +19,12 @@ class Item_Search{
 			case 'getSingleItem': 
 				$this->getSingleItem();
 				break;
+			case 'get_top_items': 
+				$this->getTopItems();
+				break;
 			default: break;
 		}
 	}	
-	
 	
 	private function getSingleItem(){
 		include 'DbConnection.php';
@@ -70,7 +72,42 @@ class Item_Search{
 	private function getTopItems(){
 		include 'DbConnection.php';
 		
-		$sql = "SELECT DISTINCT item_id, item_name, item_short_description, primary_image, SUM(item_reviews.rating) AS 'rating' FROM menu_items INNER JOIN item_reviews ON item_reviews.item_id = menu_items.item_id ORDER BY rand() LIMIT 3";
+		$sql = "SELECT DISTINCT menu_items.item_id, menu_items.vendor_id, vendors.vendor_name, item_name, item_short_description, primary_image, SUM(item_reviews.rating) AS 'rating' 
+				FROM menu_items 
+				INNER JOIN vendors ON vendors.vendor_id = menu_items.vendor_id
+				LEFT JOIN item_reviews ON item_reviews.item_id = menu_items.item_id 
+				GROUP BY menu_items.item_id, menu_items.vendor_id
+				ORDER BY rand()
+				LIMIT 3";
+				
+		$stmt = $conn->prepare($sql);
+		$stmt->execute();
+		$stmt->setFetchMode(PDO::FETCH_ASSOC);
+		
+		$results = $stmt->fetchall();
+		
+		
+		
+		
+		for($i = 0; $i < count($results); $i++){			
+			if(!file_exists($results[$i]['primary_image'])){
+				$results[$i]['primary_image'] = $this->get_vendor_meta($results[$i]['vendor_id'], '_profile_picture');
+				$profile_picture = json_decode($results[$i]['primary_image']);
+				
+				$profile_picture = $profile_picture->_profile_picture;
+				
+				if($profile_picture == "None"){
+					$profile_picture = "//localhost/utterfare/assets/img/UF Logo.png";
+				}
+				$results[$i]['primary_image'] = $profile_picture;
+				
+			}
+			$results[$i]['address'] =  $this->get_vendor_meta($results[$i]['vendor_id']);
+		}
+		
+		
+		echo json_encode($results);
+		
 	}
 	
 	/*
@@ -118,10 +155,22 @@ class Item_Search{
 		
 		$results = $stmt->fetchall();
 		
-		for($i = 0; $i < count($results); $i++){
-			$results[$i]['address'] =  $this->get_vendor_meta($results[$i]['vendor_id'], '_address');
-			$results[$i]['profile_picture'] = $this->get_vendor_meta($results[$i]['vendor_id'], '_profile_picture');
+		for($i = 0; $i < count($results); $i++){			
+			if(!file_exists($results[$i]['primary_image'])){
+				$results[$i]['primary_image'] = $this->get_vendor_meta($results[$i]['vendor_id'], '_profile_picture');
+				$profile_picture = json_decode($results[$i]['primary_image']);
+				
+				$profile_picture = $profile_picture->_profile_picture;
+				
+				if($profile_picture == "None"){
+					$profile_picture = "//localhost/utterfare/assets/img/UF Logo.png";
+				}
+				$results[$i]['primary_image'] = $profile_picture;
+				
+			}
+			$results[$i]['address'] =  $this->get_vendor_meta($results[$i]['vendor_id']);
 		}
+
 				
 		return json_encode($results);
 	}
@@ -130,7 +179,7 @@ class Item_Search{
 		include 'DbConnection.php';
 		
 		
-		$sql = "SELECT meta_value FROM vendor_meta WHERE vendor_id = ?";
+		$sql = "SELECT meta_keyword, meta_value FROM vendor_meta WHERE vendor_id = ?";
 		
 		if($keyword){
 			$sql .= " AND meta_keyword = ?";
@@ -140,21 +189,24 @@ class Item_Search{
 		
 		$stmt->bindParam(1, $vendor_id);
 		
-		if($keyword){
+		if($keyword != null){
 			$stmt->bindParam(2, $keyword);
 		}
 		
 		$stmt->execute();
 		
 		$stmt->setFetchMode(PDO::FETCH_ASSOC);	
-		$results = $stmt->fetch();
+		$results = $stmt->fetchall();
 		
 		
-		if($keyword){
-			$results = array($keyword => $results['meta_value']);
-		};
-		
-		return json_encode($results);
+		$response = array();
+		if($results){
+			foreach($results as $result){
+				$response[$result['meta_keyword']] = $result['meta_value'];
+			}
+		}
+			
+		return json_encode($response);
 		
 		
 	}
