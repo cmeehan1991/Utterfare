@@ -29,9 +29,7 @@ function getTopItems(){
 	
 	$.post(window.search_url, data, function(response){
 		$.each(response, function(k, v){
-			
-			console.log(v);
-			
+						
 			var address_parts = $.parseJSON(v.address);
 			
 			var address = address_parts._city + ", " + address_parts._state.toUpperCase();

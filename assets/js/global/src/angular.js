@@ -4,24 +4,26 @@ app.config(function($routeProvider, $locationProvider){
 	
 	$routeProvider
 	.when('/', {
-		templateUrl: "//localhost/utterfare/page-templates/main.php",
+		templateUrl: "page-templates/main.php",
 		controller: 'HomeController'
 	})
 	.when('/results', {
-		templateUrl: "./page-templates/results.php",
+		templateUrl: "page-templates/results.php",
 		controller: 'ResultsController'
 	})
 	.when('/single', {
-		templateUrl: "./page-templates/single.php",
+		templateUrl: "page-templates/single.php",
 		controller: 'SingleController'
 	})
 	.when('/sign-up', {
-		templateUrl: './page-templates/newUser.php'
+		templateUrl: 'page-templates/newUser.php'
 	})
 	.when('/user/account', {
-		templateUrl: './page-templates/user/account.php',
+		templateUrl: 'page-templates/user/account.php',
 		controller: 'UserController'
-	});
+	})
+	.otherwise('/');
+
 	
 });
 
@@ -30,12 +32,27 @@ app.controller('UserController', function($scope){
 });
 
 app.controller('HomeController', function($scope){
+	console.log('Home controller');
 	if(window.userLocation!== undefined && window.userLocation !== null){
 		window.currateHomepageSections(userLocation);
 	}
 });
 
 app.controller('ResultsController', function($scope){
+	
+	// Get the search parameters from the URL
+	let params = window.getSearchParameters(window.location.href);
+	
+	// Initialize the map
+	window.initMap(window.userLocation);
+	
+	console.log($scope.location);
+	
+	// Perform the search
+	//terms, searchLocation, distance, page, limit, offset
+	var offset = (params.page - 1) * 25;
+	window.performSearch(params.terms, params.location, params.distance, params.page, 25, 0);
+	
 });
 
 app.controller('SingleController', function($scope){
@@ -52,12 +69,13 @@ app.controller('SignInController', function($scope){
 
 app.controller('SearchController',  function($scope, $http, $location){
 		
+	$scope.location = window.userLocation;
+		
 	$scope.search = function(data){
-		window.performSearch(data.terms, 'Hilton Head Island, SC 29926', 10, 1, 25, 0);
+		window.goToSearchPage(data.terms, $scope.location, 10, 1, 25, 0);
 	};
 	
 	$scope.setManualSearchLocation = function(data){
-		console.log(data);
 		$('.search-form__input').data('location', data.location);
 		$('.search-form__input').data('distance', data.distance);
 		$('.recent-searches--search-location').text(data.location);

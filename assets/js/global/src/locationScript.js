@@ -61,16 +61,21 @@ function codeLatLng(lat, lng) {
     geocoder.geocode({'latLng': latLng}, function (results, status) {
         if (status === google.maps.GeocoderStatus.OK) {
 	        if (results[0]) {
+				userLocation = results[0].formatted_address;
+				
+				var appElement = document.querySelector("[ng-app=utterfare]");
+				var $scope = angular.element(appElement).scope();
+				
+				$scope = $scope.$$childHead;
+				
+				$scope.$apply(function(){
+					console.log(userLocation);
+					$scope.location = userLocation;
+				});
 
-                $('.locationLink').html("<i class='fa fa-map-marker' aria-hidden='true'></i>" + results[0].formatted_address);       
-                //$('.locationLink').attr('data-location', results[0].formatted_address);
-                
-               //$('.search-form__input').data('location', results[0].formatted_address);
-                $('.search-form__input').data('location', 'Hilton Head Island, SC 29926');
-                $('input[name="location"]').val('Hilton Head Island, SC 29926');
-                
                 if($('.results').is(":visible") === false){
-	                userLocation = "Hilton Head Island, SC, 29926";
+	            	    
+	                //userLocation = "Hilton Head Island, SC, 29926";
                		window.curateHomepageSections(userLocation);
                 }
             }

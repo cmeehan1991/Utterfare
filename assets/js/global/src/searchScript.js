@@ -9,7 +9,7 @@ var markers = [];
 
 $(document).ready(function () {
     $('.search-form__input').focusin(function(){
-		showSuggestions();
+		//showSuggestions();
 		$('.search-form__input').attr('placeholder', 'Try Searching: Impossible Burger');
     });       
 });
@@ -23,7 +23,7 @@ $(window).on('load', function(){
 		parameters = getSearchParameters(url);
 
 		var offset = 25 * (parameters.page - 1);
-		performSearch(parameters.terms, decodeURIComponent(parameters.location), parameters.distance, parseInt(parameters.page), 25, parseInt(offset));
+		//performSearch(parameters.terms, decodeURIComponent(parameters.location), parameters.distance, parseInt(parameters.page), 25, parseInt(offset));
 		
 		if($('.search-form__input').val() === undefined || $('.search-form__input').val() === null || $('.search-form__input').val() === ""){
 			$('.search-form__input').val(decodeURIComponent(parameters.terms));
@@ -48,6 +48,26 @@ $(document).mouseup(function(e){
 		removeSuggestions();
 	}
 });
+
+function showLocationPopover(){
+	var locationInputContent = "Location:<input name='userSearchLocation' value='{{userLocation}}'>";
+	locationInputContent += "<select name='userSearchDistance'>";
+	locationInputContent += "<option value='1'>1 Mile</option>";
+	locationInputContent += "<option value='2'>2 Mile</option>";
+	locationInputContent += "<option value='5'>5 Miles</option>";
+	locationInputContent += "<option value='10'>10 Miles</option>";
+	locationInputContent += "<option value='15'>15 Miles</option>";
+	locationInputContent += "<option value='20'>20 Miles</option>";
+	locationInputContent += "</select>";
+	
+	$('.location-link').popover({
+		container: 'body', 
+		content: locationInputContent,
+		title: "Change Location",
+		html: true,
+		placement: 'bottom',
+	},'toggle');
+}
 
 function getSearchParameters(url){
 	var allParameters = url.split("?")[1].split("&");
@@ -93,7 +113,8 @@ function showSuggestions(){
 		$('.recent-searches--item').on('click', function(){
 			removeSuggestions();
 			$('.search-form__input').val($(this).text());
-			performSearch($(this).text(), $('.search-form__input').data('location'), 10, 1, 25, 0);
+			
+			goToSearchPage($(this).text(), $('.location-link').text(), 10, 1, 25, 0);
 		});
 		
 	}
@@ -107,31 +128,29 @@ function changeLocation(){
 	$('input[name="location"]').val(searchLocation);
 	
 	$('#locationModal').modal('show');
+	window.userLocation = searchLocation;
 }
 
 /**
 * Populate the top picks section
 */
-function getTopPicks(){
+
+
+function goToSearchPage(terms, searchLocation, distance, page, limit, offset){	
+	var url = window.location.protocol + "//" + window.location.host + window.location.pathname + "#!/results";
+	var searchParameters = "?action=search&terms=" + encodeURI(terms) + "&page=" + page + "&location=" + encodeURI(searchLocation.replace(/[(,)+]/g, '')) + "&distance=" + distance;
 	
+	window.location.href = url + searchParameters;
 }
 
 /*
 * Perform the search based on the passed values
 */
-function performSearch(terms, location, distance, page, limit, offset){
-				
-	main.detach();
-	$('.content').append(loadingIndicator);
-			
-	var url = window.location.protocol + "//" + window.location.host + window.location.pathname + "#!/results";
-	var searchParameters = "?action=search&terms=" + encodeURI(terms) + "&page=" + page + "&location=" + encodeURI(location) + "&distance=" + distance;
-	
-	window.location.href = url + searchParameters;
+function performSearch(terms, searchLocation, distance, page, limit, offset){			
 		
 	var data = {
 		'action' : 'search',
-		'location': location,
+		'location': searchLocation,
 		'terms': terms,
 		'limit': limit,
 		'page': page,
@@ -140,11 +159,12 @@ function performSearch(terms, location, distance, page, limit, offset){
 	};
 	
 	
+	
 	var display = '';
 	var map;
 
 	// Initialize the map		
-	initMap(location);
+	initMap(searchLocation);
 
 	// Run the search
 	$.ajax({
@@ -152,6 +172,7 @@ function performSearch(terms, location, distance, page, limit, offset){
 		data: data,
 		method: 'post',
 		success: function (response) {
+			console.log(response);
 			$.each(JSON.parse(response), function(index, result){
 
 				display += '<li class="results-list--item" data-item-id="' + result.item_id + '">';
@@ -228,11 +249,8 @@ function performSearch(terms, location, distance, page, limit, offset){
 				markers.forEach(function(marker){
 					marker.setAnimation(null);
 				});
-			});
-			
-			
-			loadingIndicator.detach();
-						
+			});						
+			window.loadingIndicator.detach();
 		}
 	});
 }
@@ -374,7 +392,7 @@ function loadMore() {
     
 
     var distance = $('.distance').val();
-		performSearch(terms, location, distance, page, limit, offset);
+	performSearch(terms, location, distance, page, limit, offset);
 }
 
 function getLatLng(location){

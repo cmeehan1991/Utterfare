@@ -56,15 +56,12 @@ class Item_Search{
 		$offset = filter_input(INPUT_POST, 'offset');
 				
 		// Form the search location
-		$search_location = urlencode($location);
-		$json = file_get_contents("https://maps.googleapis.com/maps/api/geocode/json?address=$search_location&key=AIzaSyBNOJbx_2Q5h8f0ONZ4Abf5ULE0w4B-VTc");
+		$json = file_get_contents("https://maps.googleapis.com/maps/api/geocode/json?address=$location&key=AIzaSyBNOJbx_2Q5h8f0ONZ4Abf5ULE0w4B-VTc");
 		$obj = json_decode($json, true);
 		
 		// Get the latitude and longitude
         $lat = $obj['results'][0]['geometry']['location']['lat'];
         $lng = $obj['results'][0]['geometry']['location']['lng'];
-        
-        //$this->addRecentSearch($terms);
         
         echo $this->search($distance, $lat, $lng, $limit, $page, $offset, $terms);
 	}
@@ -126,12 +123,14 @@ class Item_Search{
         $lat = $obj['results'][0]['geometry']['location']['lat'];
         $lng = $obj['results'][0]['geometry']['location']['lng'];
         
-       
+		
 		echo $this->search(10, $lat, $lng, 8);
 	}
 	
 	
-	
+	/*
+	* This is the primary search logic 
+	*/
 	private function search($distance = 10, $latitude = null, $longitude = null, $ppp = null, $page = 1, $offset = 0, $terms = null){
 		include 'DbConnection.php';
 				
@@ -145,9 +144,7 @@ class Item_Search{
 			$sql .= " AND (item_name = '$terms' OR item_name like '%$terms%' OR item_short_description = '$terms' OR item_short_description LIKE '%$terms%' OR item_description = '$terms' OR item_description LIKE '%$terms%' OR vendor_name = '$terms' OR vendor_name LIKE '%$terms%')";
 		}
 	
-		
-		$sql .= " LIMIT $ppp OFFSET $offset";	
-		
+		$sql .= " LIMIT $ppp OFFSET $offset";			
 		
 		$stmt = $conn->prepare($sql);
 		$stmt->execute();
