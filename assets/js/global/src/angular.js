@@ -31,7 +31,6 @@ app.controller('UserController', function($scope){
 });
 
 app.controller('HomeController', function($scope){
-	console.log('Home controller');
 	if(window.userLocation!== undefined && window.userLocation !== null){
 		window.curateHomepageSections(userLocation);
 	}
@@ -66,7 +65,6 @@ app.controller('SignInController', function($scope){
 
 app.controller('SearchController',  function($scope, $http, $location){
 		
-	console.log("Search");
 	$scope.location = window.userLocation;
 	
 	if($('.search-form__input').is(":focus")){

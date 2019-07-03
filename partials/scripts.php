@@ -19,11 +19,13 @@
 
 
 <!-- Custom Site Scripts -->
-<!--<script src="http://localhost/utterfare/assets/js/global/dist/min/allscripts.min.js" type="text/javascript"></script>-->
-<script src="http://localhost/utterfare/assets/js/global/src/angular.js" type="text/javascript"></script>
-<script src="http://localhost/utterfare/assets/js/global/src/locationScript.js" type="text/javascript"></script>
-<script src="http://localhost/utterfare/assets/js/global/src/home.js" type="text/javascript"></script>
-<script src="http://localhost/utterfare/assets/js/global/src/searchScript.js" type="text/javascript"></script>
-<script src="http://localhost/utterfare/assets/js/global/src/site-navigation.js" type="text/javascript"></script>
-<script src="http://localhost/utterfare/assets/js/global/src/user.js" type="text/javascript"></script>
-<script src="http://localhost/utterfare/assets/js/global/src/single.js" type="text/javascript"></script>
+
+<!--<script src="assets/js/global/dist/allscripts.min.js" type="text/javascript"></script>-->
+
+<script src="assets/js/global/src/angular.js" type="text/javascript"></script>
+<script src="assets/js/global/src/locationScript.js" type="text/javascript"></script>
+<script src="assets/js/global/src/home.js" type="text/javascript"></script>
+<script src="assets/js/global/src/searchScript.js" type="text/javascript"></script>
+<script src="assets/js/global/src/site-navigation.js" type="text/javascript"></script>
+<script src="assets/js/global/src/user.js" type="text/javascript"></script>
+<script src="assets/js/global/src/single.js" type="text/javascript"></script>

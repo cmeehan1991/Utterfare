@@ -7,7 +7,7 @@
 				<ul class="footer-content__links">
 					<li><a href="about">About</a></li>
 					<li><a href="terms">Terms &amp; Conditions</a></li>
-					<li><a href="contact">Contact Us</a></li>
+					<li><a href="mailto:customer">Contact Us</a></li>
 				</ul>
 			</div>
 			<div class="col-md-2 my-auto">
