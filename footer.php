@@ -16,8 +16,6 @@
 			</div>
 			<div class="col-md-2 mr-auto my-auto">
 				<ul class="footer-content__links">
-					<li><a href="about">Vendor Dashboard</a></li>
-					<li><a href="terms">Vendor Services</a></li>
 				</ul>
 			</div>
 		</div>

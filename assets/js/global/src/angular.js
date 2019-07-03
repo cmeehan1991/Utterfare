@@ -21,8 +21,7 @@ app.config(function($routeProvider, $locationProvider){
 	.when('/user/account', {
 		templateUrl: 'page-templates/user/account.php',
 		controller: 'UserController'
-	})
-	.otherwise('/');
+	});
 
 	
 });
@@ -34,28 +33,26 @@ app.controller('UserController', function($scope){
 app.controller('HomeController', function($scope){
 	console.log('Home controller');
 	if(window.userLocation!== undefined && window.userLocation !== null){
-		window.currateHomepageSections(userLocation);
+		window.curateHomepageSections(userLocation);
 	}
 });
 
-app.controller('ResultsController', function($scope){
+app.controller('ResultsController', function($scope, $routeParams){
 	
-	// Get the search parameters from the URL
-	let params = window.getSearchParameters(window.location.href);
-	
+	var params = $routeParams;
+		
 	// Initialize the map
 	window.initMap(window.userLocation);
-	
-	console.log($scope.location);
-	
+		
 	// Perform the search
 	//terms, searchLocation, distance, page, limit, offset
 	var offset = (params.page - 1) * 25;
-	window.performSearch(params.terms, params.location, params.distance, params.page, 25, 0);
+	window.performSearch(params.terms, window.userSearchLocation, window.searchDistance, params.page, 25, 0);
 	
 });
 
-app.controller('SingleController', function($scope){
+app.controller('SingleController', function($scope, $routeParams){
+	window.showSingleItem($routeParams.id);
 	window.getSingleVendorItems();
 	window.getItemReviews();
 	window.getItemRating();
@@ -69,7 +66,12 @@ app.controller('SignInController', function($scope){
 
 app.controller('SearchController',  function($scope, $http, $location){
 		
+	console.log("Search");
 	$scope.location = window.userLocation;
+	
+	if($('.search-form__input').is(":focus")){
+		$('.search-form__input').focusout();
+	}
 		
 	$scope.search = function(data){
 		window.goToSearchPage(data.terms, $scope.location, 10, 1, 25, 0);

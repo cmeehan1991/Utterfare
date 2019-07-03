@@ -4,20 +4,24 @@ var loadingIndicator;
 var recommendationsCarousel;
 
 $(document).ready(function(){
-	main = $('.content');
+	main = $('.main');
 	results = $('.results');
 	loadingIndicator = $('.loading-indicator--section');
 	
 	main.detach();
 	
 	recommendationsCarousel = $('.recommendations-carousel__inner');
-	getTopItems();
 	
 });
 
 function curateHomepageSections(user_location){		
-	getRecommendations(user_location);	
-	$('.content').append(window.main);
+	main.detach();
+	$('.content').append(loadingIndicator);
+	
+	getTopItems();
+	getRecommendations(user_location);
+		
+	$('.content').append(main);
 }
 
 function getTopItems(){
@@ -33,7 +37,6 @@ function getTopItems(){
 			var address_parts = $.parseJSON(v.address);
 			
 			var address = address_parts._city + ", " + address_parts._state.toUpperCase();
-			
 			top_items += '<div class="col mx-auto d-flex">';
 			top_items += '<div class="card featured-item">';
 			top_items += '<img src="' + v.primary_image + '" class="card-img-top" alt="' + v.item_name + '">';
@@ -45,7 +48,7 @@ function getTopItems(){
 			top_items += '<i class="featured-item__location">' + address + '</i><br/>';
 			top_items += '<strong class="featured-item__vendor">' + v.vendor_name + '</strong><br/>';
 			top_items += '<p class="featured-item__short-description">' + v.item_short_description + '</p>';
-			top_items += '<a type="button" class="btn btn-light" href="#!/single/?id=' + v.item_id + '">More Info</a>';
+			top_items += '<a href="#!/single?id=' + v.item_id + '" type="button" class="btn btn-light">More Info</a>'; 
 			top_items += '</div></div></div></div>';
 
 		});
@@ -87,7 +90,7 @@ function getRecommendations(user_location){
 			recommendations += '<i class="recommendation__location">' + address + "</i>";
 			recommendations += '<h4 class="recommendation__vendor">' + value.vendor_name + "</h4>";
 			recommendations += '<p>' + value.item_short_description + '</p>';
-			recommendations += '<a href="#!/single/?id=' + value.item_id + '" class="btn btn-light">More Info</a>'; 
+			recommendations += '<a href="#!/single?id=' + value.item_id + '" type="button" class="btn btn-light">More Info</a>'; 
 			recommendations += '</div>'; // .card-text
 			recommendations += '</div>'; // .card-body
 			recommendations += '</div>'; // .recommendation

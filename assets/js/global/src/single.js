@@ -41,6 +41,55 @@ function getSingleVendorItems(){
 	});
 }
 
+
+/*
+* Get the item information to be shown on the single item page
+*/
+function showSingleItem(itemId){
+	
+	var singleUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + "#!/single";
+	window.location.href = singleUrl + "?id=" + itemId;
+	
+	var queryUrl = "includes/php/search.php";
+	var data = {
+		'action': 'getSingleItem', 
+		'item_id': itemId,
+	};
+	$.post(queryUrl, data, 'json')
+	.done(function(response){
+		populateSingleItemInformation(response);
+	});
+}
+
+/*
+* Handle the single item data 
+*/
+function populateSingleItemInformation(data){
+	var data = JSON.parse(data);
+	
+	console.log(data);
+	
+	$('.item-name').text(data.item_name);
+	$('.item-image').attr('src', data.primary_image).attr('alt', data.item_name);
+	//$('.item-image').attr('src', 'http://localhost/utterfare/assets/img/new-york-strip.jpg').attr('alt', data.item_name);
+	$('.vendor-address').attr('href', "http://maps.google.com/maps?q=" + JSON.parse(data.address)._address).text(JSON.parse(data.address)._address);
+	latlng = {
+		lat: parseFloat(data.latitude),
+		lng: parseFloat(data.longitude),
+	};
+	
+	map = new google.maps.Map(document.getElementById('single-item--map'), {
+		center: {lat: latlng.lat, lng: latlng.lng},
+		zoom:14
+	});
+	
+	
+	addMarkers({lat: data.latitude, lng: data.longitude, title: data.vendor_name});
+	$('.item-description').text(data.item_description);
+}
+
+
+
 function getItemReviews(){
 	var url = window.location.href;
 	var params = window.getSearchParameters(url);

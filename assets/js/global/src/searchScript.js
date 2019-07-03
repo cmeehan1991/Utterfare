@@ -10,7 +10,7 @@ var markers = [];
 $(document).ready(function () {
     $('.search-form__input').focusin(function(){
 		//showSuggestions();
-		$('.search-form__input').attr('placeholder', 'Try Searching: Impossible Burger');
+		$('.search-form__input').attr('placeholder', 'Try "Impossible Burger"');
     });       
 });
 
@@ -30,12 +30,6 @@ $(window).on('load', function(){
 			$('.search-form__input').text(decodeURIComponent(parameters.terms));
 		}
 	}
-	
-	if(url.indexOf('single') > -1){
-		parameters = getSearchParameters(url);
-		
-		showItem(parameters.id);		
-	}
 });
 
 
@@ -48,26 +42,6 @@ $(document).mouseup(function(e){
 		removeSuggestions();
 	}
 });
-
-function showLocationPopover(){
-	var locationInputContent = "Location:<input name='userSearchLocation' value='{{userLocation}}'>";
-	locationInputContent += "<select name='userSearchDistance'>";
-	locationInputContent += "<option value='1'>1 Mile</option>";
-	locationInputContent += "<option value='2'>2 Mile</option>";
-	locationInputContent += "<option value='5'>5 Miles</option>";
-	locationInputContent += "<option value='10'>10 Miles</option>";
-	locationInputContent += "<option value='15'>15 Miles</option>";
-	locationInputContent += "<option value='20'>20 Miles</option>";
-	locationInputContent += "</select>";
-	
-	$('.location-link').popover({
-		container: 'body', 
-		content: locationInputContent,
-		title: "Change Location",
-		html: true,
-		placement: 'bottom',
-	},'toggle');
-}
 
 function getSearchParameters(url){
 	var allParameters = url.split("?")[1].split("&");
@@ -141,6 +115,7 @@ function goToSearchPage(terms, searchLocation, distance, page, limit, offset){
 	var searchParameters = "?action=search&terms=" + encodeURI(terms) + "&page=" + page + "&location=" + encodeURI(searchLocation.replace(/[(,)+]/g, '')) + "&distance=" + distance;
 	
 	window.location.href = url + searchParameters;
+	
 }
 
 /*
@@ -159,7 +134,6 @@ function performSearch(terms, searchLocation, distance, page, limit, offset){
 	};
 	
 	
-	
 	var display = '';
 	var map;
 
@@ -171,49 +145,55 @@ function performSearch(terms, searchLocation, distance, page, limit, offset){
 		url: window.search_url,
 		data: data,
 		method: 'post',
+		dataType: 'json',
 		success: function (response) {
-			console.log(response);
-			$.each(JSON.parse(response), function(index, result){
-
-				display += '<li class="results-list--item" data-item-id="' + result.item_id + '">';
+			console.log(response.length)
+			if(response.length > 0 ){
+				$.each(response, function(index, result){
+	
+					display += '<li class="results-list--item" data-item-id="' + result.item_id + '">';
+					
+					display += '<div class="card mb-3"></div><div class="row no-gutters">';
+					
+					display += '<div class="col-md-4">';
+	
+					display += '<img src="' + result.primary_image + '" class="card-img" alt="' + result.item_name + '">';
+					
+					display += "</div>";
+					
+					display += '<div class="col-md-8">';
+					
+					display += '<div class="card-body">';
+					
+					display += '<h3 class="card-title">' + result.item_name + '</h3>';
+	
+					display += '<h4 class="card-title card-title--vendor-name">' + result.vendor_name + '</h4>';
+										
+					display += '<p class="card-text"><small class="text-muted"></small></p>';
+					
+					display += '<p class="card-text">' + result.item_short_description + '</p>';					
+					
+					display += "</div></div>";
+					
+					display += '</div></div></li>';
+					
 				
-				display += '<div class="card mb-3"></div><div class="row no-gutters">';
-				
-				display += '<div class="col-md-4">';
-
-				display += '<img src="..." class="card-img" alt="...">';
-				
-				display += "</div>";
-				
-				display += '<div class="col-md-8">';
-				
-				display += '<div class="card-body">';
-				
-				display += '<h3 class="card-title">' + result.item_name + '</h3>';
-
-				display += '<h4 class="card-title card-title--vendor-name">' + result.vendor_name + '</h4>';
-									
-				display += '<p class="card-text"><small class="text-muted"></small></p>';
-				
-				display += '<p class="card-text">' + result.item_short_description + '</p>';					
-				
-				display += "</div></div>";
-				
-				display += '</div></div></li>';
-				
-			
-				addMarkers({
-					'lat': result.latitude,
-					'lng': result.longitude, 
-					'title': result.vendor_name, 
+					addMarkers({
+						'lat': result.latitude,
+						'lng': result.longitude, 
+						'title': result.vendor_name, 
+					});
 				});
-			});
+			}else{
+				display += "<h3>It looks like there is nothing there.</h3><p>Try expanding your search location or searching for something else.</p>";
+			}
 			
 		}, 
 		error: function (jqXHR, error, errorThrown) {
 			console.log("error");
 			console.log(jqXHR);
 			console.log(error);
+			console.log(errorThrown);
 			
 		}, 
 		complete: function(){
@@ -241,8 +221,10 @@ function performSearch(terms, searchLocation, distance, page, limit, offset){
 			
 			
 			$('.results-list--item').on('click', function(){
-				var itemId = $(this).data('item-id');
-				showItem(itemId);
+				var itemId = $(this).attr('data-item-id');
+				console.log($(this));
+				console.log(itemId);
+				window.location.href="#!/single?id=" + itemId;
 			});
 			
 			$('.results-list--item').on('mouseleave', function(){
@@ -251,53 +233,10 @@ function performSearch(terms, searchLocation, distance, page, limit, offset){
 				});
 			});						
 			window.loadingIndicator.detach();
+			
 		}
 	});
 }
-
-/*
-* Get the item information to be shown on the single item page
-*/
-function showItem(itemId){
-	
-	var singleUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + "#!/single";
-	window.location.href = singleUrl + "?id=" + itemId;
-	
-	var queryUrl = "includes/php/search.php";
-	var data = {
-		'action': 'getSingleItem', 
-		'item_id': itemId,
-	};
-	$.post(queryUrl, data, 'json')
-	.done(function(response){
-		populateItemInformation(response);
-	});
-}
-
-/*
-* Handle the single item data 
-*/
-function populateItemInformation(data){
-	var data = JSON.parse(data);
-	$('.item-name').text(data.item_name);
-	//$('.item-image').attr('src', data.primary_image).attr('alt', data.item_name);
-	$('.item-image').attr('src', 'http://localhost/utterfare/assets/img/new-york-strip.jpg').attr('alt', data.item_name);
-	$('.vendor-address').attr('href', "http://maps.google.com/maps?q=" + JSON.parse(data.address)._address).text(JSON.parse(data.address)._address);
-	latlng = {
-		lat: parseFloat(data.latitude),
-		lng: parseFloat(data.longitude),
-	};
-	
-	map = new google.maps.Map(document.getElementById('single-item--map'), {
-		center: {lat: latlng.lat, lng: latlng.lng},
-		zoom:14
-	});
-	
-	
-	addMarkers({lat: data.latitude, lng: data.longitude, title: data.vendor_name});
-	$('.item-description').text(data.item_description);
-}
-
 /*
 * Initialize the results map*/
 function initMap(searchLocation){

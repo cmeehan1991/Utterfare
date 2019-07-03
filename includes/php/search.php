@@ -40,6 +40,24 @@ class Item_Search{
 		
 		$result = $stmt->fetch();
 		
+		$image_exists = strpos(@get_headers($result['primary_image'])[0], '200') > -1;
+	
+		
+		if(!$image_exists){
+			
+			$result['exists'] = file_exists($result['primary_image']);
+			$result['primary_image'] = $this->get_vendor_meta($result['vendor_id'], '_profile_picture');
+			$profile_picture = json_decode($result['primary_image']);
+			
+			$profile_picture = $profile_picture->_profile_picture;
+			
+			if($profile_picture == "None"){
+				$profile_picture = "//localhost/utterfare/assets/img/UF Logo.png";
+			}
+			$result['primary_image'] = $profile_picture;
+
+		}
+		
 		$result['address'] =  $this->get_vendor_meta($result['vendor_id'], '_address');
 		$result['telephone'] =  $this->get_vendor_meta($result['vendor_id'], '_telephone');
 		
@@ -54,8 +72,11 @@ class Item_Search{
 		$limit = filter_input(INPUT_POST, 'limit');
 		$page = filter_input(INPUT_POST, 'page');
 		$offset = filter_input(INPUT_POST, 'offset');
+
 				
 		// Form the search location
+		$location = urlencode($location);
+		
 		$json = file_get_contents("https://maps.googleapis.com/maps/api/geocode/json?address=$location&key=AIzaSyBNOJbx_2Q5h8f0ONZ4Abf5ULE0w4B-VTc");
 		$obj = json_decode($json, true);
 		
@@ -80,14 +101,16 @@ class Item_Search{
 		$stmt = $conn->prepare($sql);
 		$stmt->execute();
 		$stmt->setFetchMode(PDO::FETCH_ASSOC);
-		
+				
 		$results = $stmt->fetchall();
 		
 		
 		
 		
-		for($i = 0; $i < count($results); $i++){			
-			if(!file_exists($results[$i]['primary_image'])){
+		for($i = 0; $i < count($results); $i++){	
+			
+			$image_exists = strpos(@get_headers($results[$i]['primary_image'])[0], '200') > -1;		
+			if(!$image_exists){
 				$results[$i]['primary_image'] = $this->get_vendor_meta($results[$i]['vendor_id'], '_profile_picture');
 				$profile_picture = json_decode($results[$i]['primary_image']);
 				
@@ -152,8 +175,9 @@ class Item_Search{
 		
 		$results = $stmt->fetchall();
 		
-		for($i = 0; $i < count($results); $i++){			
-			if(!file_exists($results[$i]['primary_image'])){
+		for($i = 0; $i < count($results); $i++){		
+			$image_exists = strpos(@get_headers($results[$i]['primary_image'])[0], '200') > -1;	
+			if(!$image_exists){
 				$results[$i]['primary_image'] = $this->get_vendor_meta($results[$i]['vendor_id'], '_profile_picture');
 				$profile_picture = json_decode($results[$i]['primary_image']);
 				
