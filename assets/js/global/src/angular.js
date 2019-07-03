@@ -45,8 +45,8 @@ app.controller('ResultsController', function($scope, $routeParams){
 		
 	// Perform the search
 	//terms, searchLocation, distance, page, limit, offset
-	var offset = (params.page - 1) * 25;
-	window.performSearch(params.terms, window.userSearchLocation, window.searchDistance, params.page, 25, 0);
+	var offset = (params.page - 1) * 1000;
+	window.performSearch(params.terms, window.userSearchLocation, window.searchDistance, params.page, 1000, 0);
 	
 });
 

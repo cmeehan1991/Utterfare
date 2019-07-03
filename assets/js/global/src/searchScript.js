@@ -147,7 +147,7 @@ function performSearch(terms, searchLocation, distance, page, limit, offset){
 		method: 'post',
 		dataType: 'json',
 		success: function (response) {
-			console.log(response.length)
+			console.log(response);
 			if(response.length > 0 ){
 				$.each(response, function(index, result){
 	

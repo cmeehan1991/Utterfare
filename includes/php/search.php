@@ -164,11 +164,17 @@ class Item_Search{
 		WHERE DEGREES((ACOS(SIN(RADIANS($latitude))*SIN(RADIANS(vendors.latitude))+ COS(RADIANS($latitude))*COS(RADIANS(vendors.latitude))*COS(RADIANS((vendors.longitude)-($longitude)))))) * 60 * 1.1515 <= $distance";
 
 		if($terms){
-			$sql .= " AND (item_name = '$terms' OR item_name like '%$terms%' OR item_short_description = '$terms' OR item_short_description LIKE '%$terms%' OR item_description = '$terms' OR item_description LIKE '%$terms%' OR vendor_name = '$terms' OR vendor_name LIKE '%$terms%')";
+			$split_terms = explode(' ', $terms);
+			
+			$sql .= " AND (item_name = '$terms' OR item_name like '%$terms%' OR item_short_description = '$terms' OR item_short_description LIKE '%$terms%' OR item_description = '$terms' OR item_description LIKE '%$terms%' OR vendor_name = '$terms' OR vendor_name LIKE '%$terms%'";
+			foreach($split_terms as $term){
+				$sql .= " OR (item_name = '$term' OR item_name like '%$term%' OR item_short_description = '$term' OR item_short_description LIKE '%$term%' OR item_description = '$term' OR item_description LIKE '%$term%' OR vendor_name = '$term' OR vendor_name LIKE '%$term%')";
+			}
+			$sql .= ")";
 		}
 	
 		$sql .= " LIMIT $ppp OFFSET $offset";			
-		
+				
 		$stmt = $conn->prepare($sql);
 		$stmt->execute();
 		$stmt->setFetchMode(PDO::FETCH_ASSOC);
@@ -190,11 +196,73 @@ class Item_Search{
 				
 			}
 			$results[$i]['address'] =  $this->get_vendor_meta($results[$i]['vendor_id']);
+			
+			if($terms){
+				// Rank the terms
+				$results[$i]['rank'] = $this->rank_item($results[$i], $terms);
+			}
 		}
 
+		if($terms){
+			
+			// If this is an actual search we are going to sort the array by rank
+			usort($results, function($a, $b){
+				return $a['rank'] - $b['rank'];
+			});
+			
+			// We nee dto reverse the array because usort orders from lowest to highest. 
+			$results = array_reverse($results);
+		}
 				
 		return json_encode($results);
 	}
+	
+	private function rank_item($item, $terms){
+		$rank = 0;	
+				
+		if($item['item_name'] == $terms){
+			$rank += 20; 
+		}
+		
+		
+		if(strpos($item['item_name'], $terms) > -1){
+			$rank += 10; 
+		}
+		
+		
+		if(strpos($item['item_description'], $terms) > -1){
+			$rank += 10;	
+		}
+		
+		if(strpos($item['vendor_name'], $terms) > -1){
+			$rank += 10;
+		}
+		
+		$split_terms = explode(' ', $terms);
+		
+		foreach($split_terms as $term){
+			
+			if($item['item_name'] == $term){
+				$rank += 5; 
+			}
+			
+			if(strpos($item['item_name'] == $term) !== false){
+				$rank += 5; 
+			}
+			
+			if(strpos($item['item_description'], $term) !== false){
+				$rank += 1;	
+			}
+			
+			if(strpos($item['vendor_name'], $term) !== false){
+				$rank += 1;
+			}
+		}
+		
+		return $rank;
+		
+	}
+
 	
 	private function get_vendor_meta($vendor_id, $keyword = null){
 		include 'DbConnection.php';
