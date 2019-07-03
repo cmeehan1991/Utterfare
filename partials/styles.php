@@ -1,7 +1,7 @@
 
 <!--Bootstrap -->
-<link href='https://www.utterfare.com/node_modules/bootstrap/dist/css/bootstrap.min.css' rel="stylesheet" />
-<script src='https://www.utterfare.com/node_modules/bootstrap/dist/js/bootstrap.min.js' type="text/javascript"></script>
+<link href='<?php echo BASE_URL; ?>node_modules/bootstrap/dist/css/bootstrap.min.css' rel="stylesheet" />
+<script src='<?php echo BASE_URL; ?>node_modules/bootstrap/dist/js/bootstrap.min.js' type="text/javascript"></script>
 
 <!-- Font Awesome -->
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
@@ -14,8 +14,8 @@
 
 <!-- Custom Styles -->
 <!--<link type="text/css" rel="stylesheet"  href="./assets/styles/css/dist/min/allstyles.min.css" />   -->
-<link type="text/css" rel="stylesheet" href="https://www.utterfare.com/assets/styles/css/src/global.css" />
-<link type="text/css" rel="stylesheet" href="https://www.utterfare.com/assets/styles/css/src/header.css" />
-<link type="text/css" rel="stylesheet" href="https://www.utterfare.com/assets/styles/css/src/main.css" />
-<link type="text/css" rel="stylesheet" href="https://www.utterfare.com/assets/styles/css/src/single.css" />
-<link type="text/css" rel="stylesheet" href="https://www.utterfare.com/assets/styles/css/src/footer.css" />
+<link type="text/css" rel="stylesheet" href="<?php echo BASE_URL; ?>assets/styles/css/src/global.css" />
+<link type="text/css" rel="stylesheet" href="<?php echo BASE_URL; ?>assets/styles/css/src/header.css" />
+<link type="text/css" rel="stylesheet" href="<?php echo BASE_URL; ?>assets/styles/css/src/main.css" />
+<link type="text/css" rel="stylesheet" href="<?php echo BASE_URL; ?>assets/styles/css/src/single.css" />
+<link type="text/css" rel="stylesheet" href="<?php echo BASE_URL; ?>assets/styles/css/src/footer.css" />

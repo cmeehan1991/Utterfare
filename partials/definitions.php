@@ -1,8 +1,18 @@
 <?php 
-DEFINE('BASE_URL',  'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI']);
-DEFINE('SEARCH_URL', 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'] . 'includes/php/search.php');
-DEFINE('SINGLE_URL', 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'] . 'includes/php/single-item.php');
-DEFINE('USER_URL', 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'] . 'includes/php/user.php');
+$whitelist = array(
+    '127.0.0.1',
+    '::1',
+);
+
+if(!in_array($_SERVER['REMOTE_ADDR'], $whitelist)){
+	define('PROTOCOL', 'https://');
+}else{
+	define('PROTOCOL', 'http://');
+}
+DEFINE('BASE_URL',  PROTOCOL . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI']);
+DEFINE('SEARCH_URL', PROTOCOL . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'] . 'includes/php/search.php');
+DEFINE('SINGLE_URL', PROTOCOL . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'] . 'includes/php/single-item.php');
+DEFINE('USER_URL', PROTOCOL . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'] . 'includes/php/user.php');
 DEFINE('USER_ID', $_SESSION['user_id']);
 DEFINE('SIGNED_IN',  $_SESSION['IS_SIGNED_IN']);
 ?>
