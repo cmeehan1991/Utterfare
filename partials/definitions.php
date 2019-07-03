@@ -12,4 +12,4 @@ DEFINE('SIGNED_IN',  $_SESSION['IS_SIGNED_IN']);
 	var base_url = '<?php echo BASE_URL ?>';
 	var single_item_url = '<?php echo SINGLE_URL?>';
 	var user_url = '<?php echo USER_URL?>';
-	</script>
+</script>

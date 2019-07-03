@@ -1,7 +1,6 @@
 archived
 includes/php/error_log
 images/
-node_modules/
 deploy.php
 .htaccess
 

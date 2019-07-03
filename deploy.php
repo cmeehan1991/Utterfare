@@ -20,7 +20,7 @@ set('git_recursive', false);
 
 set('branch', 'master');
 
-set('default_stage', 'dev');
+set('default_stage', 'dev ');
 
 // Shared files/dirs between deploys 
 //set('shared_files', []);
@@ -65,6 +65,9 @@ task('move_to_live_production', function(){
 	run('cp -af public_html/current/. /home1/cmeehan/public_html/');
 });
 
+task('test_task', function(){
+	writeln('this is a test');
+});
 
 desc('Deploy your project');
 task('deploy', [
