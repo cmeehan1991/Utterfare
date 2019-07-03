@@ -1,99 +1,131 @@
 var limit = 25;
 var page = 1;
 var offset = '0';
+var distance = 10;
+var params={};
+var setMarkers = [];
+var markers = [];
+
 
 $(document).ready(function () {
-    $('.loadmore-button').hide();
-    $('.navbar-normal').hide();
-    
-   /* $(window).on('load', function(){ 
-		var queryString = window.location.search;
-		if(queryString){ 
-			var queryStringArr = window.location.search.split("&");
-			var parameters = new Array();
-			$.each(queryStringArr, function(k,v){
-			  var item = decodeURIComponent(v.split("=")[1]);
-			  parameters.push(item)
-			});
-			var type = parameters[0];
-			if(type === 'search'){
-				console.log('perform search');
-				var location = getLatLng(parameters[1]);
-				var terms = parameters[2];
-				var limit = parameters[3];
-				var page = parameters[4];
-				var distance = parameters[5];
-				var offset = parameters[6];
-				var newLimit = limit * page;
-				$('.searchInput').val(terms);
-				performSearch(terms, location, distance, page, newLimit, 0);
-			}
-		}
-    });*/
+    $('.search-form__input').focusin(function(){
+		//showSuggestions();
+		$('.search-form__input').attr('placeholder', 'Try "Impossible Burger"');
+    });       
 });
 
-// Save the current search parameters and run the search again
+$(window).on('load', function(){
+	var url = window.location.href;
+	var parameters;
+	
+	
+	if(url.indexOf('results') > -1){
+		parameters = getSearchParameters(url);
 
-/*$(window).on("unload", function(){
-	if(window.location.pathname === '/utterfare/'){
-		var terms = $('.searchInput').val();
-		var location = null;
-	    if ($('.locationLink').is(":visible")) {
-	        location = $('.locationLink').data('location');
-	    } else {
-	        location = $(".locationInput").val();
-	    }
-	    var distance = $('.distance').val();
-	    var limit = "";
+		var offset = 25 * (parameters.page - 1);
+		//performSearch(parameters.terms, decodeURIComponent(parameters.location), parameters.distance, parseInt(parameters.page), 25, parseInt(offset));
+		
+		if($('.search-form__input').val() === undefined || $('.search-form__input').val() === null || $('.search-form__input').val() === ""){
+			$('.search-form__input').val(decodeURIComponent(parameters.terms));
+			$('.search-form__input').text(decodeURIComponent(parameters.terms));
+		}
 	}
+});
 
-});*/
 
-function authorized(terms, location, distance) {
-    var isValid = false;
-    if (terms === '' || terms === null) {
-        isValid = false;
-    }else if (location === '' || location === null || location.length < 5) {
-        isValid = false;
-    }else if(distance === '' || distance === null) {
-        isValid = false;
-    }else {
-        isValid = true;
-    }
-    return isValid;
+$(document).mouseup(function(e){
+	var searchContainer = $('.search-form__input');
+	var recentItems = $('.recent-searches--item');
+	var changeLocation = $('.recent-searches--search-location');
+	
+	if(!searchContainer.is(e.target) && !recentItems.is(e.target) && !changeLocation.is(e.target) && searchContainer.has(e.target).length === 0){
+		removeSuggestions();
+	}
+});
+
+function getSearchParameters(url){
+	var allParameters = url.split("?")[1].split("&");
+	
+	
+	var data = {};
+	allParameters.forEach(function(value){
+		var param = value.split("=");
+		data[param[0]] = param[1];
+	});
+	
+	return data;
+}
+/**
+* Collapse the suggestions box from the view
+*/
+function removeSuggestions(){
+	$('.recent-searches').remove();
+	$('.search-form__input').attr('placeholder', 'Search');
 }
 
-function formSearch() {
-    var limit = this.limit;
-    var page = this.page;
-    var offset = this.offset;
-    var terms = $('.searchInput').val();
-    var location = null;
-    if ($('.locationLink').is(":visible")) {
-        location = $('.locationLink').data('location');
-    } else {
-        location = $(".locationInput").val();
-    }
-    var distance = $('.distance').val();
 
-    // Check if all of the inputs have been filled
-    if (authorized(terms, location, distance) === true) {
-	    location = getLatLng(location);
-		performSearch(terms, location, distance, page, limit, offset);    
-	} else {
-        //console.log('false');
-        $('.results').html('Please be sure to fill out the location, distance, and search parameters');
-    }
-    return false;
+/*
+* Display the suggestions box
+*/
+function showSuggestions(){
+	if($('.recent-searches').length <= 0){
+		var suggestions = "<ul class='recent-searches'>";
+		
+		suggestions += "<li class='recent-searches--search-location'><i class='fas fa-map-marker-alt'></i> " + $('.search-form__input').data('location') + "";
+		
+		suggestions += "<li><i>Recent Searches</i></li>";
+		suggestions += "<li class='recent-searches--item' ng-click='search(search)' ng-model='search.terms'>Cheeseburger</li>";
+		
+		suggestions += "</ul>";
+	
+		$('.search-form__input').after(suggestions);
+		
+		$('.recent-searches--search-location').on('click', function(){
+			changeLocation();
+		});
+		
+		$('.recent-searches--item').on('click', function(){
+			removeSuggestions();
+			$('.search-form__input').val($(this).text());
+			
+			goToSearchPage($(this).text(), $('.location-link').text(), 10, 1, 25, 0);
+		});
+		
+	}
+}
+
+function changeLocation(){
+	var searchDistance = $('.search-form__input').data('distance');
+	var searchLocation = $('.search-form__input').data('location');
+	
+	$('select[name="distance"]').val(searchDistance);
+	$('input[name="location"]').val(searchLocation);
+	
+	$('#locationModal').modal('show');
+	window.userLocation = searchLocation;
+}
+
+/**
+* Populate the top picks section
+*/
+
+
+function goToSearchPage(terms, searchLocation, distance, page, limit, offset){	
+	var url = window.location.protocol + "//" + window.location.host + window.location.pathname + "#!/results";
+	var searchParameters = "?action=search&terms=" + encodeURI(terms) + "&page=" + page + "&location=" + encodeURI(searchLocation.replace(/[(,)+]/g, '')) + "&distance=" + distance;
+	
+	window.location.href = url + searchParameters;
+	
 }
 
 /*
 * Perform the search based on the passed values
 */
-function performSearch(terms, location, distance, page, limit, offset){
-	$('.loader').show();
+function performSearch(terms, searchLocation, distance, page, limit, offset){			
+		
 	var data = {
-		'location': location,
+		'action' : 'search',
+		'location': searchLocation,
 		'terms': terms,
 		'limit': limit,
 		'page': page,
@@ -101,31 +133,187 @@ function performSearch(terms, location, distance, page, limit, offset){
 		'offset': offset
 	};
 	
+	
+	var display = '';
+	var map;
+
+	// Initialize the map		
+	initMap(searchLocation);
+
+	// Run the search
 	$.ajax({
-		url: 'includes/php/search.php',
+		url: window.search_url,
 		data: data,
 		method: 'post',
-		success: function (results) {
-		    $('.loader').hide();
-		    if (results !== "No Results") {
-				/*var parameters = $.param(data, true);
-				var newUrl = window.location.protocol + '//' + window.location.host + window.location.pathname + "?" + parameters;
-		        window.history.pushState({path:newUrl}, '', newUrl);*/ 
-		        //console.log("results");
-		        //$('.results').html("");
-		        $('.results').append(results);
-		        $('.page-title').hide();
-		        $('.navbar-normal').show();
-		        $('.navbar-presearch').hide();
-		        $('.loadmore-button').show();
-		    } else {
-		        $('.results').html("We're afraid that nothing was returned for your search. Please try something else!");
-		    }
-		}, error: function (jqXHR, error, errorThrown) {
-		    $('.loader').hide();
+		dataType: 'json',
+		success: function (response) {
+			console.log(response.length)
+			if(response.length > 0 ){
+				$.each(response, function(index, result){
+	
+					display += '<li class="results-list--item" data-item-id="' + result.item_id + '">';
+					
+					display += '<div class="card mb-3"></div><div class="row no-gutters">';
+					
+					display += '<div class="col-md-4">';
+	
+					display += '<img src="' + result.primary_image + '" class="card-img" alt="' + result.item_name + '">';
+					
+					display += "</div>";
+					
+					display += '<div class="col-md-8">';
+					
+					display += '<div class="card-body">';
+					
+					display += '<h3 class="card-title">' + result.item_name + '</h3>';
+	
+					display += '<h4 class="card-title card-title--vendor-name">' + result.vendor_name + '</h4>';
+										
+					display += '<p class="card-text"><small class="text-muted"></small></p>';
+					
+					display += '<p class="card-text">' + result.item_short_description + '</p>';					
+					
+					display += "</div></div>";
+					
+					display += '</div></div></li>';
+					
+				
+					addMarkers({
+						'lat': result.latitude,
+						'lng': result.longitude, 
+						'title': result.vendor_name, 
+					});
+				});
+			}else{
+				display += "<h3>It looks like there is nothing there.</h3><p>Try expanding your search location or searching for something else.</p>";
+			}
+			
+		}, 
+		error: function (jqXHR, error, errorThrown) {
+			console.log("error");
+			console.log(jqXHR);
+			console.log(error);
+			console.log(errorThrown);
+			
+		}, 
+		complete: function(){
+
+			
+			$('.content').append(results);
+			results.hide();
+			$('.results-list').html(display);		
+			
+						
+			$('.results-list--item').on('mouseenter', function(){
+
+				var title = $(this).find('.card-title--vendor-name').text();
+
+				markers.forEach(function(marker){
+
+					if(marker.title === title){
+
+						marker.setAnimation(google.maps.Animation.BOUNCE);
+					}else{
+						marker.setAnimation(null);
+					}
+				});
+			});
+			
+			
+			$('.results-list--item').on('click', function(){
+				var itemId = $(this).attr('data-item-id');
+				console.log($(this));
+				console.log(itemId);
+				window.location.href="#!/single?id=" + itemId;
+			});
+			
+			$('.results-list--item').on('mouseleave', function(){
+				markers.forEach(function(marker){
+					marker.setAnimation(null);
+				});
+			});						
+			window.loadingIndicator.detach();
+			
 		}
 	});
 }
+/*
+* Initialize the results map*/
+function initMap(searchLocation){
+	
+	var url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + encodeURIComponent(searchLocation) + '&key=AIzaSyBNOJbx_2Q5h8f0ONZ4Abf5ULE0w4B-VTc';
+		
+	var latlng = {};
+	
+	if(document.getElementById('map') !== undefined && document.getElementById('map') !== null){
+		$.get(url, null, function(success){
+			if(success.results[0].geometry !== undefined){
+				latlng.lat = success.results[0].geometry.location.lat;
+				latlng.lng = success.results[0].geometry.location.lng;
+			}else{
+				latlng.lat = 32.229004;
+				latlng.lng = -80.740280;
+			}
+		})
+		.done(function(){
+			map = new google.maps.Map(document.getElementById('map'), {
+				center: latlng, 
+				zoom: 12
+			});
+			
+		});
+	}
+}
+
+/**
+* Add marrkers to the map. 
+* We will only add each marker once by checking the restaurante title
+*/
+function addMarkers(data){
+		var position = new google.maps.LatLng(data.lat, data.lng);
+		var marker = new google.maps.Marker({
+			position: position,
+			title: data.title,
+			animation: google.maps.Animation.DROP,
+		});
+		
+		
+		marker.addListener('click', function(){
+			var infowindow = new google.maps.InfoWindow({
+				content: data.title
+			});
+			
+			infowindow.open(map, marker);
+		});
+		
+		
+	if($.inArray(data.title, setMarkers) <= 0){		
+		marker.setMap(map);
+		setMarkers.push(data.title);
+		markers.push(marker);
+	}
+}
+
+
+
+function get_map_center(address){
+	var encoded_address = encodeURI(address);
+
+	$.ajax({
+		url: 'https://maps.googleapis.com/maps/api/geocode/json?address=' + encoded_address + '&key=AIzaSyBNOJbx_2Q5h8f0ONZ4Abf5ULE0w4B-VTc',
+		datatype: 'json',
+		method: 'get',
+		success: function(response){
+			var lat = response.results[0].geometry.location.lat;
+			var lng = response.results[0].geometry.location.lng;
+			return {lat: lat, lng: lng};
+		}, 
+		error: function(error){
+			console.log(error);
+		}
+	});
+}
+
 
 function loadMore() {
     this.page += 1;
@@ -143,7 +331,7 @@ function loadMore() {
     
 
     var distance = $('.distance').val();
-		performSearch(terms, location, distance, page, limit, offset)
+	performSearch(terms, location, distance, page, limit, offset);
 }
 
 function getLatLng(location){
@@ -151,11 +339,9 @@ function getLatLng(location){
 	var latLng = location;
 	geocoder.geocode({'address' : location}, function(results, status){
 		if(status === 'OK'){
-			//console.log(results.geometry.location);
 			var lat = results[0].geometry.location.latitude;
 			var lng = results[0].geometry.location.longitude;
 			latLng = lat + '+' + lng;
-			//console.log(latLng);
 		}
 	});
 	

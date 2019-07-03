@@ -1,25 +1,29 @@
+var map;
+var userLocation;
+var userSearchLocation;
+var searchDistance = 10;
+
 $(document).ready(function () {
-    $('.locationInput').hide();
-    $('.locationLink').html('Finding Location...');
-    $('.locationInput').on('keyup', function (e) {
-        validateInput($(this).val(), e);
-    });
-
-    locationLink = $('.locationLink');
     geolocation();
-
 });
+
+function setManualSearchLocation(){
+	userLocation = $('input[name="location"]').val();
+	var distance = $('select[name="distance"]').val();
+	if(userLocation !== undefined && userLocation !== null){
+		$('.search-form__input').data('location', userLocation);
+		$('.search-form__input').data('distance', distance);
+		window.distance = distance;
+		window.getRecommendations(userLocation);
+	}
+	
+	$('#locationModal').modal('hide');
+	return false;
+}
 
 function validateInput(input, e) {
     var matchesNumber = input.match(/\d+/g);
     var matchesLetter = input.match(/^[a-zA-Z\s]+$/);
-    /*if(input.length == 5 && matchesLetter != null){
-        inputNotValid();
-    }else if(input.length < 5){
-        inputNotValid();
-    }else{
-        inputValid();
-    }*/
     inputValid();
 }
 
@@ -47,7 +51,6 @@ function geolocation() {
 }
 
 function showPosition(position) {
-
     var lat = position.coords.latitude;
     var lng = position.coords.longitude;
 
@@ -60,13 +63,27 @@ function codeLatLng(lat, lng) {
     geocoder.geocode({'latLng': latLng}, function (results, status) {
         if (status === google.maps.GeocoderStatus.OK) {
 	        if (results[0]) {
-                $('.locationLink').html("<i class='fa fa-map-marker' aria-hidden='true'></i>" + results[0].formatted_address);
-                $('.locationLink').attr('data-location', results[0].formatted_address);
+				userLocation = results[0].formatted_address;
+				userSearchLocation = userLocation;
+				
+				var appElement = document.querySelector("[ng-app=utterfare]");
+				var $scope = angular.element(appElement).scope();
+				
+				$scope = $scope.$$childHead;
+				
+				$scope.$apply(function(){
+					$scope.location = userLocation;
+					window.userSearchLocation = $scope.location;
+					window.searchDistance = 10;
+				});
+
+                if($('.results').is(":visible") === false){
+               		window.curateHomepageSections(userLocation);
+                }
             }
         }
     });
 }
-
 
 function changeLocation() {
     $('.locationInput').show();
@@ -77,4 +94,36 @@ function changeLocation() {
     $('.locationInput').val(city[0] + ", " + state[1]);
 }
 
+/*
+* Create the location popoever. 
+* This popover will allow the user to input a location and distance manually.
+*/
+function showLocationPopover(){
+	var locationInputContent = "<label for='userSearchLocationInput'><strong>Location:</strong>";
+	locationInputContent += "<input type='text'name='userSearchLocationInput' value='" + window.userLocation + "'>";
+	locationInputContent += "<label for='userSearchDistance'><strong>Distance</strong></label>";
+	locationInputContent += "<select name='userSearchDistance' value='" + window.searchDistance + "'}>";
+	locationInputContent += "<option value='1'>1 Mile</option>";
+	locationInputContent += "<option value='2'>2 Mile</option>";
+	locationInputContent += "<option value='5'>5 Miles</option>";
+	locationInputContent += "<option value='10'>10 Miles</option>";
+	locationInputContent += "<option value='15'>15 Miles</option>";
+	locationInputContent += "<option value='20'>20 Miles</option>";
+	locationInputContent += "</select>";
+	
+	$('.location-link').popover({
+		content: locationInputContent,
+		title: "Search Area",
+		html: true,
+		placement: 'bottom',
+		sanitize: false,
+	},'toggle');
+	
+	$('.location-link').on('hide.bs.popover', function(){
+		window.userSearchLocation = $('input[name="userSearchLocationInput"]').val();
+		window.searchDistance = $('input[name="userSearchDistance"]').val();
+		
+		console.log(window.searchDistance);
+	});
+}
 
