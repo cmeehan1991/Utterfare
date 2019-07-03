@@ -52,7 +52,7 @@ class Item_Search{
 			$profile_picture = $profile_picture->_profile_picture;
 			
 			if($profile_picture == "None"){
-				$profile_picture = BASE_URL . "assets/img/UF Logo.png";
+				$profile_picture = "assets/img/UF Logo.png";
 			}
 			$result['primary_image'] = $profile_picture;
 
@@ -117,7 +117,7 @@ class Item_Search{
 				$profile_picture = $profile_picture->_profile_picture;
 				
 				if($profile_picture == "None"){
-					$profile_picture = BASE_URL . "assets/img/UF Logo.png";
+					$profile_picture = "assets/img/UF Logo.png";
 				}
 				$results[$i]['primary_image'] = $profile_picture;
 				
@@ -190,7 +190,7 @@ class Item_Search{
 				$profile_picture = $profile_picture->_profile_picture;
 				
 				if($profile_picture == "None"){
-					$profile_picture = BASE_URL . "assets/img/UF Logo.png";
+					$profile_picture = "assets/img/UF Logo.png";
 				}
 				$results[$i]['primary_image'] = $profile_picture;
 				
