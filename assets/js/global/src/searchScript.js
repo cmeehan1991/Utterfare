@@ -147,7 +147,7 @@ function performSearch(terms, searchLocation, distance, page, limit, offset){
 		method: 'post',
 		dataType: 'json',
 		success: function (response) {
-			console.log(response.length)
+
 			if(response.length > 0 ){
 				$.each(response, function(index, result){
 	
@@ -222,8 +222,7 @@ function performSearch(terms, searchLocation, distance, page, limit, offset){
 			
 			$('.results-list--item').on('click', function(){
 				var itemId = $(this).attr('data-item-id');
-				console.log($(this));
-				console.log(itemId);
+
 				window.location.href="#!/single?id=" + itemId;
 			});
 			

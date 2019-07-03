@@ -1,10 +1,10 @@
 <!-- jQuery -->
-<script src="https://www.utterfare.com/node_modules/jquery/dist/jquery.min.js" type="text/javascript"></script>
+<script src="<?php echo BASE_URL; ?>node_modules/jquery/dist/jquery.min.js" type="text/javascript"></script>
 
 <!-- Angular -->
-<script src="https://www.utterfare.com/node_modules/angular/angular.js" type="text/javascript"></script>
+<script src="<?php echo BASE_URL; ?>node_modules/angular/angular.js" type="text/javascript"></script>
 <!--<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-route.js"></script>-->
-<script src="https://www.utterfare.com/node_modules/angular-route/angular-route.min.js" type="text/javascript"></script>
+<script src="<?php echo BASE_URL; ?>node_modules/angular-route/angular-route.min.js" type="text/javascript"></script>
 
 <!-- ReactJS -->
 
