@@ -3,6 +3,3 @@ includes/php/error_log
 images/
 deploy.php
 .htaccess
-
-includes/php/DbConnection.php
-includes/mobile/connection/DBConnection.php
