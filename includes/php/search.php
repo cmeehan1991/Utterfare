@@ -22,9 +22,19 @@ class Item_Search{
 			case 'get_top_items': 
 				$this->getTopItems();
 				break;
+			case 'get_local_items': 
+				$this->getLocalItems();
+				break;
 			default: break;
 		}
 	}	
+	
+	private function getLocationItems(){
+		$lat = filter_input(INPUT_POST, 'lat');
+		$lng = filter_input(INPUT_POST, 'lng');
+		
+		echo $this->search(10, $lat, $lng, 8);
+	}
 	
 	private function getSingleItem(){
 		include 'DbConnection.php';
@@ -108,26 +118,35 @@ class Item_Search{
 		
 		
 		for($i = 0; $i < count($results); $i++){	
-			
-			$image_exists = strpos(@get_headers($results[$i]['primary_image'])[0], '200') > -1;		
-			if(!$image_exists){
-				$results[$i]['primary_image'] = $this->get_vendor_meta($results[$i]['vendor_id'], '_profile_picture');
-				$profile_picture = json_decode($results[$i]['primary_image']);
-				
-				$profile_picture = $profile_picture->_profile_picture;
-				
-				if($profile_picture == "None"){
-					$profile_picture = "assets/img/UF Logo.png";
-				}
-				$results[$i]['primary_image'] = $profile_picture;
-				
-			}
+			$results[$i]['primary_image'] = $this->check_image($results[$i]['primary_image'], $results[$i]['vendor_id']);
 			$results[$i]['address'] =  $this->get_vendor_meta($results[$i]['vendor_id']);
 		}
 		
 		
 		echo json_encode($results);
 		
+	}
+	
+	/*
+	* Check if the returned image exists. 
+	* If it does not exist then we will either return the vendor profile image 
+	* or we will return the default utterfare logo. 
+	*/
+	private function check_image($image_url, $vendor_id){
+	
+		$image_exists = strpos(@get_headers($image_url)[7], '200') > -1 || strpos(@get_headers($image_url)[0], '200') > -1;	
+					
+		if(!$image_exists){
+			$profile_picture = $this->get_vendor_meta($vendor_id, '_profile_picture');
+			$profile_picture = json_decode($profile_picture);
+			
+			$image_url = $profile_picture->_profile_picture;
+
+			if($image_url == "None"){
+				$image_url = "https://www.utterfare.com/assets/img/UF Logo.png";
+			}
+		}
+		return $image_url;	
 	}
 	
 	/*
@@ -182,19 +201,8 @@ class Item_Search{
 		$results = $stmt->fetchall();
 		
 		for($i = 0; $i < count($results); $i++){		
-			$image_exists = strpos(@get_headers($results[$i]['primary_image'])[0], '200') > -1;	
-			if(!$image_exists){
-				$results[$i]['primary_image'] = $this->get_vendor_meta($results[$i]['vendor_id'], '_profile_picture');
-				$profile_picture = json_decode($results[$i]['primary_image']);
-				
-				$profile_picture = $profile_picture->_profile_picture;
-				
-				if($profile_picture == "None"){
-					$profile_picture = "assets/img/UF Logo.png";
-				}
-				$results[$i]['primary_image'] = $profile_picture;
-				
-			}
+			
+			$results[$i]['primary_image'] = $this->check_image($results[$i]['primary_image'], $results[$i]['vendor_id']);
 			$results[$i]['address'] =  $this->get_vendor_meta($results[$i]['vendor_id']);
 			
 			if($terms){
