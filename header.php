@@ -27,28 +27,4 @@
 			</form>
 					    
 		</nav>
-
-
-<?php 
-function userHeader($title) {
-    ?>
-<title><?php echo $title = $title != null ? $title . ' | ': '';?> Utterfare&trade;</title>
-	</head>
-		<body>
-		<nav class="navbar navbar-expand-md navbar-light bg-light ">
-		    <a class="navbar-brand" href="index">Utterfare</a>
-		    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-		    	<img src="includes/img/fast-food-99180_640.png" alt="" width="25px" height="25px"/>
-		    </button>
-		    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-		        <ul class="navbar-nav ml-auto">
-	                <li class="nav-item"><a class="nav-link" href="userHome">Home</a></li>
-	                <li class="nav-item"><a class="nav-link" href="addEditItems">Add/Edit Items</a></li>
-	                <li class="nav-item"><a class="nav-link" href="companyInformation">Company Information</a></li>
-	                <li class="nav-item"><a class="nav-link" href="" onclick="return signOut()">Log Out</a></li>
-	            </ul>
-			</div>
-		</nav>
-    <?php
-}
-include('partials/loading.php');
+		<?php include('partials/loading.php');
