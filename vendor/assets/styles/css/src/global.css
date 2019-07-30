@@ -1,0 +1,33 @@
+html, body, h1, h2, h3, h4, h5, p, span, a, li{
+	font-family: "Arial", Arial, sans-serif;
+	font-weight: 100;
+}
+
+.items-table{
+	width:100%;
+}
+
+.items-table--item-image{
+	width:100%;
+	max-width:150px;
+	height:auto;
+	
+}
+
+.items-table tbody tr td:last-of-type{
+	white-space:nowrap;
+	width:1%;
+}
+
+.items-table tbody tr td:last-of-type a{
+	margin:2px;
+}
+
+/* Edit Item */
+.edit-item--item-image{
+	min-width:300px;
+	min-height:197px;
+	width:300px; 
+	height:auto;
+	background:rgba(211,211,211,1.0);
+}

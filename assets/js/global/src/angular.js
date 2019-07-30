@@ -1,5 +1,6 @@
 var app = angular.module('utterfare', ['ngRoute']);
 
+
 app.config(function($routeProvider, $locationProvider){	
 	
 	$routeProvider
@@ -21,10 +22,30 @@ app.config(function($routeProvider, $locationProvider){
 	.when('/user/account', {
 		templateUrl: 'page-templates/user/account.php',
 		controller: 'UserController'
-	});
+	})
+	.when('/vendor/', {
+		templateUrl: 'vendor/page-templates/vendor.php',
+		controller: 'VendorController'
+	})
+	.when('/vendor/sign-in', {
+		templateUrl: 'vendor/page-templates/sign-in.php',
+		controller: 'VendorSignInController'
+	})
+	.when('/404', {
+		templateUrl: 'page-templates/404.php'
+	})
+	.otherwise('/404');
 
 	
 });
+
+app.controller('VendorController', function($scope){
+	let vendorStatus = window.getVendorStatus();
+	
+	if(!vendorStatus){
+		window.location.href = '#!/vendor/sign-in'
+	}
+})
 
 app.controller('UserController', function($scope){
 	window.getUserData();

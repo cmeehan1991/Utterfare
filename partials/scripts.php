@@ -29,3 +29,4 @@
 <script src="assets/js/global/src/site-navigation.js" type="text/javascript"></script>
 <script src="assets/js/global/src/user.js" type="text/javascript"></script>
 <script src="assets/js/global/src/single.js" type="text/javascript"></script>
+<script src="assets/js/global/src/vendor.js" type="text/javascript"></script>
