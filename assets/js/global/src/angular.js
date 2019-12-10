@@ -52,9 +52,7 @@ app.controller('UserController', function($scope){
 });
 
 app.controller('HomeController', function($scope){
-	if(window.userLocation!== undefined && window.userLocation !== null){
-		window.curateHomepageSections(userLocation);
-	}
+	window.curateHomepageSections();
 });
 
 app.controller('ResultsController', function($scope, $routeParams){

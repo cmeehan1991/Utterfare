@@ -3,3 +3,4 @@ includes/php/error_log
 images/
 deploy.php
 .htaccess
+node_modules/

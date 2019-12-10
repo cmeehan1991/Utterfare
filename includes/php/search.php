@@ -156,15 +156,16 @@ class Item_Search{
 		$location = filter_input(INPUT_POST, 'location');				
 		$distance = 10;
 		
+		
 		// Form the search location
 		$search_location = urlencode($location);
+		
 		$json = file_get_contents("https://maps.googleapis.com/maps/api/geocode/json?address=$search_location&key=AIzaSyBNOJbx_2Q5h8f0ONZ4Abf5ULE0w4B-VTc");
 		$obj = json_decode($json, true);
 	
 		// Get the latitude and longitude
         $lat = $obj['results'][0]['geometry']['location']['lat'];
         $lng = $obj['results'][0]['geometry']['location']['lng'];
-        
 		
 		echo $this->search(10, $lat, $lng, 8);
 	}

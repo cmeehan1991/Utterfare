@@ -7,7 +7,7 @@ $(document).ready(function () {
     geolocation();
 });
 
-function setManualSearchLocation(){
+window.setManualSearchLocation = function(){
 	userLocation = $('input[name="location"]').val();
 	var distance = $('select[name="distance"]').val();
 	if(userLocation !== undefined && userLocation !== null){

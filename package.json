@@ -1,43 +1,60 @@
 {
+  "private": true,
   "name": "utterfare",
   "version": "1.0.0",
+  "description": "",
+  "main": "Gruntfile.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "dependencies_base": "node_modules",
+  "dependencies_dest": "assets/js",
   "devDependencies": {
+    "angular": "^1.7.9",
     "angular-route": "^1.6.9",
+    "babel-cli": "^6.26.0",
+    "babel-preset-react-app": "^3.1.2",
+    "bootstrap": "^4.3.1",
     "clean-css": "^4.2.1",
+    "cross-env": "^6.0.3",
+    "font-awesome": "^4.7.0",
+    "grunt": "^1.0.4",
+    "grunt-contrib-watch": "^1.1.0",
     "gulp": "^4.0.2",
     "gulp-clean-css": "^4.2.0",
     "gulp-concat": "^2.6.1",
     "gulp-minify": "^3.1.0",
     "gulp-rename": "^1.4.0",
-    "gulp-uglify": "^3.0.2"
-  },
-  "main": "Gruntfile.js",
-  "directories": {
-    "lib": "lib"
-  },
-  "dependencies": {
-    "angular": "^1.7.8",
-    "babel-cli": "^6.26.0",
-    "babel-preset-react-app": "^3.1.2",
-    "bootstrap": "^4.3.1",
-    "font-awesome": "^4.7.0",
-    "grunt": "^1.0.4",
-    "grunt-contrib-watch": "^1.1.0",
+    "gulp-uglify": "^3.0.2",
     "jquery": "^3.4.1",
-    "popper.js": "^1.15.0"
+    "laravel-mix": "^5.0.0",
+    "popper.js": "^1.16.0",
+    "resolve-url-loader": "^3.1.0",
+    "sass": "^1.23.7",
+    "sass-loader": "^8.0.0",
+    "select2": "^4.0.12",
+    "vue-template-compiler": "^2.6.10",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10"
   },
   "scripts": {
-    "test": "tap test/*.js"
+    "test": "echo \"Error: no test specified\" ",
+    "dev": "npm run development",
+    "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "watch": "npm run development -- --watch",
+    "watch-poll": "npm run watch -- --watch-poll",
+    "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "prod": "npm run production",
+    "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/cmeehan1991/Utterfare.git"
   },
-  "author": "Utterfare",
+  "author": "",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/cmeehan1991/Utterfare/issues"
   },
-  "homepage": "https://github.com/cmeehan1991/Utterfare#readme",
-  "description": ""
+  "homepage": "https://github.com/cmeehan1991/Utterfare#readme"
 }

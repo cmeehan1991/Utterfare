@@ -110,7 +110,7 @@ function changeLocation(){
 */
 
 
-function goToSearchPage(terms, searchLocation, distance, page, limit, offset){	
+window.goToSearchPage = function(terms, searchLocation, distance, page, limit, offset){	
 	var url = window.location.protocol + "//" + window.location.host + window.location.pathname + "#!/results";
 	var searchParameters = "?action=search&terms=" + encodeURI(terms) + "&page=" + page + "&location=" + encodeURI(searchLocation.replace(/[(,)+]/g, '')) + "&distance=" + distance;
 	
@@ -138,7 +138,9 @@ function performSearch(terms, searchLocation, distance, page, limit, offset){
 	var map;
 
 	// Initialize the map		
-	initMap(searchLocation);
+	console.log("Initialize the map");
+	console.log(searchLocation);  
+	window.initMap(searchLocation);
 
 	// Run the search
 	$.ajax({
@@ -238,7 +240,8 @@ function performSearch(terms, searchLocation, distance, page, limit, offset){
 }
 /*
 * Initialize the results map*/
-function initMap(searchLocation){
+window.initMap = function(searchLocation){
+
 	
 	var url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + encodeURIComponent(searchLocation) + '&key=AIzaSyBNOJbx_2Q5h8f0ONZ4Abf5ULE0w4B-VTc';
 		

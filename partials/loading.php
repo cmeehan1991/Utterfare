@@ -1,4 +1,4 @@
-<div class="container-fluid loading-indicator--section">
+<div class="loading-indicator--section">
 	<div class="row">
 		<div class="col-md-12">
 			<div class="d-flex align-items-center justify-content-center">

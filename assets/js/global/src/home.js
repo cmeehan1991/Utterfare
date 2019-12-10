@@ -1,30 +1,18 @@
-var main;
-var results;
-var loadingIndicator; 
-var recommendationsCarousel;
-
-$(document).ready(function(){
-	main = $('.main');
-	results = $('.results');
-	loadingIndicator = $('.loading-indicator--section');
-	
-	main.detach();
-	
-	recommendationsCarousel = $('.recommendations-carousel__inner');
-	
+$(window).on('load', function(){
+	$('#loadingModal').modal('toggle');
 });
 
-function curateHomepageSections(user_location){		
-	main.detach();
-	$('.content').append(loadingIndicator);
-	
-	getTopItems();
-	getRecommendations(user_location);
+window.curateHomepageSections = function(user_location){	
 		
-	$('.content').append(main);
+	if(user_location === undefined){
+		user_location = '6 Kent Ct., Hilton Head Island, SC 29926';
+	}
+	
+	getTopItems(user_location);
+	
 }
 
-function getTopItems(){
+function getTopItems(user_location){
 	var data = {
 		'action': 'get_top_items'
 	}
@@ -54,7 +42,9 @@ function getTopItems(){
 		});
 	}, 'json')
 	.done(function(){
-		$('.featured-items-row--top-items').append(top_items);
+		$('.featured-items-row--top-items').html(top_items);
+
+		getRecommendations(user_location);
 	});
 }
 
@@ -64,7 +54,7 @@ function getTopItems(){
 * Populate the recommended items section
 */
 function getRecommendations(user_location){
-	
+
 	var data = {
 		"action": "get_recommendations",
 		"location": user_location
@@ -73,42 +63,51 @@ function getRecommendations(user_location){
 	var recommendations = "<div class='carousel-item active'><div class='row'>";
 	
 	var count = 0;
-
-
+	
 	$.post(window.search_url, data, function(response){
-		
-		$.each(response, function(key, value){
-			var address_parts = $.parseJSON(value.address);
-			var address = address_parts._city + ", " + address_parts._state.toUpperCase();
-			
-			recommendations += '<div class="col-md-3 mx-auto d-flex">';
-			recommendations += '<div class="card recommendation">'; 
-			recommendations += '<img src="' + value.primary_image + '" class="card-img-top" alt="' + value.item_name + '">';
-			recommendations += '<div class="card-body">';
-			recommendations += '<div class="card-title"><h3>' + value.item_name + '</h3></div>';
-			recommendations += '<div class="card-text">'; 
-			recommendations += '<i class="recommendation__location">' + address + "</i>";
-			recommendations += '<h4 class="recommendation__vendor">' + value.vendor_name + "</h4>";
-			recommendations += '<p>' + value.item_short_description + '</p>';
-			recommendations += '<a href="#!/single?id=' + value.item_id + '" type="button" class="btn btn-light">More Info</a>'; 
-			recommendations += '</div>'; // .card-text
-			recommendations += '</div>'; // .card-body
-			recommendations += '</div>'; // .recommendation
-			recommendations += '</div>'; // .col-md-3
-			
-			count += 1;
-			
-			if(count === 4){
-				recommendations += "</div></div><div class='carousel-item'><div class='row'>";
-			}else if(count === 8){
-				recommendations += "</div></div>";
-			}
-		});
+
+		if(response != ''){
+			$.each(response, function(key, value){
+				var address_parts = $.parseJSON(value.address);
+				var address = address_parts._city + ", " + address_parts._state.toUpperCase();
+				
+				recommendations += '<div class="col-md-3 mx-auto d-flex">';
+				recommendations += '<div class="card recommendation">'; 
+				recommendations += '<img src="' + value.primary_image + '" class="card-img-top" alt="' + value.item_name + '">';
+				recommendations += '<div class="card-body">';
+				recommendations += '<div class="card-title"><h3>' + value.item_name + '</h3></div>';
+				recommendations += '<div class="card-text">'; 
+				recommendations += '<i class="recommendation__location">' + address + "</i>";
+				recommendations += '<h4 class="recommendation__vendor">' + value.vendor_name + "</h4>";
+				recommendations += '<p>' + value.item_short_description + '</p>';
+				recommendations += '<a href="#!/single?id=' + value.item_id + '" type="button" class="btn btn-light">More Info</a>'; 
+				recommendations += '</div>'; // .card-text
+				recommendations += '</div>'; // .card-body
+				recommendations += '</div>'; // .recommendation
+				recommendations += '</div>'; // .col-md-3
+				
+				count += 1;
+				
+				if(count === 4){
+					recommendations += "</div></div><div class='carousel-item'><div class='row'>";
+				}else if(count === 8){
+					recommendations += "</div></div>";
+				}
+			});
+		}else{
+			recommendations = '';
+		}
 
 	}, 'json')
+	.fail(function(error){
+		console.log("Fail");
+		console.log(error);
+	})
 	.done(function(){
-		$('.recommendations-carousel__inner').html(recommendations);
-		loadingIndicator.detach();
+		if(recommendations != ''){
+			$('.recommendations-carousel__inner').html(recommendations);
+		}		
+		$('#loadingModal').modal('toggle');
 	});
 		
 }

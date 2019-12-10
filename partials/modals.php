@@ -61,3 +61,17 @@
     </div>
   </div>
 </div>
+
+<div class="modal fade" id="loadingModal" data-backdrop="static" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-body">
+				<div class="d-flex justify-content-center">
+					<div class="spinner-border text-primary" role="status">
+						<span class="sr-only">Loading...</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
