@@ -51,7 +51,7 @@ app.controller('UserController', function($scope){
 	window.getUserData();
 });
 
-app.controller('HomeController', function($scope){
+app.controller('HomeController', function($scope){	
 	window.curateHomepageSections();
 });
 
@@ -59,13 +59,11 @@ app.controller('ResultsController', function($scope, $routeParams){
 	console.log("go to results");
 	var params = $routeParams;
 		
-	// Initialize the map
-	window.initMap(window.userLocation);
 		
 	// Perform the search
 	//terms, searchLocation, distance, page, limit, offset
 	var offset = (params.page - 1) * 25;
-	window.performSearch(params.terms, window.userSearchLocation, window.searchDistance, params.page, 25, 0);
+	window.initMap(params.terms, window.userSearchLocation, window.searchDistance, params.page, 25, 0);
 	
 });
 

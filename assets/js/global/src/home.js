@@ -1,13 +1,6 @@
-$(window).on('load', function(){
-	$('#loadingModal').modal('toggle');
-});
-
 window.curateHomepageSections = function(user_location){	
-		
-	if(user_location === undefined){
-		user_location = '6 Kent Ct., Hilton Head Island, SC 29926';
-	}
-	
+	$('#loadingModal').modal('toggle');	
+
 	getTopItems(user_location);
 	
 }
@@ -107,7 +100,7 @@ function getRecommendations(user_location){
 		if(recommendations != ''){
 			$('.recommendations-carousel__inner').html(recommendations);
 		}		
-		$('#loadingModal').modal('toggle');
+		$('#loadingModal').modal('hide');
 	});
 		
 }

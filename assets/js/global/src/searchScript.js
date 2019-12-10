@@ -6,7 +6,6 @@ var params={};
 var setMarkers = [];
 var markers = [];
 
-
 $(window).on('load', function(){
 	var url = window.location.href;
 	var parameters;
@@ -16,7 +15,7 @@ $(window).on('load', function(){
 		parameters = getSearchParameters(url);
 
 		var offset = 25 * (parameters.page - 1);
-		performSearch(parameters.terms, decodeURIComponent(parameters.location), parameters.distance, parseInt(parameters.page), 25, parseInt(offset));
+		initMap(parameters.terms, decodeURIComponent(parameters.location), parameters.distance, parseInt(parameters.page), 25, parseInt(offset));
 		
 		if($('.search-form__input').val() === undefined || $('.search-form__input').val() === null || $('.search-form__input').val() === ""){
 			$('.search-form__input').val(decodeURIComponent(parameters.terms));
@@ -36,7 +35,7 @@ $(document).mouseup(function(e){
 	}
 });
 
-function getSearchParameters(url){
+window.getSearchParameters = function(url){
 	var allParameters = url.split("?")[1].split("&");
 	
 	
@@ -113,7 +112,7 @@ window.goToSearchPage = function(terms, searchLocation, distance, page, limit, o
 /*
 * Perform the search based on the passed values
 */
-function performSearch(terms, searchLocation, distance, page, limit, offset){			
+function performSearch(terms, searchLocation, distance, page, limit, offset, map){			
 	
 	$("#loadingModal").modal("show");
 	
@@ -128,13 +127,9 @@ function performSearch(terms, searchLocation, distance, page, limit, offset){
 	};
 		
 	var display = '';
-	var map;
-	// Initialize the map		 
-	window.initMap(searchLocation);
-	
-	$.post(window.search_url, data, function(response){
-		console.log(response);
-		
+
+	// Initialize the map			
+	$.post(window.search_url, data, function(response){		
 		if(response.length > 0 ){
 			$.each(response, function(index, result){
 	
@@ -169,7 +164,7 @@ function performSearch(terms, searchLocation, distance, page, limit, offset){
 					'lat': result.latitude,
 					'lng': result.longitude, 
 					'title': result.vendor_name, 
-				});
+				}, map);
 				
 			});
 			}else{
@@ -181,47 +176,44 @@ function performSearch(terms, searchLocation, distance, page, limit, offset){
 		console.log(error);
 	})
 	.done(function(){
-		console.log("Complete");
-			
-			//$('.main-content').html(results);
-			//results.hide();
-			$('.results-list').html(display);		
-			
-						
-			$('.results-list--item').on('mouseenter', function(){
+		
+		$('.results-list').html(display);		
+		
+					
+		$('.results-list--item').on('mouseenter', function(){
 
-				var title = $(this).find('.card-title--vendor-name').text();
+			var title = $(this).find('.card-title--vendor-name').text();
 
-				markers.forEach(function(marker){
+			markers.forEach(function(marker){
 
-					if(marker.title === title){
+				if(marker.title === title){
 
-						marker.setAnimation(google.maps.Animation.BOUNCE);
-					}else{
-						marker.setAnimation(null);
-					}
-				});
-			});
-			
-			
-			$('.results-list--item').on('click', function(){
-				var itemId = $(this).attr('data-item-id');
-
-				window.location.href="#!/single?id=" + itemId;
-			});
-			
-			$('.results-list--item').on('mouseleave', function(){
-				markers.forEach(function(marker){
+					marker.setAnimation(google.maps.Animation.BOUNCE);
+				}else{
 					marker.setAnimation(null);
-				});
-			});		
+				}
+			});
+		});
+		
+		
+		$('.results-list--item').on('click', function(){
+			var itemId = $(this).attr('data-item-id');
+
+			window.location.href="#!/single?id=" + itemId;
+		});
+		
+		$('.results-list--item').on('mouseleave', function(){
+			markers.forEach(function(marker){
+				marker.setAnimation(null);
+			});
+		});		
 		
 		$("#loadingModal").modal("hide");				
 	});
 }
 /*
 * Initialize the results map*/
-window.initMap = function(searchLocation){
+window.initMap = function(terms, searchLocation, distance, page, limit, offset){
 
 	
 	var url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + encodeURIComponent(searchLocation) + '&key=AIzaSyBNOJbx_2Q5h8f0ONZ4Abf5ULE0w4B-VTc';
@@ -230,6 +222,7 @@ window.initMap = function(searchLocation){
 	var map; 
 	if(document.getElementById('map') !== undefined && document.getElementById('map') !== null){
 		$.get(url, null, function(success){
+			
 			if(success.results[0].geometry !== undefined){
 				latlng.lat = success.results[0].geometry.location.lat;
 				latlng.lng = success.results[0].geometry.location.lng;
@@ -239,11 +232,21 @@ window.initMap = function(searchLocation){
 			}
 		})
 		.done(function(){
-			map = new google.maps.Map(document.getElementById('map'), {
+			var map = new google.maps.Map(document.getElementById('map'), {
 				center: latlng, 
 				zoom: 12
 			});
+		
+			var marker = new google.maps.Marker({
+				position: latlng, 
+				title: "You", 
+				map: map, 
+				visible: true,
+			});
 			
+			markers.push(marker);
+
+			performSearch(terms, searchLocation, distance, page, limit, offset, map)
 		});
 	}
 }
@@ -252,26 +255,28 @@ window.initMap = function(searchLocation){
 * Add marrkers to the map. 
 * We will only add each marker once by checking the restaurante title
 */
-window.addMarkers = function(data){
-		var position = new google.maps.LatLng(data.lat, data.lng);
-		var marker = new google.maps.Marker({
-			position: position,
-			title: data.title,
-			animation: google.maps.Animation.DROP,
+window.addMarkers = function(data, map){
+	
+	var position = new google.maps.LatLng(data.lat, data.lng);
+	var marker = new google.maps.Marker({
+		position: position,
+		title: data.title,
+		animation: google.maps.Animation.DROP,
+		map: map,
+		visible: true,
+	});
+		
+	marker.addListener('click', function(){
+		var infowindow = new google.maps.InfoWindow({
+			content: data.title
 		});
 		
+		infowindow.open(map, marker);
+	});
 		
-		marker.addListener('click', function(){
-			var infowindow = new google.maps.InfoWindow({
-				content: data.title
-			});
-			
-			infowindow.open(map, marker);
-		});
-		
+	
 		
 	if($.inArray(data.title, setMarkers) <= 0){		
-		marker.setMap(map);
 		setMarkers.push(data.title);
 		markers.push(marker);
 	}
