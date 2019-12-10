@@ -12,6 +12,8 @@ function getTopItems(user_location){
 	
 	var top_items = '';
 	
+	console.log(window.search_url);
+	
 	$.post(window.search_url, data, function(response){
 		$.each(response, function(k, v){
 						
