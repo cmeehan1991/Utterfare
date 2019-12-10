@@ -34,7 +34,7 @@ class UF_Sessions{
 		}
 	}
 	
-}new UF_Sessions();
+}
 
 
 
