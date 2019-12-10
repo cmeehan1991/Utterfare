@@ -2,10 +2,10 @@
 session_start();
 include 'header.php'; 
 ?>
-<div class="container-fluid content" ng-app>
+<div class="container-fluid content" ng-view>
 	
 	<!-- Featured Items-->
-	<div class="content--homepage">
+	<div class="main-content">
 		<div class="row">
 			<div class="col-md-6 mr-auto ml-5">
 				<h2>Find the food you want and when you want it<br/>wheverever you go</h2>			

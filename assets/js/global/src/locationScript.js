@@ -78,6 +78,8 @@ function codeLatLng(lat, lng) {
 				});
 
                 if($('.results').is(":visible") === false){
+	                window.userLocation = userLocation;
+	                window.searchDistance = 10;
                		window.curateHomepageSections(userLocation);
                 }
             }
@@ -98,11 +100,11 @@ function changeLocation() {
 * Create the location popoever. 
 * This popover will allow the user to input a location and distance manually.
 */
-function showLocationPopover(){
+window.showLocationPopover = function(){
 	var locationInputContent = "<label for='userSearchLocationInput'><strong>Location:</strong>";
 	locationInputContent += "<input type='text'name='userSearchLocationInput' value='" + window.userLocation + "'>";
 	locationInputContent += "<label for='userSearchDistance'><strong>Distance</strong></label>";
-	locationInputContent += "<select name='userSearchDistance' value='" + window.searchDistance + "'}>";
+	locationInputContent += "<select name='userSearchDistance'>";
 	locationInputContent += "<option value='1'>1 Mile</option>";
 	locationInputContent += "<option value='2'>2 Mile</option>";
 	locationInputContent += "<option value='5'>5 Miles</option>";
@@ -110,6 +112,8 @@ function showLocationPopover(){
 	locationInputContent += "<option value='15'>15 Miles</option>";
 	locationInputContent += "<option value='20'>20 Miles</option>";
 	locationInputContent += "</select>";
+	
+	
 	
 	$('.location-link').popover({
 		content: locationInputContent,
@@ -122,8 +126,6 @@ function showLocationPopover(){
 	$('.location-link').on('hide.bs.popover', function(){
 		window.userSearchLocation = $('input[name="userSearchLocationInput"]').val();
 		window.searchDistance = $('input[name="userSearchDistance"]').val();
-		
-		console.log(window.searchDistance);
 	});
 }
 

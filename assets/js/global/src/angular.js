@@ -56,7 +56,7 @@ app.controller('HomeController', function($scope){
 });
 
 app.controller('ResultsController', function($scope, $routeParams){
-	
+	console.log("go to results");
 	var params = $routeParams;
 		
 	// Initialize the map
@@ -89,9 +89,12 @@ app.controller('SearchController',  function($scope, $http, $location){
 	if($('.search-form__input').is(":focus")){
 		$('.search-form__input').focusout();
 	}
+	
 		
-	$scope.search = function(data){
-		window.goToSearchPage(data.terms, $scope.location, 10, 1, 25, 0);
+	$scope.search = function(data){		
+		window.userLocation = $('.location-link').text();
+
+		window.goToSearchPage(data.terms, window.userLocation, 10, 1, 25, 0);
 	};
 	
 	$scope.setManualSearchLocation = function(data){

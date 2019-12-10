@@ -7,13 +7,6 @@ var setMarkers = [];
 var markers = [];
 
 
-$(document).ready(function () {
-    $('.search-form__input').focusin(function(){
-		//showSuggestions();
-		$('.search-form__input').attr('placeholder', 'Try "Impossible Burger"');
-    });       
-});
-
 $(window).on('load', function(){
 	var url = window.location.href;
 	var parameters;
@@ -23,7 +16,7 @@ $(window).on('load', function(){
 		parameters = getSearchParameters(url);
 
 		var offset = 25 * (parameters.page - 1);
-		//performSearch(parameters.terms, decodeURIComponent(parameters.location), parameters.distance, parseInt(parameters.page), 25, parseInt(offset));
+		performSearch(parameters.terms, decodeURIComponent(parameters.location), parameters.distance, parseInt(parameters.page), 25, parseInt(offset));
 		
 		if($('.search-form__input').val() === undefined || $('.search-form__input').val() === null || $('.search-form__input').val() === ""){
 			$('.search-form__input').val(decodeURIComponent(parameters.terms));
@@ -115,14 +108,15 @@ window.goToSearchPage = function(terms, searchLocation, distance, page, limit, o
 	var searchParameters = "?action=search&terms=" + encodeURI(terms) + "&page=" + page + "&location=" + encodeURI(searchLocation.replace(/[(,)+]/g, '')) + "&distance=" + distance;
 	
 	window.location.href = url + searchParameters;
-	
 }
 
 /*
 * Perform the search based on the passed values
 */
 function performSearch(terms, searchLocation, distance, page, limit, offset){			
-		
+	
+	$("#loadingModal").modal("show");
+	
 	var data = {
 		'action' : 'search',
 		'location': searchLocation,
@@ -132,77 +126,65 @@ function performSearch(terms, searchLocation, distance, page, limit, offset){
 		'distance': distance,
 		'offset': offset
 	};
-	
-	
+		
 	var display = '';
 	var map;
-
-	// Initialize the map		
-	console.log("Initialize the map");
-	console.log(searchLocation);  
+	// Initialize the map		 
 	window.initMap(searchLocation);
-
-	// Run the search
-	$.ajax({
-		url: window.search_url,
-		data: data,
-		method: 'post',
-		dataType: 'json',
-		success: function (response) {
-
-			if(response.length > 0 ){
-				$.each(response, function(index, result){
 	
-					display += '<li class="results-list--item" data-item-id="' + result.item_id + '">';
-					
-					display += '<div class="card mb-3"></div><div class="row no-gutters">';
-					
-					display += '<div class="col-md-4">';
+	$.post(window.search_url, data, function(response){
+		console.log(response);
+		
+		if(response.length > 0 ){
+			$.each(response, function(index, result){
 	
-					display += '<img src="' + result.primary_image + '" class="card-img" alt="' + result.item_name + '">';
-					
-					display += "</div>";
-					
-					display += '<div class="col-md-8">';
-					
-					display += '<div class="card-body">';
-					
-					display += '<h3 class="card-title">' + result.item_name + '</h3>';
-	
-					display += '<h4 class="card-title card-title--vendor-name">' + result.vendor_name + '</h4>';
-										
-					display += '<p class="card-text"><small class="text-muted"></small></p>';
-					
-					display += '<p class="card-text">' + result.item_short_description + '</p>';					
-					
-					display += "</div></div>";
-					
-					display += '</div></div></li>';
-					
+				display += '<li class="results-list--item" data-item-id="' + result.item_id + '">';
 				
-					addMarkers({
-						'lat': result.latitude,
-						'lng': result.longitude, 
-						'title': result.vendor_name, 
-					});
+				display += '<div class="card mb-3"></div><div class="row no-gutters">';
+				
+				display += '<div class="col-md-4">';
+
+				display += '<img src="' + result.primary_image + '" class="card-img" alt="' + result.item_name + '">';
+				
+				display += "</div>";
+				
+				display += '<div class="col-md-8">';
+				
+				display += '<div class="card-body">';
+				
+				display += '<h3 class="card-title">' + result.item_name + '</h3>';
+
+				display += '<h4 class="card-title card-title--vendor-name">' + result.vendor_name + '</h4>';
+									
+				display += '<p class="card-text"><small class="text-muted"></small></p>';
+				
+				display += '<p class="card-text">' + result.item_short_description + '</p>';					
+				
+				display += "</div></div>";
+				
+				display += '</div></div></li>';
+				
+				
+				window.addMarkers({
+					'lat': result.latitude,
+					'lng': result.longitude, 
+					'title': result.vendor_name, 
 				});
+				
+			});
 			}else{
 				display += "<h3>It looks like there is nothing there.</h3><p>Try expanding your search location or searching for something else.</p>";
 			}
+	}, 'json')
+	.fail(function(error){
+		console.log("Search Error (performSearch())");
+		console.log(error);
+	})
+	.done(function(){
+		console.log("Complete");
 			
-		}, 
-		error: function (jqXHR, error, errorThrown) {
-			console.log("error");
-			console.log(jqXHR);
-			console.log(error);
-			console.log(errorThrown);
-			
-		}, 
-		complete: function(){
-
-			
-			$('.content').append(results);
-			results.hide();
+			//$('.main-content').html(results);
+			//results.hide();
 			$('.results-list').html(display);		
 			
 						
@@ -232,10 +214,9 @@ function performSearch(terms, searchLocation, distance, page, limit, offset){
 				markers.forEach(function(marker){
 					marker.setAnimation(null);
 				});
-			});						
-			window.loadingIndicator.detach();
-			
-		}
+			});		
+		
+		$("#loadingModal").modal("hide");				
 	});
 }
 /*
@@ -246,7 +227,7 @@ window.initMap = function(searchLocation){
 	var url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + encodeURIComponent(searchLocation) + '&key=AIzaSyBNOJbx_2Q5h8f0ONZ4Abf5ULE0w4B-VTc';
 		
 	var latlng = {};
-	
+	var map; 
 	if(document.getElementById('map') !== undefined && document.getElementById('map') !== null){
 		$.get(url, null, function(success){
 			if(success.results[0].geometry !== undefined){
@@ -271,7 +252,7 @@ window.initMap = function(searchLocation){
 * Add marrkers to the map. 
 * We will only add each marker once by checking the restaurante title
 */
-function addMarkers(data){
+window.addMarkers = function(data){
 		var position = new google.maps.LatLng(data.lat, data.lng);
 		var marker = new google.maps.Marker({
 			position: position,
