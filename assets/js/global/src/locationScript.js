@@ -73,7 +73,6 @@ function codeLatLng(lat, lng) {
 					window.searchDistance = 10;
 				});
 				
-				console.log($(".results").is(":visible") === false);
                 if($('.results').is(":visible") === false){
 	                window.userLocation = userLocation;
 	                window.searchDistance = 10;

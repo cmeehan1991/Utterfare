@@ -1143,7 +1143,6 @@ function codeLatLng(lat, lng) {
           window.userSearchLocation = $scope.location;
           window.searchDistance = 10;
         });
-        console.log($(".results").is(":visible") === false);
 
         if ($('.results').is(":visible") === false) {
           window.userLocation = userLocation;

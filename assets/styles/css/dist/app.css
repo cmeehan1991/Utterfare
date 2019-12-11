@@ -437,12 +437,12 @@
 }
 
 
-.main{
+.user-main{
     position:absolute;
     width:90%
 }
 @media(max-width:768px){
-    .main{
+    .user-main{
         left:0px !important;;
     }
 }
@@ -451,7 +451,7 @@
     .left-nav{
         width:200px;
     }
-    .main{
+    .user-main{
         left:200px !important;
     width:80%
     }
