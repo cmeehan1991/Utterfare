@@ -212,6 +212,10 @@
     right:50%;
 }
 
+.recommendation{
+	width:100%;
+}
+
 @-webkit-keyframes spin {
     0% { -webkit-transform: rotate(0deg); transform: rotate(0deg); }
     100% { -webkit-transform: rotate(360deg); transform: rotate(360deg); }
@@ -371,7 +375,7 @@
 .related-vendor-item{
 	display:inline-block;
 	white-space: normal;
-	height:350px;
+	min-height:350px;
 	margin:5px;
 }
 
@@ -379,10 +383,6 @@
 	height:inherit;
 }
 
-.related-vendor-item .card .card-body .btn{
-	position:absolute;
-	bottom:15px;
-}
 
 /* Single item ratings */
 .item-rating{

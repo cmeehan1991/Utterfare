@@ -38,7 +38,7 @@
 .related-vendor-item{
 	display:inline-block;
 	white-space: normal;
-	height:350px;
+	min-height:350px;
 	margin:5px;
 }
 
@@ -46,10 +46,6 @@
 	height:inherit;
 }
 
-.related-vendor-item .card .card-body .btn{
-	position:absolute;
-	bottom:15px;
-}
 
 /* Single item ratings */
 .item-rating{

@@ -23,8 +23,7 @@ include 'header.php';
 				<h2>Recommended for you</h2>
 			</div>
 			<div class="row">
-				<div class="col-md-10 mx-auto">
-					<div id="#recommendationsCarousel" class="carousel slide" data-ride="carousel">
+					<div id="#recommendationsCarousel" class="carousel slide col-md-10 mx-auto" data-ride="carousel">
 						<div class="carousel-inner recommendations-carousel__inner"></div> <!-- .carousel-inner -->	
 						<a class="carousel-control-prev" href="#recommendationsCarousel" role="button" data-slide="prev">
 							<span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -35,6 +34,7 @@ include 'header.php';
 							<span class="sr-only">Next</span>
 						</a>			
 					</div>
+				</div>
 				</div>
 			</div>
 		</div>

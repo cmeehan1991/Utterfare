@@ -848,7 +848,6 @@ app.controller('HomeController', function ($scope) {
   window.curateHomepageSections();
 });
 app.controller('ResultsController', function ($scope, $routeParams) {
-  console.log("go to results");
   var params = $routeParams; // Perform the search
   //terms, searchLocation, distance, page, limit, offset
 
@@ -856,6 +855,7 @@ app.controller('ResultsController', function ($scope, $routeParams) {
   window.initMap(params.terms, window.userSearchLocation, window.searchDistance, params.page, 25, 0);
 });
 app.controller('SingleController', function ($scope, $routeParams) {
+  window.scrollTo(0, 0);
   window.showSingleItem($routeParams.id);
   window.getSingleVendorItems();
   window.getItemReviews();
@@ -1730,7 +1730,6 @@ window.getSingleVendorItems = function () {
 
 
 window.showSingleItem = function (itemId) {
-  $("#loadingModal").modal('show');
   var singleUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + "#!/single";
   window.location.href = singleUrl + "?id=" + itemId;
   var queryUrl = "includes/php/search.php";
@@ -1740,7 +1739,6 @@ window.showSingleItem = function (itemId) {
   };
   $.post(queryUrl, data, 'json').done(function (response) {
     populateSingleItemInformation(response);
-    $("#loadingModal").modal('hide');
   });
 };
 /*
@@ -1753,7 +1751,6 @@ function populateSingleItemInformation(data) {
   $('.item-name').text(data.item_name);
   $('.item-image').attr('src', data.primary_image).attr('alt', data.item_name); //$('.item-image').attr('src', 'http://localhost/utterfare/assets/img/new-york-strip.jpg').attr('alt', data.item_name);
 
-  $('.vendor-address').attr('href', "http://maps.google.com/maps?q=" + JSON.parse(data.address)._address).text(JSON.parse(data.address)._address);
   latlng = {
     lat: parseFloat(data.latitude),
     lng: parseFloat(data.longitude)
@@ -1765,6 +1762,21 @@ function populateSingleItemInformation(data) {
     },
     zoom: 14
   });
+
+  if (JSON.parse(data.address).length > 0) {
+    var address = JSON.parse(data.address)._address;
+
+    $('.vendor-address').attr('href', "http://maps.google.com/maps?q=" + address).text(address);
+  } else {
+    var geocoder = new google.maps.Geocoder();
+    geocoder.geocode({
+      'latLng': latlng
+    }, function (result, status) {
+      var address = result[0].formatted_address;
+      $('.vendor-address').attr('href', "http://maps.google.com/maps?q=" + address).text(address);
+    });
+  }
+
   window.addMarkers({
     lat: data.latitude,
     lng: data.longitude,
@@ -1806,11 +1818,12 @@ window.getItemReviews = function () {
 
 window.getItemRating = function () {
   var url = window.location.href;
-  var params = {
+  var params = getSearchParameters(url);
+  var data = {
     item_id: params.id,
     action: 'get_item_ratings'
   };
-  $.post(window.single_item_url, params, function (data, textStatus, jqXHR) {}, 'json').done(function () {});
+  $.post(window.single_item_url, data, function (data, textStatus, jqXHR) {}, 'json').done(function () {});
 };
 
 /***/ }),

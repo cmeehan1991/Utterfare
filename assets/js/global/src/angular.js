@@ -56,7 +56,6 @@ app.controller('HomeController', function($scope){
 });
 
 app.controller('ResultsController', function($scope, $routeParams){
-	console.log("go to results");
 	var params = $routeParams;
 		
 	// Perform the search
@@ -67,6 +66,8 @@ app.controller('ResultsController', function($scope, $routeParams){
 });
 
 app.controller('SingleController', function($scope, $routeParams){
+	
+	window.scrollTo(0,0);
 	window.showSingleItem($routeParams.id);
 	window.getSingleVendorItems();
 	window.getItemReviews();
