@@ -968,10 +968,10 @@ function updateProfilePicture() {
 
 window.curateHomepageSections = function (user_location) {
   $('#loadingModal').modal('show');
-  getTopItems(user_location);
+  window.geolocation(); //getTopItems(user_location);
 };
 
-function getTopItems(user_location) {
+window.getTopItems = function (user_location) {
   var data = {
     'action': 'get_top_items'
   };
@@ -1001,7 +1001,7 @@ function getTopItems(user_location) {
     $('.featured-items-row--top-items').html(top_items);
     getRecommendations(user_location);
   });
-}
+};
 /*
 * Populate the recommended items section
 */
@@ -1075,9 +1075,6 @@ var map;
 var userLocation;
 var userSearchLocation;
 var searchDistance = 10;
-$(document).ready(function () {
-  geolocation();
-});
 
 window.setManualSearchLocation = function () {
   userLocation = $('input[name="location"]').val();
@@ -1116,11 +1113,11 @@ function isNumeric(input) {
   return !isNaN(parseFloat(input)) && isFinite(input);
 }
 
-function geolocation() {
+window.geolocation = function () {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(showPosition);
   }
-}
+};
 
 function showPosition(position) {
   var lat = position.coords.latitude;
@@ -1146,11 +1143,12 @@ function codeLatLng(lat, lng) {
           window.userSearchLocation = $scope.location;
           window.searchDistance = 10;
         });
+        console.log($(".results").is(":visible") === false);
 
         if ($('.results').is(":visible") === false) {
           window.userLocation = userLocation;
           window.searchDistance = 10;
-          window.curateHomepageSections(userLocation);
+          window.getTopItems(userLocation);
         }
       }
     }

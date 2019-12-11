@@ -4,8 +4,8 @@ include 'header.php';
 ?>
 <div class="container-fluid content" ng-view>
 	
-	<!-- Featured Items-->
 	<div class="main-content">
+	<!-- Featured Items-->
 		<div class="row">
 			<div class="col-md-6 mr-auto ml-5">
 				<h2>Find the food you want and when you want it<br/>wheverever you go</h2>			

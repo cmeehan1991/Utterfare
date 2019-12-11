@@ -3,10 +3,6 @@ var userLocation;
 var userSearchLocation;
 var searchDistance = 10;
 
-$(document).ready(function () {
-    geolocation();
-});
-
 window.setManualSearchLocation = function(){
 	userLocation = $('input[name="location"]').val();
 	var distance = $('select[name="distance"]').val();
@@ -44,7 +40,7 @@ function isNumeric(input){
     return !isNaN(parseFloat(input)) && isFinite(input);
 }
 
-function geolocation() {
+window.geolocation = function() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(showPosition);
     } 
@@ -76,11 +72,12 @@ function codeLatLng(lat, lng) {
 					window.userSearchLocation = $scope.location;
 					window.searchDistance = 10;
 				});
-
+				
+				console.log($(".results").is(":visible") === false);
                 if($('.results').is(":visible") === false){
 	                window.userLocation = userLocation;
 	                window.searchDistance = 10;
-               		window.curateHomepageSections(userLocation);
+               		window.getTopItems(userLocation);
                 }
             }
         }

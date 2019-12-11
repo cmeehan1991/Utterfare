@@ -6,6 +6,8 @@ import 'select2';
 
 global.$ = global.jQuery = require('jquery');
 
+
+
 //Frontend Scripts
 require('./src/home.js');
 require('./src/single.js');

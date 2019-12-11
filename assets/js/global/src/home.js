@@ -1,10 +1,11 @@
 window.curateHomepageSections = function(user_location){	
 	$('#loadingModal').modal('show');	
-	getTopItems(user_location);
+	window.geolocation();
+	//getTopItems(user_location);
 	
 }
 
-function getTopItems(user_location){
+window.getTopItems = function(user_location){
 	var data = {
 		'action': 'get_top_items'
 	}
