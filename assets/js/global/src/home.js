@@ -1,6 +1,5 @@
 window.curateHomepageSections = function(user_location){	
-	$('#loadingModal').modal('toggle');	
-
+	$('#loadingModal').modal('show');	
 	getTopItems(user_location);
 	
 }

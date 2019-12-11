@@ -1,4 +1,3 @@
-var $ = require('jquery');
 const mix = require('laravel-mix');
 
 /*

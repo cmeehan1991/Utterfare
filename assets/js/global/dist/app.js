@@ -967,7 +967,7 @@ function updateProfilePicture() {
 /***/ (function(module, exports) {
 
 window.curateHomepageSections = function (user_location) {
-  $('#loadingModal').modal('toggle');
+  $('#loadingModal').modal('show');
   getTopItems(user_location);
 };
 
@@ -976,6 +976,7 @@ function getTopItems(user_location) {
     'action': 'get_top_items'
   };
   var top_items = '';
+  console.log(window.search_url);
   $.post(window.search_url, data, function (response) {
     $.each(response, function (k, v) {
       var address_parts = $.parseJSON(v.address);
