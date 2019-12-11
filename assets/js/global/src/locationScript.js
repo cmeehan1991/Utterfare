@@ -98,9 +98,9 @@ function changeLocation() {
 */
 window.showLocationPopover = function(){
 	var locationInputContent = "<label for='userSearchLocationInput'><strong>Location:</strong>";
-	locationInputContent += "<input type='text'name='userSearchLocationInput' value='" + window.userLocation + "'>";
+	locationInputContent += "<input type='text' class='form-control' name='userSearchLocationInput' value='" + window.userLocation + "'>";
 	locationInputContent += "<label for='userSearchDistance'><strong>Distance</strong></label>";
-	locationInputContent += "<select name='userSearchDistance'>";
+	locationInputContent += "<select class='custom-select' name='userSearchDistance'>";
 	locationInputContent += "<option value='1'>1 Mile</option>";
 	locationInputContent += "<option value='2'>2 Mile</option>";
 	locationInputContent += "<option value='5'>5 Miles</option>";
@@ -109,8 +109,7 @@ window.showLocationPopover = function(){
 	locationInputContent += "<option value='20'>20 Miles</option>";
 	locationInputContent += "</select>";
 	
-	
-	
+		
 	$('.location-link').popover({
 		content: locationInputContent,
 		title: "Search Area",
@@ -118,10 +117,15 @@ window.showLocationPopover = function(){
 		placement: 'bottom',
 		sanitize: false,
 	},'toggle');
-	
+		
 	$('.location-link').on('hide.bs.popover', function(){
 		window.userSearchLocation = $('input[name="userSearchLocationInput"]').val();
-		window.searchDistance = $('input[name="userSearchDistance"]').val();
+		window.searchDistance = $('select[name="userSearchDistance"]').val();
+		
+		$('.location-link').text(window.searchDistance + " miles from " + window.userSearchLocation);
+		console.log(window.searchDistance);
+		$('select[name=userSearchDistance] option[value=' + window.searchDistance + ']').attr('selected', 'selected');
+		console.log($('select[name=userSearchDistance]').val());
 	});
 }
 

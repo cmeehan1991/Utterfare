@@ -59,7 +59,6 @@ app.controller('ResultsController', function($scope, $routeParams){
 	console.log("go to results");
 	var params = $routeParams;
 		
-		
 	// Perform the search
 	//terms, searchLocation, distance, page, limit, offset
 	var offset = (params.page - 1) * 25;
@@ -87,12 +86,17 @@ app.controller('SearchController',  function($scope, $http, $location){
 	if($('.search-form__input').is(":focus")){
 		$('.search-form__input').focusout();
 	}
-	
 		
 	$scope.search = function(data){		
 		window.userLocation = $('.location-link').text();
-
-		window.goToSearchPage(data.terms, window.userLocation, 10, 1, 25, 0);
+		console.log(data.terms === undefined);
+		var terms = data.terms === undefined ?  $('.search-form__input').val() : data.terms; 
+		
+		if(terms !== undefined && terms != null && terms != ""){		
+			window.goToSearchPage(terms, window.userLocation, 10, 1, 25, 0);
+		}else{
+			$('#noticeModal').modal('show');
+		}
 	};
 	
 	$scope.setManualSearchLocation = function(data){

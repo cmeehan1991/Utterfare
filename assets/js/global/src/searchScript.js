@@ -128,6 +128,9 @@ function performSearch(terms, searchLocation, distance, page, limit, offset, map
 		
 	var display = '';
 
+	console.log(data);
+	
+
 	// Initialize the map			
 	$.post(window.search_url, data, function(response){		
 		if(response.length > 0 ){
@@ -174,6 +177,9 @@ function performSearch(terms, searchLocation, distance, page, limit, offset, map
 	.fail(function(error){
 		console.log("Search Error (performSearch())");
 		console.log(error);
+		
+		console.log("Data");
+		console.log(data);
 	})
 	.done(function(){
 		
@@ -236,16 +242,43 @@ window.initMap = function(terms, searchLocation, distance, page, limit, offset){
 				center: latlng, 
 				zoom: 12
 			});
+			
+			// Add a marker for the user's current search location
+			var image = 'assets/img/maps-and-flags.png';
 		
 			var marker = new google.maps.Marker({
 				position: latlng, 
-				title: "You", 
+				title: "Your Search Location", 
 				map: map, 
 				visible: true,
+				icon:image,
 			});
-			
+			marker.addListener('click', function(){
+				var infowindow = new google.maps.InfoWindow({
+					content: marker.title,
+				});
+				
+				infowindow.open(map, marker);
+			});
+						
 			markers.push(marker);
 
+
+			// Add a circle for the search radius
+			// Convert the miles to meters
+			var radius = distance * 1609.34
+			
+			// Instantiate the circle
+			var circle = new google.maps.Circle({
+				map: map, 
+				radius: radius,
+				fillColor: '#AA0000',
+			});
+			
+			// Add the circle to the map
+			circle.bindTo('center', marker, 'position');
+			
+			// Perform the search
 			performSearch(terms, searchLocation, distance, page, limit, offset, map)
 		});
 	}

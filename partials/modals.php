@@ -62,6 +62,25 @@
   </div>
 </div>
 
+<div class="modal" id="noticeModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content" ng-controller="SignInController">
+      <div class="modal-header alert alert-danger">
+        <h5 class="modal-title">Holy guacamole!</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+	     <p>It looks like you forgot to search for something!</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" ng-click="setManualSearchLocation(data)">Ok!</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="modal fade" id="loadingModal" data-backdrop="static" tabindex="-1" role="dialog">
 	<div class="modal-dialog modal-dialog-centered" role="document">
 		<div class="modal-content">

@@ -875,7 +875,14 @@ app.controller('SearchController', function ($scope, $http, $location) {
 
   $scope.search = function (data) {
     window.userLocation = $('.location-link').text();
-    window.goToSearchPage(data.terms, window.userLocation, 10, 1, 25, 0);
+    console.log(data.terms === undefined);
+    var terms = data.terms === undefined ? $('.search-form__input').val() : data.terms;
+
+    if (terms !== undefined && terms != null && terms != "") {
+      window.goToSearchPage(terms, window.userLocation, 10, 1, 25, 0);
+    } else {
+      $('#noticeModal').modal('show');
+    }
   };
 
   $scope.setManualSearchLocation = function (data) {
@@ -1170,9 +1177,9 @@ function changeLocation() {
 
 window.showLocationPopover = function () {
   var locationInputContent = "<label for='userSearchLocationInput'><strong>Location:</strong>";
-  locationInputContent += "<input type='text'name='userSearchLocationInput' value='" + window.userLocation + "'>";
+  locationInputContent += "<input type='text' class='form-control' name='userSearchLocationInput' value='" + window.userLocation + "'>";
   locationInputContent += "<label for='userSearchDistance'><strong>Distance</strong></label>";
-  locationInputContent += "<select name='userSearchDistance'>";
+  locationInputContent += "<select class='custom-select' name='userSearchDistance'>";
   locationInputContent += "<option value='1'>1 Mile</option>";
   locationInputContent += "<option value='2'>2 Mile</option>";
   locationInputContent += "<option value='5'>5 Miles</option>";
@@ -1189,7 +1196,11 @@ window.showLocationPopover = function () {
   }, 'toggle');
   $('.location-link').on('hide.bs.popover', function () {
     window.userSearchLocation = $('input[name="userSearchLocationInput"]').val();
-    window.searchDistance = $('input[name="userSearchDistance"]').val();
+    window.searchDistance = $('select[name="userSearchDistance"]').val();
+    $('.location-link').text(window.searchDistance + " miles from " + window.userSearchLocation);
+    console.log(window.searchDistance);
+    $('select[name=userSearchDistance] option[value=' + window.searchDistance + ']').attr('selected', 'selected');
+    console.log($('select[name=userSearchDistance]').val());
   });
 };
 
@@ -1477,7 +1488,8 @@ function performSearch(terms, searchLocation, distance, page, limit, offset, map
     'distance': distance,
     'offset': offset
   };
-  var display = ''; // Initialize the map			
+  var display = '';
+  console.log(data); // Initialize the map			
 
   $.post(window.search_url, data, function (response) {
     if (response.length > 0) {
@@ -1507,6 +1519,8 @@ function performSearch(terms, searchLocation, distance, page, limit, offset, map
   }, 'json').fail(function (error) {
     console.log("Search Error (performSearch())");
     console.log(error);
+    console.log("Data");
+    console.log(data);
   }).done(function () {
     $('.results-list').html(display);
     $('.results-list--item').on('mouseenter', function () {
@@ -1553,14 +1567,35 @@ window.initMap = function (terms, searchLocation, distance, page, limit, offset)
       var map = new google.maps.Map(document.getElementById('map'), {
         center: latlng,
         zoom: 12
-      });
+      }); // Add a marker for the user's current search location
+
+      var image = 'assets/img/maps-and-flags.png';
       var marker = new google.maps.Marker({
         position: latlng,
-        title: "You",
+        title: "Your Search Location",
         map: map,
-        visible: true
+        visible: true,
+        icon: image
       });
-      markers.push(marker);
+      marker.addListener('click', function () {
+        var infowindow = new google.maps.InfoWindow({
+          content: marker.title
+        });
+        infowindow.open(map, marker);
+      });
+      markers.push(marker); // Add a circle for the search radius
+      // Convert the miles to meters
+
+      var radius = distance * 1609.34; // Instantiate the circle
+
+      var circle = new google.maps.Circle({
+        map: map,
+        radius: radius,
+        fillColor: '#AA0000'
+      }); // Add the circle to the map
+
+      circle.bindTo('center', marker, 'position'); // Perform the search
+
       performSearch(terms, searchLocation, distance, page, limit, offset, map);
     });
   }
