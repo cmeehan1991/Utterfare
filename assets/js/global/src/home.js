@@ -36,6 +36,10 @@ window.getTopItems = function(user_location){
 
 		});
 	}, 'json')
+	.fail(function(error){
+		console.log("Failed");
+		console.log(error);
+	})
 	.done(function(){
 		$('.featured-items-row--top-items').html(top_items);
 

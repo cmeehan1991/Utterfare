@@ -1004,7 +1004,10 @@ window.getTopItems = function (user_location) {
       top_items += '<a href="#!/single?id=' + v.item_id + '" type="button" class="btn btn-light">More Info</a>';
       top_items += '</div></div></div></div>';
     });
-  }, 'json').done(function () {
+  }, 'json').fail(function (error) {
+    console.log("Failed");
+    console.log(error);
+  }).done(function () {
     $('.featured-items-row--top-items').html(top_items);
     getRecommendations(user_location);
   });
