@@ -132,9 +132,12 @@ function performSearch(terms, searchLocation, distance, page, limit, offset, map
 	
 
 	// Initialize the map			
-	$.post(window.search_url, data, function(response){		
+	$.post(window.search_url, data, function(response){
+		console.log("Response");	
+		console.log(response);	
 		if(response.length > 0 ){
 			$.each(response, function(index, result){
+	
 	
 				display += '<li class="results-list--item" data-item-id="' + result.item_id + '">';
 				
@@ -161,7 +164,7 @@ function performSearch(terms, searchLocation, distance, page, limit, offset, map
 				display += "</div></div>";
 				
 				display += '</div></div></li>';
-				
+				 
 				
 				window.addMarkers({
 					'lat': result.latitude,

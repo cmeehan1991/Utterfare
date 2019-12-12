@@ -29,9 +29,19 @@ class Item_Search{
 		}
 	}	
 	
-	private function getLocationItems(){
-		$lat = filter_input(INPUT_POST, 'lat');
-		$lng = filter_input(INPUT_POST, 'lng');
+	private function getLocalItems(){
+		$location = filter_input(INPUT_POST, 'location');
+
+				
+		// Form the search location
+		$location = urlencode($location);
+		
+		$json = file_get_contents("https://maps.googleapis.com/maps/api/geocode/json?address=$location&key=AIzaSyBNOJbx_2Q5h8f0ONZ4Abf5ULE0w4B-VTc");
+		$obj = json_decode($json, true);
+		
+		// Get the latitude and longitude
+        $lat = $obj['results'][0]['geometry']['location']['lat'];
+        $lng = $obj['results'][0]['geometry']['location']['lng'];
 		
 		echo $this->search(10, $lat, $lng, 8);
 	}
@@ -40,7 +50,7 @@ class Item_Search{
 		include 'DbConnection.php';
 		$item_id = filter_input(INPUT_POST, 'item_id');
 		
-		$sql = "SELECT item_name, item_description, primary_image, menu_items.vendor_id, latitude, longitude FROM menu_items INNER JOIN vendors ON vendors.vendor_id = menu_items.vendor_id WHERE item_id = ?";
+		$sql = "SELECT item_name, item_description, primary_image, menu_items.vendor_id, vendors.vendor_name, latitude, longitude FROM menu_items INNER JOIN vendors ON vendors.vendor_id = menu_items.vendor_id WHERE item_id = ?";
 		
 		$stmt = $conn->prepare($sql);
 		$stmt->bindParam(1, $item_id);
@@ -50,22 +60,21 @@ class Item_Search{
 		
 		$result = $stmt->fetch();
 		
-		$image_exists = strpos(@get_headers($result['primary_image'])[0], '200') > -1;
-	
-		
+		$image_exists = $this->checkImageExists($result['primary_image'][0]);//strpos(@get_headers($result['primary_image'])[0], '200') > -1;
+				
 		if(!$image_exists){
 			
 			$result['exists'] = file_exists($result['primary_image']);
 			$result['primary_image'] = $this->get_vendor_meta($result['vendor_id'], '_profile_picture');
+			
 			$profile_picture = json_decode($result['primary_image']);
 			
 			$profile_picture = $profile_picture->_profile_picture;
 			
-			if($profile_picture == "None"){
-				$profile_picture = "assets/img/UF Logo.png";
+			if($profile_picture == "None" || $this->checkImageExists($profile_picture) == false){
+				$profile_picture = "https://www.utterfare.com/assets/img/UF Logo.png";
 			}
 			$result['primary_image'] = $profile_picture;
-
 		}
 		
 		$result['address'] =  $this->get_vendor_meta($result['vendor_id'], '_address');
@@ -73,6 +82,10 @@ class Item_Search{
 		
 		echo json_encode($result);
 		
+	}
+	
+	private function checkImageExists($image_url){
+		return strpos(@get_headers($image_url), '200') > -1;
 	}
 	
 	private function doSearch(){
@@ -141,8 +154,8 @@ class Item_Search{
 			$profile_picture = json_decode($profile_picture);
 			
 			$image_url = $profile_picture->_profile_picture;
-
-			if($image_url == "None"){
+			
+			if($image_url == "None" || $this->checkImageExists($image_url) == false){
 				$image_url = "https://www.utterfare.com/assets/img/UF Logo.png";
 			}
 		}
@@ -280,14 +293,18 @@ class Item_Search{
 		$sql = "SELECT meta_keyword, meta_value FROM vendor_meta WHERE vendor_id = ?";
 		
 		if($keyword){
-			$sql .= " AND meta_keyword = ?";
+			if($keyword == '_address'){
+				$sql .= " AND (meta_keyword = '_primary_address' OR meta_keyword = '_secondary_address' OR meta_keyword = '_city' OR meta_keyword = '_state' OR meta_keyword = 'postal_code')";
+			}else{
+				$sql .= " AND meta_keyword = ?";
+			}
 		}
 		
 		$stmt = $conn->prepare($sql);
 		
 		$stmt->bindParam(1, $vendor_id);
 		
-		if($keyword != null){
+		if($keyword != null && $keyword != '_address'){
 			$stmt->bindParam(2, $keyword);
 		}
 		
@@ -300,7 +317,9 @@ class Item_Search{
 		$response = array();
 		if($results){
 			foreach($results as $result){
+				
 				$response[$result['meta_keyword']] = $result['meta_value'];
+			
 			}
 		}
 			

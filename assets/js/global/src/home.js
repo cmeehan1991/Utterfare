@@ -13,8 +13,9 @@ window.getTopItems = function(user_location){
 	var top_items = '';
 	
 	console.log(window.search_url);
-	
+	console.log("Search");
 	$.post(window.search_url, data, function(response){
+		console.log(response);
 		$.each(response, function(k, v){
 						
 			var address_parts = $.parseJSON(v.address);

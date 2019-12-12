@@ -984,7 +984,9 @@ window.getTopItems = function (user_location) {
   };
   var top_items = '';
   console.log(window.search_url);
+  console.log("Search");
   $.post(window.search_url, data, function (response) {
+    console.log(response);
     $.each(response, function (k, v) {
       var address_parts = $.parseJSON(v.address);
 
@@ -1125,9 +1127,17 @@ function isNumeric(input) {
 
 window.geolocation = function () {
   if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(showPosition);
+    navigator.geolocation.getCurrentPosition(showPosition, locationErrorCallback, {
+      timeout: 1000000,
+      enableHighAccurace: true
+    });
   }
 };
+
+function locationErrorCallback(err) {
+  console.warn("ERROR(".concat(err.code, "): ").concat(err.message));
+  console.log(err);
+}
 
 function showPosition(position) {
   var lat = position.coords.latitude;
@@ -1136,6 +1146,7 @@ function showPosition(position) {
 }
 
 function codeLatLng(lat, lng) {
+  console.log("lat lng");
   var geocoder = new google.maps.Geocoder();
   var latLng = new google.maps.LatLng(lat, lng);
   geocoder.geocode({
@@ -1495,6 +1506,9 @@ function performSearch(terms, searchLocation, distance, page, limit, offset, map
   console.log(data); // Initialize the map			
 
   $.post(window.search_url, data, function (response) {
+    console.log("Response");
+    console.log(response);
+
     if (response.length > 0) {
       $.each(response, function (index, result) {
         display += '<li class="results-list--item" data-item-id="' + result.item_id + '">';
