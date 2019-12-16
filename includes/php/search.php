@@ -25,9 +25,51 @@ class Item_Search{
 			case 'get_local_items': 
 				$this->getLocalItems();
 				break;
+			case 'getExplorerItems': 
+				$this->getExplorerItems();
+				break;
 			default: break;
 		}
 	}	
+	
+	private function getExplorerItems(){
+		include 'DbConnection.php'; 
+		
+		$location = filter_input(INPUT_POST, 'location');
+		
+		// Form the search location
+		$location = urlencode($location);
+				
+		$json = file_get_contents("https://maps.googleapis.com/maps/api/geocode/json?address=$location&key=AIzaSyBNOJbx_2Q5h8f0ONZ4Abf5ULE0w4B-VTc");
+		$obj = json_decode($json, true);
+		
+		// Get the latitude and longitude
+        $lat = $obj['results'][0]['geometry']['location']['lat'];
+        $lng = $obj['results'][0]['geometry']['location']['lng'];
+		
+		$sql = "SELECT DISTINCT menu_items.item_id, menu_items.vendor_id"; 
+		$sql .= " FROM menu_items"; 
+		$sql .= " INNER JOIN vendors ON vendors.vendor_id = menu_items.vendor_id";
+		$sql .= " LEFT JOIN item_reviews ON item_reviews.item_id = menu_items.item_id"; 
+		$sql .= " WHERE DEGREES((ACOS(SIN(RADIANS($lat))*SIN(RADIANS(vendors.latitude))+ COS(RADIANS($lat))*COS(RADIANS(vendors.latitude))*COS(RADIANS((vendors.longitude)-($lng)))))) * 60 * 1.1515 <= '25'";
+		$sql .= " GROUP BY menu_items.item_id, menu_items.vendor_id";
+		$sql .= " ORDER BY rand()"; 
+		$sql .= " LIMIT 25";
+						
+		$stmt = $conn->prepare($sql);
+		$stmt->execute();
+		$stmt->setFetchMode(PDO::FETCH_ASSOC);
+				
+		$results = $stmt->fetchall();
+		
+		for($i = 0; $i < count($results); $i++){	
+			$results[$i]['primary_image'] = $this->check_image($results[$i]['primary_image'], $results[$i]['vendor_id']);
+			$results[$i]['address'] =  $this->get_vendor_meta($results[$i]['vendor_id']);
+		}
+		
+		echo json_encode($results);
+
+	}
 	
 	private function getLocalItems(){
 		$location = filter_input(INPUT_POST, 'location');
@@ -72,7 +114,7 @@ class Item_Search{
 			$profile_picture = $profile_picture->_profile_picture;
 			
 			if($profile_picture == "None" || $this->checkImageExists($profile_picture) == false){
-				$profile_picture = "https://www.utterfare.com/assets/img/UF Logo.png";
+				$profile_picture = "https://www.utterfare.com/assets/img/UF%20Logo.png";
 			}
 			$result['primary_image'] = $profile_picture;
 		}
@@ -156,7 +198,7 @@ class Item_Search{
 			$image_url = $profile_picture->_profile_picture;
 			
 			if($image_url == "None" || $this->checkImageExists($image_url) == false){
-				$image_url = "https://www.utterfare.com/assets/img/UF Logo.png";
+				$image_url = "https://www.utterfare.com/assets/img/UF%20Logo.png";
 			}
 		}
 		return $image_url;	
