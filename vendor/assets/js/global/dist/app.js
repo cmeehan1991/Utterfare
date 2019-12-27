@@ -110,16 +110,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-global.$ = global.jQuery = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js"); //Frontend Scripts
-
-__webpack_require__(/*! ./src/home.js */ "./assets/js/global/src/home.js");
-
-__webpack_require__(/*! ./src/single.js */ "./assets/js/global/src/single.js");
-
-__webpack_require__(/*! ./src/searchAnalytics.js */ "./assets/js/global/src/searchAnalytics.js");
-
-__webpack_require__(/*! ./src/searchScript.js */ "./assets/js/global/src/searchScript.js"); //Backend scripts
-
+global.$ = global.jQuery = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js"); //Backend scripts
 
 __webpack_require__(/*! ./src/AddEditItems.js */ "./assets/js/global/src/AddEditItems.js");
 
@@ -133,8 +124,6 @@ __webpack_require__(/*! ./src/VendorRegistration.js */ "./assets/js/global/src/V
 
 __webpack_require__(/*! ./src/VendorSignIn.js */ "./assets/js/global/src/VendorSignIn.js"); //Global scripts
 
-
-__webpack_require__(/*! ./src/locationScript.js */ "./assets/js/global/src/locationScript.js");
 
 __webpack_require__(/*! ./src/angular.js */ "./assets/js/global/src/angular.js");
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../node_modules/webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
@@ -808,97 +797,44 @@ function signOut() {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-var app = angular.module('utterfare', ['ngRoute']);
-app.config(function ($routeProvider, $locationProvider) {
+var vendor = angular.module('utterfare-vendor', ['ngRoute']);
+vendor.config(function ($routeProvider, $locationProvider) {
   $routeProvider.when('/', {
-    templateUrl: "page-templates/main.php",
-    controller: 'HomeController'
-  }).when('/results', {
-    templateUrl: "page-templates/results.php",
-    controller: 'ResultsController'
-  }).when('/single', {
-    templateUrl: "page-templates/single.php",
-    controller: 'SingleController'
-  }).when('/sign-up', {
-    templateUrl: 'page-templates/newUser.php'
-  }).when('/user/account', {
-    templateUrl: 'page-templates/user/account.php',
-    controller: 'UserController'
-  }).when('/vendor/', {
-    templateUrl: 'vendor/page-templates/vendor.php',
-    controller: 'VendorController'
-  }).when('/vendor/sign-in', {
-    templateUrl: 'vendor/page-templates/login.php',
-    controller: 'VendorSignInController'
-  }).when('/404', {
-    templateUrl: 'page-templates/404.php'
+    templateUrl: 'page-templates/vendor.php',
+    controller: 'vendorController'
+  }).when('/sign-in', {
+    templateUrl: 'page-templates/login.php',
+    controller: 'vendorLoginController'
+  }).when('/items/', {
+    templateUrl: 'page-templates/items.php',
+    controller: 'vendorItemsController'
+  }).when('/items/edit', {
+    templateUrl: 'page-templates/edit-item.php',
+    controller: 'editItemController'
+  }).when('/company', {
+    templateUrl: 'page-templates/company.php',
+    controller: 'vendorItemsController'
+  }).when('/sign-out', {
+    controller: 'SignOutController'
   }).otherwise('/404');
 });
-app.controller('VendorController', function ($scope) {
+vendor.controller('vendorItemsController', function ($scope) {
+  window.getMenuItems(1);
+});
+vendor.controller('vendorController', function ($scope) {
+  console.log("Status");
   var vendorStatus = window.getVendorStatus();
+  console.log(vendorStatus);
 
   if (!vendorStatus) {
-    window.location.href = '#!/vendor/sign-in';
+    window.location.href = "#!/sign-in";
   }
 });
-app.controller('UserController', function ($scope) {
-  window.getUserData();
+vendor.controller('editItemController', function ($scope, $routeParams) {
+  window.getItem($routeParams.item_id);
 });
-app.controller('HomeController', function ($scope) {
-  window.curateHomepageSections();
-});
-app.controller('ResultsController', function ($scope, $routeParams) {
-  var params = $routeParams; // Perform the search
-  //terms, searchLocation, distance, page, limit, offset
-
-  var offset = (params.page - 1) * 25;
-  window.initMap(params.terms, window.userSearchLocation, window.searchDistance, params.page, 25, 0);
-});
-app.controller('SingleController', function ($scope, $routeParams) {
-  window.scrollTo(0, 0);
-  window.showSingleItem($routeParams.id);
-  window.getSingleVendorItems();
-  window.getItemReviews();
-  window.getItemRating();
-});
-app.controller('SignInController', function ($scope) {
-  $scope.signUserIn = function (user) {
-    window.userSignIn(user.username, user.password);
-  };
-});
-app.controller('SearchController', function ($scope, $http, $location) {
-  $scope.location = window.userLocation;
-
-  if ($('.search-form__input').is(":focus")) {
-    $('.search-form__input').focusout();
-  }
-
-  $scope.search = function (data) {
-    window.userLocation = $('.location-link').text();
-    console.log(data.terms === undefined);
-    var terms = data.terms === undefined ? $('.search-form__input').val() : data.terms;
-
-    if (terms !== undefined && terms != null && terms != "") {
-      window.goToSearchPage(terms, window.userLocation, 10, 1, 25, 0);
-    } else {
-      $('#noticeModal').modal('show');
-    }
-  };
-
-  $scope.setManualSearchLocation = function (data) {
-    $('.search-form__input').data('location', data.location);
-    $('.search-form__input').data('distance', data.distance);
-    $('.recent-searches--search-location').text(data.location);
-  };
-});
-app.controller('UserController', function ($scope) {
-  $scope.newUser = function (data) {
-    if (data.password !== data.confirm_password) {
-      $scope.password_match = "Your passwords do not match.";
-    }
-
-    window.insertNewUser(data);
-  };
+vendor.controller('vendorLoginController', function ($scope) {
+  console.log("Login Controller");
 });
 
 /***/ }),
@@ -966,885 +902,6 @@ function updateProfilePicture() {
 
 /***/ }),
 
-/***/ "./assets/js/global/src/home.js":
-/*!**************************************!*\
-  !*** ./assets/js/global/src/home.js ***!
-  \**************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-window.curateHomepageSections = function (user_location) {
-  $('#loadingModal').modal('show');
-  window.geolocation(); //getTopItems(user_location);
-};
-
-window.getTopItems = function (user_location) {
-  var data = {
-    'action': 'get_top_items'
-  };
-  var top_items = '';
-  console.log(window.search_url);
-  console.log("Search");
-  $.post(window.search_url, data, function (response) {
-    console.log(response);
-    $.each(response, function (k, v) {
-      var address_parts = $.parseJSON(v.address);
-
-      var address = address_parts._city + ", " + address_parts._state.toUpperCase();
-
-      top_items += '<div class="col mx-auto d-flex">';
-      top_items += '<div class="card featured-item">';
-      top_items += '<img src="' + v.primary_image + '" class="card-img-top" alt="' + v.item_name + '">';
-      top_items += '<div class="card-body">';
-      top_items += '<div class="card-title">';
-      top_items += '<h3>' + v.item_name + '</h3>';
-      top_items += '</div>';
-      top_items += '<div class="card-text">';
-      top_items += '<i class="featured-item__location">' + address + '</i><br/>';
-      top_items += '<strong class="featured-item__vendor">' + v.vendor_name + '</strong><br/>';
-      top_items += '<p class="featured-item__short-description">' + v.item_short_description + '</p>';
-      top_items += '<a href="#!/single?id=' + v.item_id + '" type="button" class="btn btn-light">More Info</a>';
-      top_items += '</div></div></div></div>';
-    });
-  }, 'json').fail(function (error) {
-    console.log("Failed");
-    console.log(error);
-  }).done(function () {
-    $('.featured-items-row--top-items').html(top_items);
-    getRecommendations(user_location);
-  });
-};
-/*
-* Populate the recommended items section
-*/
-
-
-function getRecommendations(user_location) {
-  var data = {
-    "action": "get_recommendations",
-    "location": user_location
-  };
-  var recommendations = "<div class='carousel-item active'><div class='row'>";
-  var count = 0;
-  $.post(window.search_url, data, function (response) {
-    if (response != '') {
-      $.each(response, function (key, value) {
-        var address_parts = $.parseJSON(value.address);
-
-        var address = address_parts._city + ", " + address_parts._state.toUpperCase();
-
-        recommendations += '<div class="col-md-3 mx-auto d-flex">';
-        recommendations += '<div class="card recommendation">';
-        recommendations += '<img src="' + value.primary_image + '" class="card-img-top" alt="' + value.item_name + '">';
-        recommendations += '<div class="card-body">';
-        recommendations += '<div class="card-title"><h3>' + value.item_name + '</h3></div>';
-        recommendations += '<div class="card-text">';
-        recommendations += '<i class="recommendation__location">' + address + "</i>";
-        recommendations += '<h4 class="recommendation__vendor">' + value.vendor_name + "</h4>";
-        recommendations += '<p>' + value.item_short_description + '</p>';
-        recommendations += '<a href="#!/single?id=' + value.item_id + '" type="button" class="btn btn-light">More Info</a>';
-        recommendations += '</div>'; // .card-text
-
-        recommendations += '</div>'; // .card-body
-
-        recommendations += '</div>'; // .recommendation
-
-        recommendations += '</div>'; // .col-md-3
-
-        count += 1;
-
-        if (count === 4) {
-          recommendations += "</div></div><div class='carousel-item'><div class='row'>";
-        } else if (count === 8) {
-          recommendations += "</div></div>";
-        }
-      });
-    } else {
-      recommendations = '';
-    }
-  }, 'json').fail(function (error) {
-    console.log("Fail");
-    console.log(error);
-  }).done(function () {
-    if (recommendations != '') {
-      $('.recommendations-carousel__inner').html(recommendations);
-    }
-
-    $('#loadingModal').modal('hide');
-  });
-}
-
-/***/ }),
-
-/***/ "./assets/js/global/src/locationScript.js":
-/*!************************************************!*\
-  !*** ./assets/js/global/src/locationScript.js ***!
-  \************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-var map;
-var userLocation;
-var userSearchLocation;
-var searchDistance = 10;
-
-window.setManualSearchLocation = function () {
-  userLocation = $('input[name="location"]').val();
-  var distance = $('select[name="distance"]').val();
-
-  if (userLocation !== undefined && userLocation !== null) {
-    $('.search-form__input').data('location', userLocation);
-    $('.search-form__input').data('distance', distance);
-    window.distance = distance;
-    window.getRecommendations(userLocation);
-  }
-
-  $('#locationModal').modal('hide');
-  return false;
-};
-
-function validateInput(input, e) {
-  var matchesNumber = input.match(/\d+/g);
-  var matchesLetter = input.match(/^[a-zA-Z\s]+$/);
-  inputValid();
-}
-
-function inputNotValid() {
-  $('.locationInput').css('border', '1px solid red');
-  $('.locationInput').css('outline', '1px solid red');
-  $('.search').prop('disabled', true);
-}
-
-function inputValid() {
-  $('.locationInput').css('border', '1px solid green');
-  $('.locationInput').css('outline', '1px solid green');
-  $('.search').prop('disabled', false);
-}
-
-function isNumeric(input) {
-  return !isNaN(parseFloat(input)) && isFinite(input);
-}
-
-window.geolocation = function () {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(showPosition, locationErrorCallback, {
-      timeout: 1000000,
-      enableHighAccurace: true
-    });
-  }
-};
-
-function locationErrorCallback(err) {
-  console.warn("ERROR(".concat(err.code, "): ").concat(err.message));
-  console.log(err);
-}
-
-function showPosition(position) {
-  var lat = position.coords.latitude;
-  var lng = position.coords.longitude;
-  codeLatLng(lat, lng);
-}
-
-function codeLatLng(lat, lng) {
-  console.log("lat lng");
-  var geocoder = new google.maps.Geocoder();
-  var latLng = new google.maps.LatLng(lat, lng);
-  geocoder.geocode({
-    'latLng': latLng
-  }, function (results, status) {
-    if (status === google.maps.GeocoderStatus.OK) {
-      if (results[0]) {
-        userLocation = results[0].formatted_address;
-        userSearchLocation = userLocation;
-        var appElement = document.querySelector("[ng-app=utterfare]");
-        var $scope = angular.element(appElement).scope();
-        $scope = $scope.$$childHead;
-        $scope.$apply(function () {
-          $scope.location = userLocation;
-          window.userSearchLocation = $scope.location;
-          window.searchDistance = 10;
-        });
-
-        if ($('.results').is(":visible") === false) {
-          window.userLocation = userLocation;
-          window.searchDistance = 10;
-          window.getTopItems(userLocation);
-        }
-      }
-    }
-  });
-}
-
-function changeLocation() {
-  $('.locationInput').show();
-  $('.locationLink').hide();
-  var city = $('.locationLink').text().split(',');
-  var state = city[1];
-  var state = state.split(' ');
-  $('.locationInput').val(city[0] + ", " + state[1]);
-}
-/*
-* Create the location popoever. 
-* This popover will allow the user to input a location and distance manually.
-*/
-
-
-window.showLocationPopover = function () {
-  var locationInputContent = "<label for='userSearchLocationInput'><strong>Location:</strong>";
-  locationInputContent += "<input type='text' class='form-control' name='userSearchLocationInput' value='" + window.userLocation + "'>";
-  locationInputContent += "<label for='userSearchDistance'><strong>Distance</strong></label>";
-  locationInputContent += "<select class='custom-select' name='userSearchDistance'>";
-  locationInputContent += "<option value='1'>1 Mile</option>";
-  locationInputContent += "<option value='2'>2 Mile</option>";
-  locationInputContent += "<option value='5'>5 Miles</option>";
-  locationInputContent += "<option value='10'>10 Miles</option>";
-  locationInputContent += "<option value='15'>15 Miles</option>";
-  locationInputContent += "<option value='20'>20 Miles</option>";
-  locationInputContent += "</select>";
-  $('.location-link').popover({
-    content: locationInputContent,
-    title: "Search Area",
-    html: true,
-    placement: 'bottom',
-    sanitize: false
-  }, 'toggle');
-  $('.location-link').on('hide.bs.popover', function () {
-    window.userSearchLocation = $('input[name="userSearchLocationInput"]').val();
-    window.searchDistance = $('select[name="userSearchDistance"]').val();
-    $('.location-link').text(window.searchDistance + " miles from " + window.userSearchLocation);
-    console.log(window.searchDistance);
-    $('select[name=userSearchDistance] option[value=' + window.searchDistance + ']').attr('selected', 'selected');
-    console.log($('select[name=userSearchDistance]').val());
-  });
-};
-
-/***/ }),
-
-/***/ "./assets/js/global/src/searchAnalytics.js":
-/*!*************************************************!*\
-  !*** ./assets/js/global/src/searchAnalytics.js ***!
-  \*************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-$(document).ready(function () {
-  var url = window.location.href;
-  console.log(url);
-
-  if (url.indexOf('userHome') > -1) {
-    topTermsChart();
-    searchCountChart();
-    platformChart();
-  }
-});
-
-function topTermsChart() {
-  var data = {
-    action: 'getTermsData'
-  };
-  $.ajax({
-    data: data,
-    method: 'post',
-    url: 'includes/php/SearchAnalytics.php',
-    success: function success(response) {
-      drawChart('topTermsChart', 'Top 5 Search Terms', 'doughnut', response);
-    },
-    error: function error() {
-      console.log('error');
-    }
-  });
-}
-
-function searchCountChart() {
-  var data = {
-    action: 'getSearchCount'
-  };
-  $.ajax({
-    data: data,
-    method: 'post',
-    url: 'includes/php/SearchAnalytics.php',
-    success: function success(response) {
-      drawChart('searchCountChart', 'Search Appearances', 'line', response);
-    },
-    error: function error() {
-      console.log('error');
-    }
-  });
-}
-
-function platformChart() {
-  var data = {
-    action: 'get_platforms'
-  };
-  $.ajax({
-    data: data,
-    method: 'post',
-    url: 'includes/php/SearchAnalytics.php',
-    success: function success(response) {
-      drawChart('searchPlatformChart', "Searches by Platform", 'bar', response);
-    }
-  });
-}
-
-function drawChart(container, title, chartType, response) {
-  var label = [];
-  var count = [];
-  var totalCount = 0;
-  $.each(JSON.parse(response), function (term, total) {
-    label.push(term);
-    count.push(parseInt(total));
-    totalCount += total;
-  });
-  var fill = null,
-      options = null,
-      borderColor = null;
-
-  if (chartType === 'bar' || chartType === 'line') {
-    borderColor = 'rgba(2,136,209,1.0)';
-    fill = false;
-    options = {
-      title: {
-        display: true,
-        text: title,
-        fontSize: 24
-      },
-      responsive: true,
-      scales: {
-        yAxes: [{
-          display: true,
-          ticks: {
-            suggestedMin: 0,
-            steps: 0.5
-          }
-        }]
-      }
-    };
-  } else if (chartType === 'doughnut') {
-    borderColor = 'rgba(0,0,0,0)';
-    options = {
-      title: {
-        display: true,
-        text: title,
-        fontSize: 24
-      },
-      responsive: true
-    };
-  }
-
-  var ctx = $("#" + container);
-  var myChart = new Chart(ctx, {
-    type: chartType,
-    data: {
-      labels: label,
-      datasets: [{
-        label: title,
-        data: count,
-        fill: fill,
-        borderColor: borderColor,
-        backgroundColor: ['rgba(2,136,209, 1.0)', 'rgba(2,136,209, 0.80)', 'rgba(2,136,209, 0.60)', 'rgba(2,136,209, 0.40)', 'rgba(2,136,209, 0.20)']
-      }]
-    },
-    options: options
-  });
-
-  if (myChart.data.datasets[0].data.length === 0) {
-    Chart.plugins.register({
-      afterDraw: function afterDraw(chart) {
-        ctx = myChart.chart.ctx;
-        var width = myChart.chart.width;
-        var height = myChart.chart.height; //myChart.clear();
-
-        ctx.save();
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.font = "16px normal 'Helvetica Nueue'";
-        ctx.canvas.title = myChart.options.title.text;
-        ctx.fillText('No data to display', width / 2, height / 2); //ctx.restore();
-      }
-    });
-  }
-  /*Chart.plugins.register({
-  	afterDraw: function(chart){
-  		$(chart.canvas).each(function(){
-  			if(myChart.data.datasets.data === undefined){
-  				var ctx = myChart.chart.ctx;
-  				var width = myChart.chart.width;
-  				var height = myChart.chart.height
-  				myChart.clear();
-  				
-  				ctx.save();
-  				ctx.textAlign = 'center';
-  				ctx.textBaseline = 'middle';
-  				ctx.font = "16px normal 'Helvetica Nueue'";
-  				ctx.fillText('No data to display', width / 2, height / 2);
-  				ctx.restore();
-  			}
-  		});
-  	}
-  });*/
-
-}
-
-/***/ }),
-
-/***/ "./assets/js/global/src/searchScript.js":
-/*!**********************************************!*\
-  !*** ./assets/js/global/src/searchScript.js ***!
-  \**********************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-var limit = 25;
-var page = 1;
-var offset = '0';
-var distance = 10;
-var params = {};
-var setMarkers = [];
-var markers = [];
-$(window).on('load', function () {
-  var url = window.location.href;
-  var parameters;
-
-  if (url.indexOf('results') > -1) {
-    parameters = getSearchParameters(url);
-    var offset = 25 * (parameters.page - 1);
-    initMap(parameters.terms, decodeURIComponent(parameters.location), parameters.distance, parseInt(parameters.page), 25, parseInt(offset));
-
-    if ($('.search-form__input').val() === undefined || $('.search-form__input').val() === null || $('.search-form__input').val() === "") {
-      $('.search-form__input').val(decodeURIComponent(parameters.terms));
-      $('.search-form__input').text(decodeURIComponent(parameters.terms));
-    }
-  }
-});
-$(document).mouseup(function (e) {
-  var searchContainer = $('.search-form__input');
-  var recentItems = $('.recent-searches--item');
-  var changeLocation = $('.recent-searches--search-location');
-
-  if (!searchContainer.is(e.target) && !recentItems.is(e.target) && !changeLocation.is(e.target) && searchContainer.has(e.target).length === 0) {
-    removeSuggestions();
-  }
-});
-
-window.getSearchParameters = function (url) {
-  var allParameters = url.split("?")[1].split("&");
-  var data = {};
-  allParameters.forEach(function (value) {
-    var param = value.split("=");
-    data[param[0]] = param[1];
-  });
-  return data;
-};
-/**
-* Collapse the suggestions box from the view
-*/
-
-
-function removeSuggestions() {
-  $('.recent-searches').remove();
-  $('.search-form__input').attr('placeholder', 'Search');
-}
-/*
-* Display the suggestions box
-*/
-
-
-function showSuggestions() {
-  if ($('.recent-searches').length <= 0) {
-    var suggestions = "<ul class='recent-searches'>";
-    suggestions += "<li class='recent-searches--search-location'><i class='fas fa-map-marker-alt'></i> " + $('.search-form__input').data('location') + "";
-    suggestions += "<li><i>Recent Searches</i></li>";
-    suggestions += "<li class='recent-searches--item' ng-click='search(search)' ng-model='search.terms'>Cheeseburger</li>";
-    suggestions += "</ul>";
-    $('.search-form__input').after(suggestions);
-    $('.recent-searches--search-location').on('click', function () {
-      changeLocation();
-    });
-    $('.recent-searches--item').on('click', function () {
-      removeSuggestions();
-      $('.search-form__input').val($(this).text());
-      goToSearchPage($(this).text(), $('.location-link').text(), 10, 1, 25, 0);
-    });
-  }
-}
-
-function changeLocation() {
-  var searchDistance = $('.search-form__input').data('distance');
-  var searchLocation = $('.search-form__input').data('location');
-  $('select[name="distance"]').val(searchDistance);
-  $('input[name="location"]').val(searchLocation);
-  $('#locationModal').modal('show');
-  window.userLocation = searchLocation;
-}
-/**
-* Populate the top picks section
-*/
-
-
-window.goToSearchPage = function (terms, searchLocation, distance, page, limit, offset) {
-  var url = window.location.protocol + "//" + window.location.host + window.location.pathname + "#!/results";
-  var searchParameters = "?action=search&terms=" + encodeURI(terms) + "&page=" + page + "&location=" + encodeURI(searchLocation.replace(/[(,)+]/g, '')) + "&distance=" + distance;
-  window.location.href = url + searchParameters;
-};
-/*
-* Perform the search based on the passed values
-*/
-
-
-function performSearch(terms, searchLocation, distance, page, limit, offset, map) {
-  $("#loadingModal").modal("show");
-  var data = {
-    'action': 'search',
-    'location': searchLocation,
-    'terms': terms,
-    'limit': limit,
-    'page': page,
-    'distance': distance,
-    'offset': offset
-  };
-  var display = '';
-  console.log(data); // Initialize the map			
-
-  $.post(window.search_url, data, function (response) {
-    console.log("Response");
-    console.log(response);
-
-    if (response.length > 0) {
-      $.each(response, function (index, result) {
-        display += '<li class="results-list--item" data-item-id="' + result.item_id + '">';
-        display += '<div class="card mb-3"></div><div class="row no-gutters">';
-        display += '<div class="col-md-4">';
-        display += '<img src="' + result.primary_image + '" class="card-img" alt="' + result.item_name + '">';
-        display += "</div>";
-        display += '<div class="col-md-8">';
-        display += '<div class="card-body">';
-        display += '<h3 class="card-title">' + result.item_name + '</h3>';
-        display += '<h4 class="card-title card-title--vendor-name">' + result.vendor_name + '</h4>';
-        display += '<p class="card-text"><small class="text-muted"></small></p>';
-        display += '<p class="card-text">' + result.item_short_description + '</p>';
-        display += "</div></div>";
-        display += '</div></div></li>';
-        window.addMarkers({
-          'lat': result.latitude,
-          'lng': result.longitude,
-          'title': result.vendor_name
-        }, map);
-      });
-    } else {
-      display += "<h3>It looks like there is nothing there.</h3><p>Try expanding your search location or searching for something else.</p>";
-    }
-  }, 'json').fail(function (error) {
-    console.log("Search Error (performSearch())");
-    console.log(error);
-    console.log("Data");
-    console.log(data);
-  }).done(function () {
-    $('.results-list').html(display);
-    $('.results-list--item').on('mouseenter', function () {
-      var title = $(this).find('.card-title--vendor-name').text();
-      markers.forEach(function (marker) {
-        if (marker.title === title) {
-          marker.setAnimation(google.maps.Animation.BOUNCE);
-        } else {
-          marker.setAnimation(null);
-        }
-      });
-    });
-    $('.results-list--item').on('click', function () {
-      var itemId = $(this).attr('data-item-id');
-      window.location.href = "#!/single?id=" + itemId;
-    });
-    $('.results-list--item').on('mouseleave', function () {
-      markers.forEach(function (marker) {
-        marker.setAnimation(null);
-      });
-    });
-    $("#loadingModal").modal("hide");
-  });
-}
-/*
-* Initialize the results map*/
-
-
-window.initMap = function (terms, searchLocation, distance, page, limit, offset) {
-  var url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + encodeURIComponent(searchLocation) + '&key=AIzaSyBNOJbx_2Q5h8f0ONZ4Abf5ULE0w4B-VTc';
-  var latlng = {};
-  var map;
-
-  if (document.getElementById('map') !== undefined && document.getElementById('map') !== null) {
-    $.get(url, null, function (success) {
-      if (success.results[0].geometry !== undefined) {
-        latlng.lat = success.results[0].geometry.location.lat;
-        latlng.lng = success.results[0].geometry.location.lng;
-      } else {
-        latlng.lat = 32.229004;
-        latlng.lng = -80.740280;
-      }
-    }).done(function () {
-      var map = new google.maps.Map(document.getElementById('map'), {
-        center: latlng,
-        zoom: 12
-      }); // Add a marker for the user's current search location
-
-      var image = 'assets/img/maps-and-flags.png';
-      var marker = new google.maps.Marker({
-        position: latlng,
-        title: "Your Search Location",
-        map: map,
-        visible: true,
-        icon: image
-      });
-      marker.addListener('click', function () {
-        var infowindow = new google.maps.InfoWindow({
-          content: marker.title
-        });
-        infowindow.open(map, marker);
-      });
-      markers.push(marker); // Add a circle for the search radius
-      // Convert the miles to meters
-
-      var radius = distance * 1609.34; // Instantiate the circle
-
-      var circle = new google.maps.Circle({
-        map: map,
-        radius: radius,
-        fillColor: '#AA0000'
-      }); // Add the circle to the map
-
-      circle.bindTo('center', marker, 'position'); // Perform the search
-
-      performSearch(terms, searchLocation, distance, page, limit, offset, map);
-    });
-  }
-};
-/**
-* Add marrkers to the map. 
-* We will only add each marker once by checking the restaurante title
-*/
-
-
-window.addMarkers = function (data, map) {
-  var position = new google.maps.LatLng(data.lat, data.lng);
-  var marker = new google.maps.Marker({
-    position: position,
-    title: data.title,
-    animation: google.maps.Animation.DROP,
-    map: map,
-    visible: true
-  });
-  marker.addListener('click', function () {
-    var infowindow = new google.maps.InfoWindow({
-      content: data.title
-    });
-    infowindow.open(map, marker);
-  });
-
-  if ($.inArray(data.title, setMarkers) <= 0) {
-    setMarkers.push(data.title);
-    markers.push(marker);
-  }
-};
-
-function get_map_center(address) {
-  var encoded_address = encodeURI(address);
-  $.ajax({
-    url: 'https://maps.googleapis.com/maps/api/geocode/json?address=' + encoded_address + '&key=AIzaSyBNOJbx_2Q5h8f0ONZ4Abf5ULE0w4B-VTc',
-    datatype: 'json',
-    method: 'get',
-    success: function success(response) {
-      var lat = response.results[0].geometry.location.lat;
-      var lng = response.results[0].geometry.location.lng;
-      return {
-        lat: lat,
-        lng: lng
-      };
-    },
-    error: function error(_error) {
-      console.log(_error);
-    }
-  });
-}
-
-function loadMore() {
-  this.page += 1;
-  var offset = this.limit * this.page;
-  var limit = this.limit;
-  var terms = $('.searchInput').val();
-  var location = null;
-
-  if ($('.locationLink').is(":visible")) {
-    location = $('.locationLink').data('location');
-  } else {
-    location = $(".locationInput").val();
-  }
-
-  var distance = $('.distance').val();
-  performSearch(terms, location, distance, page, limit, offset);
-}
-
-function getLatLng(location) {
-  var geocoder = new google.maps.Geocoder();
-  var latLng = location;
-  geocoder.geocode({
-    'address': location
-  }, function (results, status) {
-    if (status === 'OK') {
-      var lat = results[0].geometry.location.latitude;
-      var lng = results[0].geometry.location.longitude;
-      latLng = lat + '+' + lng;
-    }
-  });
-  return latLng;
-}
-
-/***/ }),
-
-/***/ "./assets/js/global/src/single.js":
-/*!****************************************!*\
-  !*** ./assets/js/global/src/single.js ***!
-  \****************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-window.getSingleVendorItems = function () {
-  var items_section = $('.related-vendor-items');
-  items_section.detach();
-  $('.related-items').append(window.loading_indicator);
-  var url = window.location.href;
-  var params = window.getSearchParameters(url);
-  params = {
-    item_id: params.id,
-    action: 'get_vendor_items'
-  };
-  var related_items = '';
-  $.post(window.single_item_url, params, function (response) {
-    console.log(response);
-    $.each(response, function (index, item) {
-      related_items += '<li class="related-vendor-item">';
-      related_items += '<div class="card" style="width: 18rem;">';
-      related_items += '<img src="' + item.primary_image + '" class="card-img-top" alt="' + item.item_name + '">';
-      related_items += '<div class="card-body">';
-      related_items += '<h5 class="card-title">' + item.item_name + '</h5>';
-      related_items += '<p class="card-text">' + item.item_short_description + '</p>';
-      related_items += '<a href="#" data-id="' + item.item_id + '" class="btn btn-primary item-btn">View Item</a>';
-      related_items += '</div>';
-      related_items += '</div>';
-      related_items += '</li>';
-    });
-  }, 'json').done(function () {
-    $('.related-items').html(items_section);
-    items_section.html(related_items);
-    $('.item-btn').on('click', function (e) {
-      e.preventDefault();
-      window.showItem($(this).data('id'));
-      window.scrollTo(0, 0);
-    });
-  });
-};
-/*
-* Get the item information to be shown on the single item page
-*/
-
-
-window.showSingleItem = function (itemId) {
-  var singleUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + "#!/single";
-  window.location.href = singleUrl + "?id=" + itemId;
-  var queryUrl = "includes/php/search.php";
-  var data = {
-    'action': 'getSingleItem',
-    'item_id': itemId
-  };
-  $.post(queryUrl, data, 'json').done(function (response) {
-    populateSingleItemInformation(response);
-  });
-};
-/*
-* Handle the single item data 
-*/
-
-
-function populateSingleItemInformation(data) {
-  var data = JSON.parse(data);
-  $('.item-name').text(data.item_name);
-  $('.item-image').attr('src', data.primary_image).attr('alt', data.item_name); //$('.item-image').attr('src', 'http://localhost/utterfare/assets/img/new-york-strip.jpg').attr('alt', data.item_name);
-
-  latlng = {
-    lat: parseFloat(data.latitude),
-    lng: parseFloat(data.longitude)
-  };
-  map = new google.maps.Map(document.getElementById('single-item--map'), {
-    center: {
-      lat: latlng.lat,
-      lng: latlng.lng
-    },
-    zoom: 14
-  });
-
-  if (JSON.parse(data.address).length > 0) {
-    var address = JSON.parse(data.address)._address;
-
-    $('.vendor-address').attr('href', "http://maps.google.com/maps?q=" + address).text(address);
-  } else {
-    var geocoder = new google.maps.Geocoder();
-    geocoder.geocode({
-      'latLng': latlng
-    }, function (result, status) {
-      var address = result[0].formatted_address;
-      $('.vendor-address').attr('href', "http://maps.google.com/maps?q=" + address).text(address);
-    });
-  }
-
-  window.addMarkers({
-    lat: data.latitude,
-    lng: data.longitude,
-    title: data.vendor_name
-  }, map);
-  $('.item-description').text(data.item_description);
-}
-
-window.getItemReviews = function () {
-  var url = window.location.href;
-  var params = window.getSearchParameters(url);
-  params = {
-    item_id: params.id,
-    action: 'get_item_reviews'
-  };
-  var review = "";
-  $.post(window.single_item_url, params, function (data, textStatus, jqXHR) {
-    if (data !== "") {
-      $.each(data, function (index, item) {
-        review += '<li class="item-reviews--reivew">';
-        review += '<div class="d-flex align-items-start">';
-        review += '<img class="item-reviews--user-profile-picture" src="' + data.profile_image + '" alt="' + item.username + ' Profile Picture">';
-        review += '<div class="d-flex align-items-start flex-column">';
-        review += '<h3 class="item-reviews--title p-2">' + item.review_title + '</h3>';
-        review += '<p class="item-reviews--body p-2">' + item.review_text + '</p>';
-        review += '</div>';
-        review += '</div>';
-        review += '</li>';
-      });
-    }
-  }).done(function () {
-    if (review === "") {
-      $('.item-reviews').prepend('<h4>There are no reviews yet.</h4><p>Be the first person to leave a review for this item!</p>');
-    } else {
-      $('.item-reviews').html(review);
-    }
-  });
-};
-
-window.getItemRating = function () {
-  var url = window.location.href;
-  var params = getSearchParameters(url);
-  var data = {
-    item_id: params.id,
-    action: 'get_item_ratings'
-  };
-  $.post(window.single_item_url, data, function (data, textStatus, jqXHR) {}, 'json').done(function () {});
-};
-
-/***/ }),
-
 /***/ "./assets/js/global/src/vendor.js":
 /*!****************************************!*\
   !*** ./assets/js/global/src/vendor.js ***!
@@ -1852,30 +909,281 @@ window.getItemRating = function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-function getVendorStatus() {
+var page = 1;
+
+window.getVendorStatus = function () {
   console.log(session);
 
-  if (session.length !== 0) {
-    if (session.UF_VENDOR_ID !== undefined) {
-      return true;
-    } else {
-      return false;
+  if (window.session.length !== 0) {
+    session = $.parseJSON(session);
+    console.log(session);
+
+    if (session.UF_VENDOR_USER_SIGNED_IN === true) {
+      return session.UF_VENDOR_USER_ID;
     }
   }
-}
 
-function vendorSignIn() {
-  var data = $('form[name="vendorSignInForm"]').serialize();
-  data += "&" + "action=vendorSignIn";
+  return false;
+};
+
+window.vendorSignIn = function () {
+  var data = $('.vendor-login-form').serialize();
+  data += '&action=vendor_sign_in';
+  console.log(data);
+  console.log(window.vendor_class_url);
   var success = false;
-  $.post(vendor_url, data, function (response) {
+  $.post(window.vendor_class_url, data, function (response) {
+    console.log(response);
+    console.log(response.success);
     success = response.success;
-  }, 'json').done(function () {
-    if (success === true) {} else {
-      notifyUser();
+  }, 'json').fail(function (error) {
+    console.log('error');
+    console.log(error);
+  }).done(function () {
+    console.log(success);
+
+    if (success === true) {
+      window.location.href = "/vendor";
+    } else {
+      notify();
     }
   });
+};
+
+window.confirmDelete = function () {
+  $('.delete-item-button').popover({
+    container: 'body',
+    content: 'Are you sure you want to delete this item? This action cannot be undone.<hr><a class="btn btn-outline-danger" href="">Delete Item</a> <a class="btn btn-outline-secondary" onclick="closePopover();">Cancel</a>',
+    html: true,
+    title: 'Confirm Delete Item'
+  });
+};
+
+function closePopover() {
+  console.log('close');
+  $('.delete-item-button').popover('trigger');
 }
+
+function notify() {
+  console.log("Notify the user of something");
+}
+
+window.getMenuItems = function (page) {
+  this.page = page;
+
+  if (page === null || page === undefined) {
+    page = 1;
+  }
+
+  var limit = 10;
+  var offset = (page - 1) * limit;
+  var data = {
+    action: 'get_menu_items',
+    offset: offset,
+    limit: limit
+  };
+  var display = document.createElement('tbody');
+  var pagination = document.createElement('ul');
+  pagination.className = 'pagination';
+  var totalItems = 0;
+  $.post(window.vendor_class_url, data, function (results) {
+    if (results.length > 0) {
+      totalItems = results[0].total_items;
+      var totalPages = totalItems / limit;
+
+      for (i = 1; i <= totalPages; i++) {
+        var pageWrapper = document.createElement('li');
+        var pageElement = document.createElement('a'); // Set the active page element
+
+        if (page === i) {
+          pageWrapper.className = 'page-item active';
+        } else {
+          pageWrapper.className = 'page-item';
+        }
+
+        pageElement.textContent = i;
+        pageElement.className = 'page-link';
+        pageElement.setAttribute('href', '');
+        pageElement.setAttribute('onclick', 'return getMenuItems(' + i + ');');
+        pageWrapper.appendChild(pageElement);
+        pagination.appendChild(pageWrapper);
+      }
+
+      $.each(results, function (key, result) {
+        var row = document.createElement("tr"); // Table columns
+
+        var imgColumn = document.createElement('td');
+        var nameColumn = document.createElement('td');
+        var descColumn = document.createElement('td');
+        var editDeleteColumn = document.createElement('td'); // HTML Elements
+
+        var itemImage = document.createElement('img');
+        var itemName = document.createElement('span');
+        var itemDescription = document.createElement('span');
+        var editButton = document.createElement('a');
+        var deleteButton = document.createElement('button');
+        itemName.textContent = result.item_name;
+        itemDescription.textContent = result.item_description;
+        deleteButton.className = "btn btn-outline-danger delete-item-popover";
+        editButton.className = "btn btn-outline-info";
+        editButton.setAttribute("href", "#!/items/edit?item_id=" + result.item_id);
+        deleteButton.setAttribute("onclick", "confirmDeleteItem(" + result.item_id + ")");
+        deleteButton.setAttribute('type', 'button');
+        deleteButton.setAttribute('data-title', "Confirm Delete Item");
+        deleteButton.setAttribute('data-toggle', 'popover');
+        deleteButton.setAttribute('data-content', 'popover content');
+        deleteButton.setAttribute('data-placement', 'top');
+        editButton.textContent = "Edit";
+        deleteButton.textContent = "Delete";
+        itemImage.setAttribute('src', result.primary_image);
+        itemImage.setAttribute('alt', result.item_name);
+        itemImage.setAttribute('class', 'items-table--item-image');
+        imgColumn.appendChild(itemImage);
+        nameColumn.appendChild(itemName);
+        descColumn.appendChild(itemDescription);
+        editDeleteColumn.appendChild(editButton);
+        editDeleteColumn.appendChild(deleteButton);
+        row.setAttribute('data-item-id', result.item_id);
+        row.appendChild(imgColumn);
+        row.appendChild(nameColumn);
+        row.appendChild(descColumn);
+        row.appendChild(editDeleteColumn);
+        display.appendChild(row);
+      });
+    }
+  }, 'json').fail(function (error) {
+    console.log("Error");
+    console.log(error);
+  }).done(function () {
+    console.log(display);
+
+    if (display !== "") {
+      $('.items-table tbody').replaceWith(display);
+      $('.pagination').replaceWith(pagination);
+      $('.results-count--range').text(offset + 1 + " to " + (offset + limit));
+      $('.results-count--total').text(totalItems);
+    }
+  });
+  return false;
+};
+
+window.confirmDeleteItem = function (item_id) {
+  var confirmDelete = window.confirm("Are you sure you want to delete this item? This action CANNOT be undone.");
+
+  if (confirmDelete) {
+    var data = {
+      action: 'delete_item',
+      item_id: item_id
+    };
+    $.post(window.vendor_class_url, data, function (response) {
+      console.log(response);
+    }).fail(function (error) {
+      console.log("error");
+      console.log(error);
+    }).done(function () {
+      getMenuItems(page);
+    });
+  }
+};
+
+window.signUserOut = function () {
+  var data = {
+    action: 'sign_user_out'
+  };
+  $.post(window.vendor_class_url, data, function (results) {
+    console.log(results);
+  }).fail(function (error) {
+    console.log('fail');
+    console.log(error);
+  }).done(function () {
+    window.location.href = "#!/vendor";
+  });
+  return false;
+};
+
+window.getItem = function (itemId) {
+  var data = {
+    action: 'get_item',
+    item_id: itemId
+  };
+  var results = null;
+  $.post(window.vendor_class_url, data, function (response) {
+    results = response;
+  }, 'json').fail(function (error) {
+    console.log("error");
+    console.log(error);
+  }).done(function () {
+    $('form[name="edit-item-form"]').attr('data-item-id', itemId);
+    $('input[name="item-name"]').val(results.item_name);
+    $('textarea[name="item-description"]').val(results.item_description);
+    $('.edit-item--item-image').attr('src', results.primary_image);
+  });
+};
+
+window.setPreview = function (input) {
+  var reader = new FileReader();
+
+  reader.onload = function (e) {
+    $('.edit-item--item-image').attr('src', e.target.result);
+  };
+
+  reader.readAsDataURL(input.files[0]);
+};
+
+window.addEditItem = function (form) {
+  var itemId = $(form).attr('data-item-id');
+  var formData = new FormData(form);
+
+  if (itemId !== undefined && itemId !== "") {
+    formData.append('action', 'update_item');
+    formData.append('item-id', $(form).attr('data-item-id'));
+  } else {
+    formData.append('action', 'add_new_item');
+  }
+
+  var results = null;
+  $.ajax({
+    url: window.vendor_class_url,
+    data: formData,
+    type: 'POST',
+    processData: false,
+    cache: false,
+    contentType: false,
+    dataType: 'json',
+    success: function success(response) {
+      if (response.item_id !== undefined) {
+        results = response.item_id;
+      } else if (response.success !== undefined) {
+        results = response.success;
+      }
+    },
+    error: function error(_error) {
+      console.log("Error");
+      console.log(_error);
+    },
+    complete: function complete() {
+      console.log(results);
+
+      if (results >= 1) {
+        if ($.isNumeric(results)) {
+          // If it is a new item we are setting the item ID data attribute
+          form.setAttribute('data-item-id', results);
+          var url = window.location.href + "?item_id=" + results;
+          window.history.pushState({
+            path: url
+          }, '', url);
+        }
+
+        $('.toast').toast({
+          delay: 5000
+        });
+        $('.toast').toast('show');
+      } else {
+        console.log('nothing');
+      }
+    }
+  });
+};
 
 /***/ }),
 
@@ -1909,7 +1217,7 @@ function vendorSignIn() {
 /***/ (function(module, exports) {
 
 /**
- * @license AngularJS v1.6.9
+ * @license AngularJS v1.7.9
  * (c) 2010-2018 Google, Inc. http://angularjs.org
  * License: MIT
  */
@@ -1942,6 +1250,52 @@ function shallowCopy(src, dst) {
   return dst || src;
 }
 
+/* global routeToRegExp: true */
+
+/**
+ * @param {string} path - The path to parse. (It is assumed to have query and hash stripped off.)
+ * @param {Object} opts - Options.
+ * @return {Object} - An object containing an array of path parameter names (`keys`) and a regular
+ *     expression (`regexp`) that can be used to identify a matching URL and extract the path
+ *     parameter values.
+ *
+ * @description
+ * Parses the given path, extracting path parameter names and a regular expression to match URLs.
+ *
+ * Originally inspired by `pathRexp` in `visionmedia/express/lib/utils.js`.
+ */
+function routeToRegExp(path, opts) {
+  var keys = [];
+
+  var pattern = path
+    .replace(/([().])/g, '\\$1')
+    .replace(/(\/)?:(\w+)(\*\?|[?*])?/g, function(_, slash, key, option) {
+      var optional = option === '?' || option === '*?';
+      var star = option === '*' || option === '*?';
+      keys.push({name: key, optional: optional});
+      slash = slash || '';
+      return (
+        (optional ? '(?:' + slash : slash + '(?:') +
+        (star ? '(.+?)' : '([^/]+)') +
+        (optional ? '?)?' : ')')
+      );
+    })
+    .replace(/([/$*])/g, '\\$1');
+
+  if (opts.ignoreTrailingSlashes) {
+    pattern = pattern.replace(/\/+$/, '') + '/*';
+  }
+
+  return {
+    keys: keys,
+    regexp: new RegExp(
+      '^' + pattern + '(?:[?#]|$)',
+      opts.caseInsensitiveMatch ? 'i' : ''
+    )
+  };
+}
+
+/* global routeToRegExp: false */
 /* global shallowCopy: false */
 
 // `isArray` and `isObject` are necessary for `shallowCopy()` (included via `src/shallowCopy.js`).
@@ -1965,7 +1319,7 @@ var noop;
 /* global -ngRouteModule */
 var ngRouteModule = angular.
   module('ngRoute', []).
-  info({ angularVersion: '1.6.9' }).
+  info({ angularVersion: '1.7.9' }).
   provider('$route', $RouteProvider).
   // Ensure `$route` will be instantiated in time to capture the initial `$locationChangeSuccess`
   // event (unless explicitly disabled). This is necessary in case `ngView` is included in an
@@ -2125,11 +1479,22 @@ function $RouteProvider() {
    *      `redirectTo` takes precedence over `resolveRedirectTo`, so specifying both on the same
    *      route definition, will cause the latter to be ignored.
    *
+   *    - `[reloadOnUrl=true]` - `{boolean=}` - reload route when any part of the URL changes
+   *      (including the path) even if the new URL maps to the same route.
+   *
+   *      If the option is set to `false` and the URL in the browser changes, but the new URL maps
+   *      to the same route, then a `$routeUpdate` event is broadcasted on the root scope (without
+   *      reloading the route).
+   *
    *    - `[reloadOnSearch=true]` - `{boolean=}` - reload route when only `$location.search()`
    *      or `$location.hash()` changes.
    *
-   *      If the option is set to `false` and url in the browser changes, then
-   *      `$routeUpdate` event is broadcasted on the root scope.
+   *      If the option is set to `false` and the URL in the browser changes, then a `$routeUpdate`
+   *      event is broadcasted on the root scope (without reloading the route).
+   *
+   *      <div class="alert alert-warning">
+   *        **Note:** This option has no effect if `reloadOnUrl` is set to `false`.
+   *      </div>
    *
    *    - `[caseInsensitiveMatch=false]` - `{boolean=}` - match routes without being case sensitive
    *
@@ -2144,6 +1509,9 @@ function $RouteProvider() {
   this.when = function(path, route) {
     //copy original route object to preserve params inherited from proto chain
     var routeCopy = shallowCopy(route);
+    if (angular.isUndefined(routeCopy.reloadOnUrl)) {
+      routeCopy.reloadOnUrl = true;
+    }
     if (angular.isUndefined(routeCopy.reloadOnSearch)) {
       routeCopy.reloadOnSearch = true;
     }
@@ -2152,7 +1520,8 @@ function $RouteProvider() {
     }
     routes[path] = angular.extend(
       routeCopy,
-      path && pathRegExp(path, routeCopy)
+      {originalPath: path},
+      path && routeToRegExp(path, routeCopy)
     );
 
     // create redirection for trailing slashes
@@ -2162,8 +1531,8 @@ function $RouteProvider() {
             : path + '/';
 
       routes[redirectPath] = angular.extend(
-        {redirectTo: path},
-        pathRegExp(redirectPath, routeCopy)
+        {originalPath: path, redirectTo: path},
+        routeToRegExp(redirectPath, routeCopy)
       );
     }
 
@@ -2180,47 +1549,6 @@ function $RouteProvider() {
    * algorithm. Defaults to `false`.
    */
   this.caseInsensitiveMatch = false;
-
-   /**
-    * @param path {string} path
-    * @param opts {Object} options
-    * @return {?Object}
-    *
-    * @description
-    * Normalizes the given path, returning a regular expression
-    * and the original path.
-    *
-    * Inspired by pathRexp in visionmedia/express/lib/utils.js.
-    */
-  function pathRegExp(path, opts) {
-    var insensitive = opts.caseInsensitiveMatch,
-        ret = {
-          originalPath: path,
-          regexp: path
-        },
-        keys = ret.keys = [];
-
-    path = path
-      .replace(/([().])/g, '\\$1')
-      .replace(/(\/)?:(\w+)(\*\?|[?*])?/g, function(_, slash, key, option) {
-        var optional = (option === '?' || option === '*?') ? '?' : null;
-        var star = (option === '*' || option === '*?') ? '*' : null;
-        keys.push({ name: key, optional: !!optional });
-        slash = slash || '';
-        return ''
-          + (optional ? '' : slash)
-          + '(?:'
-          + (optional ? slash : '')
-          + (star && '(.+?)' || '([^/]+)')
-          + (optional || '')
-          + ')'
-          + (optional || '');
-      })
-      .replace(/([/$*])/g, '\\$1');
-
-    ret.regexp = new RegExp('^' + path + '$', insensitive ? 'i' : '');
-    return ret;
-  }
 
   /**
    * @ngdoc method
@@ -2486,8 +1814,9 @@ function $RouteProvider() {
      * @name $route#$routeUpdate
      * @eventType broadcast on root scope
      * @description
-     * The `reloadOnSearch` property has been set to false, and we are reusing the same
-     * instance of the Controller.
+     * Broadcasted if the same instance of a route (including template, controller instance,
+     * resolved dependencies, etc.) is being reused. This can happen if either `reloadOnSearch` or
+     * `reloadOnUrl` has been set to `false`.
      *
      * @param {Object} angularEvent Synthetic event object
      * @param {Route} current Current/previous route information.
@@ -2547,7 +1876,7 @@ function $RouteProvider() {
               // interpolate modifies newParams, only query params are left
               $location.search(newParams);
             } else {
-              throw $routeMinErr('norout', 'Tried updating route when with no current route');
+              throw $routeMinErr('norout', 'Tried updating route with no current route');
             }
           }
         };
@@ -2595,9 +1924,7 @@ function $RouteProvider() {
       var lastRoute = $route.current;
 
       preparedRoute = parseRoute();
-      preparedRouteIsUpdateOnly = preparedRoute && lastRoute && preparedRoute.$$route === lastRoute.$$route
-          && angular.equals(preparedRoute.pathParams, lastRoute.pathParams)
-          && !preparedRoute.reloadOnSearch && !forceReload;
+      preparedRouteIsUpdateOnly = isNavigationUpdateOnly(preparedRoute, lastRoute);
 
       if (!preparedRouteIsUpdateOnly && (lastRoute || preparedRoute)) {
         if ($rootScope.$broadcast('$routeChangeStart', preparedRoute, lastRoute).defaultPrevented) {
@@ -2622,7 +1949,7 @@ function $RouteProvider() {
 
         var nextRoutePromise = $q.resolve(nextRoute);
 
-        $browser.$$incOutstandingRequestCount();
+        $browser.$$incOutstandingRequestCount('$route');
 
         nextRoutePromise.
           then(getRedirectionData).
@@ -2650,7 +1977,7 @@ function $RouteProvider() {
             // `outstandingRequestCount` to hit zero.  This is important in case we are redirecting
             // to a new route which also requires some asynchronous work.
 
-            $browser.$$completeOutstandingRequest(noop);
+            $browser.$$completeOutstandingRequest(noop, '$route');
           });
       }
     }
@@ -2775,6 +2102,29 @@ function $RouteProvider() {
       });
       // No route matched; fallback to "otherwise" route
       return match || routes[null] && inherit(routes[null], {params: {}, pathParams:{}});
+    }
+
+    /**
+     * @param {Object} newRoute - The new route configuration (as returned by `parseRoute()`).
+     * @param {Object} oldRoute - The previous route configuration (as returned by `parseRoute()`).
+     * @returns {boolean} Whether this is an "update-only" navigation, i.e. the URL maps to the same
+     *                    route and it can be reused (based on the config and the type of change).
+     */
+    function isNavigationUpdateOnly(newRoute, oldRoute) {
+      // IF this is not a forced reload
+      return !forceReload
+          // AND both `newRoute`/`oldRoute` are defined
+          && newRoute && oldRoute
+          // AND they map to the same Route Definition Object
+          && (newRoute.$$route === oldRoute.$$route)
+          // AND `reloadOnUrl` is disabled
+          && (!newRoute.reloadOnUrl
+              // OR `reloadOnSearch` is disabled
+              || (!newRoute.reloadOnSearch
+                  // AND both routes have the same path params
+                  && angular.equals(newRoute.pathParams, oldRoute.pathParams)
+              )
+          );
     }
 
     /**
@@ -39611,14 +38961,14 @@ module.exports = angular;
 /***/ (function(module, exports, __webpack_require__) {
 
 /*!
-  * Bootstrap v4.3.1 (https://getbootstrap.com/)
+  * Bootstrap v4.4.1 (https://getbootstrap.com/)
   * Copyright 2011-2019 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
   */
 (function (global, factory) {
    true ? factory(exports, __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js"), __webpack_require__(/*! popper.js */ "./node_modules/popper.js/dist/esm/popper.js")) :
   undefined;
-}(this, function (exports, $, Popper) { 'use strict';
+}(this, (function (exports, $, Popper) { 'use strict';
 
   $ = $ && $.hasOwnProperty('default') ? $['default'] : $;
   Popper = Popper && Popper.hasOwnProperty('default') ? Popper['default'] : Popper;
@@ -39654,20 +39004,35 @@ module.exports = angular;
     return obj;
   }
 
-  function _objectSpread(target) {
+  function ownKeys(object, enumerableOnly) {
+    var keys = Object.keys(object);
+
+    if (Object.getOwnPropertySymbols) {
+      var symbols = Object.getOwnPropertySymbols(object);
+      if (enumerableOnly) symbols = symbols.filter(function (sym) {
+        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+      });
+      keys.push.apply(keys, symbols);
+    }
+
+    return keys;
+  }
+
+  function _objectSpread2(target) {
     for (var i = 1; i < arguments.length; i++) {
       var source = arguments[i] != null ? arguments[i] : {};
-      var ownKeys = Object.keys(source);
 
-      if (typeof Object.getOwnPropertySymbols === 'function') {
-        ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) {
-          return Object.getOwnPropertyDescriptor(source, sym).enumerable;
-        }));
+      if (i % 2) {
+        ownKeys(Object(source), true).forEach(function (key) {
+          _defineProperty(target, key, source[key]);
+        });
+      } else if (Object.getOwnPropertyDescriptors) {
+        Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+      } else {
+        ownKeys(Object(source)).forEach(function (key) {
+          Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+        });
       }
-
-      ownKeys.forEach(function (key) {
-        _defineProperty(target, key, source[key]);
-      });
     }
 
     return target;
@@ -39681,7 +39046,7 @@ module.exports = angular;
 
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v4.3.1): util.js
+   * Bootstrap (v4.4.1): util.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -39830,8 +39195,25 @@ module.exports = angular;
       }
 
       return Util.findShadowRoot(element.parentNode);
+    },
+    jQueryDetection: function jQueryDetection() {
+      if (typeof $ === 'undefined') {
+        throw new TypeError('Bootstrap\'s JavaScript requires jQuery. jQuery must be included before Bootstrap\'s JavaScript.');
+      }
+
+      var version = $.fn.jquery.split(' ')[0].split('.');
+      var minMajor = 1;
+      var ltMajor = 2;
+      var minMinor = 9;
+      var minPatch = 1;
+      var maxMajor = 4;
+
+      if (version[0] < ltMajor && version[1] < minMinor || version[0] === minMajor && version[1] === minMinor && version[2] < minPatch || version[0] >= maxMajor) {
+        throw new Error('Bootstrap\'s JavaScript requires at least jQuery v1.9.1 but less than v4.0.0');
+      }
     }
   };
+  Util.jQueryDetection();
   setTransitionEndSupport();
 
   /**
@@ -39841,7 +39223,7 @@ module.exports = angular;
    */
 
   var NAME = 'alert';
-  var VERSION = '4.3.1';
+  var VERSION = '4.4.1';
   var DATA_KEY = 'bs.alert';
   var EVENT_KEY = "." + DATA_KEY;
   var DATA_API_KEY = '.data-api';
@@ -39858,13 +39240,12 @@ module.exports = angular;
     ALERT: 'alert',
     FADE: 'fade',
     SHOW: 'show'
-    /**
-     * ------------------------------------------------------------------------
-     * Class Definition
-     * ------------------------------------------------------------------------
-     */
-
   };
+  /**
+   * ------------------------------------------------------------------------
+   * Class Definition
+   * ------------------------------------------------------------------------
+   */
 
   var Alert =
   /*#__PURE__*/
@@ -40006,7 +39387,7 @@ module.exports = angular;
    */
 
   var NAME$1 = 'button';
-  var VERSION$1 = '4.3.1';
+  var VERSION$1 = '4.4.1';
   var DATA_KEY$1 = 'bs.button';
   var EVENT_KEY$1 = "." + DATA_KEY$1;
   var DATA_API_KEY$1 = '.data-api';
@@ -40018,21 +39399,23 @@ module.exports = angular;
   };
   var Selector$1 = {
     DATA_TOGGLE_CARROT: '[data-toggle^="button"]',
-    DATA_TOGGLE: '[data-toggle="buttons"]',
+    DATA_TOGGLES: '[data-toggle="buttons"]',
+    DATA_TOGGLE: '[data-toggle="button"]',
+    DATA_TOGGLES_BUTTONS: '[data-toggle="buttons"] .btn',
     INPUT: 'input:not([type="hidden"])',
     ACTIVE: '.active',
     BUTTON: '.btn'
   };
   var Event$1 = {
     CLICK_DATA_API: "click" + EVENT_KEY$1 + DATA_API_KEY$1,
-    FOCUS_BLUR_DATA_API: "focus" + EVENT_KEY$1 + DATA_API_KEY$1 + " " + ("blur" + EVENT_KEY$1 + DATA_API_KEY$1)
-    /**
-     * ------------------------------------------------------------------------
-     * Class Definition
-     * ------------------------------------------------------------------------
-     */
-
+    FOCUS_BLUR_DATA_API: "focus" + EVENT_KEY$1 + DATA_API_KEY$1 + " " + ("blur" + EVENT_KEY$1 + DATA_API_KEY$1),
+    LOAD_DATA_API: "load" + EVENT_KEY$1 + DATA_API_KEY$1
   };
+  /**
+   * ------------------------------------------------------------------------
+   * Class Definition
+   * ------------------------------------------------------------------------
+   */
 
   var Button =
   /*#__PURE__*/
@@ -40048,7 +39431,7 @@ module.exports = angular;
     _proto.toggle = function toggle() {
       var triggerChangeEvent = true;
       var addAriaPressed = true;
-      var rootElement = $(this._element).closest(Selector$1.DATA_TOGGLE)[0];
+      var rootElement = $(this._element).closest(Selector$1.DATA_TOGGLES)[0];
 
       if (rootElement) {
         var input = this._element.querySelector(Selector$1.INPUT);
@@ -40064,13 +39447,16 @@ module.exports = angular;
                 $(activeElement).removeClass(ClassName$1.ACTIVE);
               }
             }
+          } else if (input.type === 'checkbox') {
+            if (this._element.tagName === 'LABEL' && input.checked === this._element.classList.contains(ClassName$1.ACTIVE)) {
+              triggerChangeEvent = false;
+            }
+          } else {
+            // if it's not a radio button or checkbox don't add a pointless/invalid checked property to the input
+            triggerChangeEvent = false;
           }
 
           if (triggerChangeEvent) {
-            if (input.hasAttribute('disabled') || rootElement.hasAttribute('disabled') || input.classList.contains('disabled') || rootElement.classList.contains('disabled')) {
-              return;
-            }
-
             input.checked = !this._element.classList.contains(ClassName$1.ACTIVE);
             $(input).trigger('change');
           }
@@ -40080,12 +39466,14 @@ module.exports = angular;
         }
       }
 
-      if (addAriaPressed) {
-        this._element.setAttribute('aria-pressed', !this._element.classList.contains(ClassName$1.ACTIVE));
-      }
+      if (!(this._element.hasAttribute('disabled') || this._element.classList.contains('disabled'))) {
+        if (addAriaPressed) {
+          this._element.setAttribute('aria-pressed', !this._element.classList.contains(ClassName$1.ACTIVE));
+        }
 
-      if (triggerChangeEvent) {
-        $(this._element).toggleClass(ClassName$1.ACTIVE);
+        if (triggerChangeEvent) {
+          $(this._element).toggleClass(ClassName$1.ACTIVE);
+        }
       }
     };
 
@@ -40127,17 +39515,57 @@ module.exports = angular;
 
 
   $(document).on(Event$1.CLICK_DATA_API, Selector$1.DATA_TOGGLE_CARROT, function (event) {
-    event.preventDefault();
     var button = event.target;
 
     if (!$(button).hasClass(ClassName$1.BUTTON)) {
-      button = $(button).closest(Selector$1.BUTTON);
+      button = $(button).closest(Selector$1.BUTTON)[0];
     }
 
-    Button._jQueryInterface.call($(button), 'toggle');
+    if (!button || button.hasAttribute('disabled') || button.classList.contains('disabled')) {
+      event.preventDefault(); // work around Firefox bug #1540995
+    } else {
+      var inputBtn = button.querySelector(Selector$1.INPUT);
+
+      if (inputBtn && (inputBtn.hasAttribute('disabled') || inputBtn.classList.contains('disabled'))) {
+        event.preventDefault(); // work around Firefox bug #1540995
+
+        return;
+      }
+
+      Button._jQueryInterface.call($(button), 'toggle');
+    }
   }).on(Event$1.FOCUS_BLUR_DATA_API, Selector$1.DATA_TOGGLE_CARROT, function (event) {
     var button = $(event.target).closest(Selector$1.BUTTON)[0];
     $(button).toggleClass(ClassName$1.FOCUS, /^focus(in)?$/.test(event.type));
+  });
+  $(window).on(Event$1.LOAD_DATA_API, function () {
+    // ensure correct active class is set to match the controls' actual values/states
+    // find all checkboxes/readio buttons inside data-toggle groups
+    var buttons = [].slice.call(document.querySelectorAll(Selector$1.DATA_TOGGLES_BUTTONS));
+
+    for (var i = 0, len = buttons.length; i < len; i++) {
+      var button = buttons[i];
+      var input = button.querySelector(Selector$1.INPUT);
+
+      if (input.checked || input.hasAttribute('checked')) {
+        button.classList.add(ClassName$1.ACTIVE);
+      } else {
+        button.classList.remove(ClassName$1.ACTIVE);
+      }
+    } // find all button toggles
+
+
+    buttons = [].slice.call(document.querySelectorAll(Selector$1.DATA_TOGGLE));
+
+    for (var _i = 0, _len = buttons.length; _i < _len; _i++) {
+      var _button = buttons[_i];
+
+      if (_button.getAttribute('aria-pressed') === 'true') {
+        _button.classList.add(ClassName$1.ACTIVE);
+      } else {
+        _button.classList.remove(ClassName$1.ACTIVE);
+      }
+    }
   });
   /**
    * ------------------------------------------------------------------------
@@ -40160,7 +39588,7 @@ module.exports = angular;
    */
 
   var NAME$2 = 'carousel';
-  var VERSION$2 = '4.3.1';
+  var VERSION$2 = '4.4.1';
   var DATA_KEY$2 = 'bs.carousel';
   var EVENT_KEY$2 = "." + DATA_KEY$2;
   var DATA_API_KEY$2 = '.data-api';
@@ -40233,13 +39661,12 @@ module.exports = angular;
   var PointerType = {
     TOUCH: 'touch',
     PEN: 'pen'
-    /**
-     * ------------------------------------------------------------------------
-     * Class Definition
-     * ------------------------------------------------------------------------
-     */
-
   };
+  /**
+   * ------------------------------------------------------------------------
+   * Class Definition
+   * ------------------------------------------------------------------------
+   */
 
   var Carousel =
   /*#__PURE__*/
@@ -40359,7 +39786,7 @@ module.exports = angular;
     ;
 
     _proto._getConfig = function _getConfig(config) {
-      config = _objectSpread({}, Default, config);
+      config = _objectSpread2({}, Default, {}, config);
       Util.typeCheckConfig(NAME$2, config, DefaultType);
       return config;
     };
@@ -40371,7 +39798,8 @@ module.exports = angular;
         return;
       }
 
-      var direction = absDeltax / this.touchDeltaX; // swipe left
+      var direction = absDeltax / this.touchDeltaX;
+      this.touchDeltaX = 0; // swipe left
 
       if (direction > 0) {
         this.prev();
@@ -40497,8 +39925,6 @@ module.exports = angular;
           event.preventDefault();
           this.next();
           break;
-
-        default:
       }
     };
 
@@ -40650,10 +40076,10 @@ module.exports = angular;
       return this.each(function () {
         var data = $(this).data(DATA_KEY$2);
 
-        var _config = _objectSpread({}, Default, $(this).data());
+        var _config = _objectSpread2({}, Default, {}, $(this).data());
 
         if (typeof config === 'object') {
-          _config = _objectSpread({}, _config, config);
+          _config = _objectSpread2({}, _config, {}, config);
         }
 
         var action = typeof config === 'string' ? config : _config.slide;
@@ -40691,7 +40117,7 @@ module.exports = angular;
         return;
       }
 
-      var config = _objectSpread({}, $(target).data(), $(this).data());
+      var config = _objectSpread2({}, $(target).data(), {}, $(this).data());
 
       var slideIndex = this.getAttribute('data-slide-to');
 
@@ -40760,7 +40186,7 @@ module.exports = angular;
    */
 
   var NAME$3 = 'collapse';
-  var VERSION$3 = '4.3.1';
+  var VERSION$3 = '4.4.1';
   var DATA_KEY$3 = 'bs.collapse';
   var EVENT_KEY$3 = "." + DATA_KEY$3;
   var DATA_API_KEY$3 = '.data-api';
@@ -40793,13 +40219,12 @@ module.exports = angular;
   var Selector$3 = {
     ACTIVES: '.show, .collapsing',
     DATA_TOGGLE: '[data-toggle="collapse"]'
-    /**
-     * ------------------------------------------------------------------------
-     * Class Definition
-     * ------------------------------------------------------------------------
-     */
-
   };
+  /**
+   * ------------------------------------------------------------------------
+   * Class Definition
+   * ------------------------------------------------------------------------
+   */
 
   var Collapse =
   /*#__PURE__*/
@@ -40986,7 +40411,7 @@ module.exports = angular;
     ;
 
     _proto._getConfig = function _getConfig(config) {
-      config = _objectSpread({}, Default$1, config);
+      config = _objectSpread2({}, Default$1, {}, config);
       config.toggle = Boolean(config.toggle); // Coerce string values
 
       Util.typeCheckConfig(NAME$3, config, DefaultType$1);
@@ -41040,7 +40465,7 @@ module.exports = angular;
         var $this = $(this);
         var data = $this.data(DATA_KEY$3);
 
-        var _config = _objectSpread({}, Default$1, $this.data(), typeof config === 'object' && config ? config : {});
+        var _config = _objectSpread2({}, Default$1, {}, $this.data(), {}, typeof config === 'object' && config ? config : {});
 
         if (!data && _config.toggle && /show|hide/.test(config)) {
           _config.toggle = false;
@@ -41120,7 +40545,7 @@ module.exports = angular;
    */
 
   var NAME$4 = 'dropdown';
-  var VERSION$4 = '4.3.1';
+  var VERSION$4 = '4.4.1';
   var DATA_KEY$4 = 'bs.dropdown';
   var EVENT_KEY$4 = "." + DATA_KEY$4;
   var DATA_API_KEY$4 = '.data-api';
@@ -41180,21 +40605,22 @@ module.exports = angular;
     flip: true,
     boundary: 'scrollParent',
     reference: 'toggle',
-    display: 'dynamic'
+    display: 'dynamic',
+    popperConfig: null
   };
   var DefaultType$2 = {
     offset: '(number|string|function)',
     flip: 'boolean',
     boundary: '(string|element)',
     reference: '(string|element)',
-    display: 'string'
-    /**
-     * ------------------------------------------------------------------------
-     * Class Definition
-     * ------------------------------------------------------------------------
-     */
-
+    display: 'string',
+    popperConfig: '(null|object)'
   };
+  /**
+   * ------------------------------------------------------------------------
+   * Class Definition
+   * ------------------------------------------------------------------------
+   */
 
   var Dropdown =
   /*#__PURE__*/
@@ -41218,8 +40644,6 @@ module.exports = angular;
         return;
       }
 
-      var parent = Dropdown._getParentFromElement(this._element);
-
       var isActive = $(this._menu).hasClass(ClassName$4.SHOW);
 
       Dropdown._clearMenus();
@@ -41228,10 +40652,25 @@ module.exports = angular;
         return;
       }
 
+      this.show(true);
+    };
+
+    _proto.show = function show(usePopper) {
+      if (usePopper === void 0) {
+        usePopper = false;
+      }
+
+      if (this._element.disabled || $(this._element).hasClass(ClassName$4.DISABLED) || $(this._menu).hasClass(ClassName$4.SHOW)) {
+        return;
+      }
+
       var relatedTarget = {
         relatedTarget: this._element
       };
       var showEvent = $.Event(Event$4.SHOW, relatedTarget);
+
+      var parent = Dropdown._getParentFromElement(this._element);
+
       $(parent).trigger(showEvent);
 
       if (showEvent.isDefaultPrevented()) {
@@ -41239,7 +40678,7 @@ module.exports = angular;
       } // Disable totally Popper.js for Dropdown in Navbar
 
 
-      if (!this._inNavbar) {
+      if (!this._inNavbar && usePopper) {
         /**
          * Check for Popper dependency
          * Popper - https://popper.js.org
@@ -41286,28 +40725,6 @@ module.exports = angular;
       $(parent).toggleClass(ClassName$4.SHOW).trigger($.Event(Event$4.SHOWN, relatedTarget));
     };
 
-    _proto.show = function show() {
-      if (this._element.disabled || $(this._element).hasClass(ClassName$4.DISABLED) || $(this._menu).hasClass(ClassName$4.SHOW)) {
-        return;
-      }
-
-      var relatedTarget = {
-        relatedTarget: this._element
-      };
-      var showEvent = $.Event(Event$4.SHOW, relatedTarget);
-
-      var parent = Dropdown._getParentFromElement(this._element);
-
-      $(parent).trigger(showEvent);
-
-      if (showEvent.isDefaultPrevented()) {
-        return;
-      }
-
-      $(this._menu).toggleClass(ClassName$4.SHOW);
-      $(parent).toggleClass(ClassName$4.SHOW).trigger($.Event(Event$4.SHOWN, relatedTarget));
-    };
-
     _proto.hide = function hide() {
       if (this._element.disabled || $(this._element).hasClass(ClassName$4.DISABLED) || !$(this._menu).hasClass(ClassName$4.SHOW)) {
         return;
@@ -41324,6 +40741,10 @@ module.exports = angular;
 
       if (hideEvent.isDefaultPrevented()) {
         return;
+      }
+
+      if (this._popper) {
+        this._popper.destroy();
       }
 
       $(this._menu).toggleClass(ClassName$4.SHOW);
@@ -41364,7 +40785,7 @@ module.exports = angular;
     };
 
     _proto._getConfig = function _getConfig(config) {
-      config = _objectSpread({}, this.constructor.Default, $(this._element).data(), config);
+      config = _objectSpread2({}, this.constructor.Default, {}, $(this._element).data(), {}, config);
       Util.typeCheckConfig(NAME$4, config, this.constructor.DefaultType);
       return config;
     };
@@ -41413,7 +40834,7 @@ module.exports = angular;
 
       if (typeof this._config.offset === 'function') {
         offset.fn = function (data) {
-          data.offsets = _objectSpread({}, data.offsets, _this2._config.offset(data.offsets, _this2._element) || {});
+          data.offsets = _objectSpread2({}, data.offsets, {}, _this2._config.offset(data.offsets, _this2._element) || {});
           return data;
         };
       } else {
@@ -41434,9 +40855,8 @@ module.exports = angular;
           preventOverflow: {
             boundariesElement: this._config.boundary
           }
-        } // Disable Popper.js if we have a static display
-
-      };
+        }
+      }; // Disable Popper.js if we have a static display
 
       if (this._config.display === 'static') {
         popperConfig.modifiers.applyStyle = {
@@ -41444,7 +40864,7 @@ module.exports = angular;
         };
       }
 
-      return popperConfig;
+      return _objectSpread2({}, popperConfig, {}, this._config.popperConfig);
     } // Static
     ;
 
@@ -41516,6 +40936,11 @@ module.exports = angular;
         }
 
         toggles[i].setAttribute('aria-expanded', 'false');
+
+        if (context._popper) {
+          context._popper.destroy();
+        }
+
         $(dropdownMenu).removeClass(ClassName$4.SHOW);
         $(parent).removeClass(ClassName$4.SHOW).trigger($.Event(Event$4.HIDDEN, relatedTarget));
       }
@@ -41556,6 +40981,10 @@ module.exports = angular;
 
       var isActive = $(parent).hasClass(ClassName$4.SHOW);
 
+      if (!isActive && event.which === ESCAPE_KEYCODE) {
+        return;
+      }
+
       if (!isActive || isActive && (event.which === ESCAPE_KEYCODE || event.which === SPACE_KEYCODE)) {
         if (event.which === ESCAPE_KEYCODE) {
           var toggle = parent.querySelector(Selector$4.DATA_TOGGLE);
@@ -41566,7 +40995,9 @@ module.exports = angular;
         return;
       }
 
-      var items = [].slice.call(parent.querySelectorAll(Selector$4.VISIBLE_ITEMS));
+      var items = [].slice.call(parent.querySelectorAll(Selector$4.VISIBLE_ITEMS)).filter(function (item) {
+        return $(item).is(':visible');
+      });
 
       if (items.length === 0) {
         return;
@@ -41646,7 +41077,7 @@ module.exports = angular;
    */
 
   var NAME$5 = 'modal';
-  var VERSION$5 = '4.3.1';
+  var VERSION$5 = '4.4.1';
   var DATA_KEY$5 = 'bs.modal';
   var EVENT_KEY$5 = "." + DATA_KEY$5;
   var DATA_API_KEY$5 = '.data-api';
@@ -41667,6 +41098,7 @@ module.exports = angular;
   };
   var Event$5 = {
     HIDE: "hide" + EVENT_KEY$5,
+    HIDE_PREVENTED: "hidePrevented" + EVENT_KEY$5,
     HIDDEN: "hidden" + EVENT_KEY$5,
     SHOW: "show" + EVENT_KEY$5,
     SHOWN: "shown" + EVENT_KEY$5,
@@ -41684,7 +41116,8 @@ module.exports = angular;
     BACKDROP: 'modal-backdrop',
     OPEN: 'modal-open',
     FADE: 'fade',
-    SHOW: 'show'
+    SHOW: 'show',
+    STATIC: 'modal-static'
   };
   var Selector$5 = {
     DIALOG: '.modal-dialog',
@@ -41693,13 +41126,12 @@ module.exports = angular;
     DATA_DISMISS: '[data-dismiss="modal"]',
     FIXED_CONTENT: '.fixed-top, .fixed-bottom, .is-fixed, .sticky-top',
     STICKY_CONTENT: '.sticky-top'
-    /**
-     * ------------------------------------------------------------------------
-     * Class Definition
-     * ------------------------------------------------------------------------
-     */
-
   };
+  /**
+   * ------------------------------------------------------------------------
+   * Class Definition
+   * ------------------------------------------------------------------------
+   */
 
   var Modal =
   /*#__PURE__*/
@@ -41845,15 +41277,40 @@ module.exports = angular;
     ;
 
     _proto._getConfig = function _getConfig(config) {
-      config = _objectSpread({}, Default$3, config);
+      config = _objectSpread2({}, Default$3, {}, config);
       Util.typeCheckConfig(NAME$5, config, DefaultType$3);
       return config;
     };
 
-    _proto._showElement = function _showElement(relatedTarget) {
+    _proto._triggerBackdropTransition = function _triggerBackdropTransition() {
       var _this3 = this;
 
+      if (this._config.backdrop === 'static') {
+        var hideEventPrevented = $.Event(Event$5.HIDE_PREVENTED);
+        $(this._element).trigger(hideEventPrevented);
+
+        if (hideEventPrevented.defaultPrevented) {
+          return;
+        }
+
+        this._element.classList.add(ClassName$5.STATIC);
+
+        var modalTransitionDuration = Util.getTransitionDurationFromElement(this._element);
+        $(this._element).one(Util.TRANSITION_END, function () {
+          _this3._element.classList.remove(ClassName$5.STATIC);
+        }).emulateTransitionEnd(modalTransitionDuration);
+
+        this._element.focus();
+      } else {
+        this.hide();
+      }
+    };
+
+    _proto._showElement = function _showElement(relatedTarget) {
+      var _this4 = this;
+
       var transition = $(this._element).hasClass(ClassName$5.FADE);
+      var modalBody = this._dialog ? this._dialog.querySelector(Selector$5.MODAL_BODY) : null;
 
       if (!this._element.parentNode || this._element.parentNode.nodeType !== Node.ELEMENT_NODE) {
         // Don't move modal's DOM position
@@ -41866,8 +41323,8 @@ module.exports = angular;
 
       this._element.setAttribute('aria-modal', true);
 
-      if ($(this._dialog).hasClass(ClassName$5.SCROLLABLE)) {
-        this._dialog.querySelector(Selector$5.MODAL_BODY).scrollTop = 0;
+      if ($(this._dialog).hasClass(ClassName$5.SCROLLABLE) && modalBody) {
+        modalBody.scrollTop = 0;
       } else {
         this._element.scrollTop = 0;
       }
@@ -41887,12 +41344,12 @@ module.exports = angular;
       });
 
       var transitionComplete = function transitionComplete() {
-        if (_this3._config.focus) {
-          _this3._element.focus();
+        if (_this4._config.focus) {
+          _this4._element.focus();
         }
 
-        _this3._isTransitioning = false;
-        $(_this3._element).trigger(shownEvent);
+        _this4._isTransitioning = false;
+        $(_this4._element).trigger(shownEvent);
       };
 
       if (transition) {
@@ -41904,25 +41361,23 @@ module.exports = angular;
     };
 
     _proto._enforceFocus = function _enforceFocus() {
-      var _this4 = this;
+      var _this5 = this;
 
       $(document).off(Event$5.FOCUSIN) // Guard against infinite focus loop
       .on(Event$5.FOCUSIN, function (event) {
-        if (document !== event.target && _this4._element !== event.target && $(_this4._element).has(event.target).length === 0) {
-          _this4._element.focus();
+        if (document !== event.target && _this5._element !== event.target && $(_this5._element).has(event.target).length === 0) {
+          _this5._element.focus();
         }
       });
     };
 
     _proto._setEscapeEvent = function _setEscapeEvent() {
-      var _this5 = this;
+      var _this6 = this;
 
       if (this._isShown && this._config.keyboard) {
         $(this._element).on(Event$5.KEYDOWN_DISMISS, function (event) {
           if (event.which === ESCAPE_KEYCODE$1) {
-            event.preventDefault();
-
-            _this5.hide();
+            _this6._triggerBackdropTransition();
           }
         });
       } else if (!this._isShown) {
@@ -41931,11 +41386,11 @@ module.exports = angular;
     };
 
     _proto._setResizeEvent = function _setResizeEvent() {
-      var _this6 = this;
+      var _this7 = this;
 
       if (this._isShown) {
         $(window).on(Event$5.RESIZE, function (event) {
-          return _this6.handleUpdate(event);
+          return _this7.handleUpdate(event);
         });
       } else {
         $(window).off(Event$5.RESIZE);
@@ -41943,7 +41398,7 @@ module.exports = angular;
     };
 
     _proto._hideModal = function _hideModal() {
-      var _this7 = this;
+      var _this8 = this;
 
       this._element.style.display = 'none';
 
@@ -41956,11 +41411,11 @@ module.exports = angular;
       this._showBackdrop(function () {
         $(document.body).removeClass(ClassName$5.OPEN);
 
-        _this7._resetAdjustments();
+        _this8._resetAdjustments();
 
-        _this7._resetScrollbar();
+        _this8._resetScrollbar();
 
-        $(_this7._element).trigger(Event$5.HIDDEN);
+        $(_this8._element).trigger(Event$5.HIDDEN);
       });
     };
 
@@ -41972,7 +41427,7 @@ module.exports = angular;
     };
 
     _proto._showBackdrop = function _showBackdrop(callback) {
-      var _this8 = this;
+      var _this9 = this;
 
       var animate = $(this._element).hasClass(ClassName$5.FADE) ? ClassName$5.FADE : '';
 
@@ -41986,8 +41441,8 @@ module.exports = angular;
 
         $(this._backdrop).appendTo(document.body);
         $(this._element).on(Event$5.CLICK_DISMISS, function (event) {
-          if (_this8._ignoreBackdropClick) {
-            _this8._ignoreBackdropClick = false;
+          if (_this9._ignoreBackdropClick) {
+            _this9._ignoreBackdropClick = false;
             return;
           }
 
@@ -41995,11 +41450,7 @@ module.exports = angular;
             return;
           }
 
-          if (_this8._config.backdrop === 'static') {
-            _this8._element.focus();
-          } else {
-            _this8.hide();
-          }
+          _this9._triggerBackdropTransition();
         });
 
         if (animate) {
@@ -42023,7 +41474,7 @@ module.exports = angular;
         $(this._backdrop).removeClass(ClassName$5.SHOW);
 
         var callbackRemove = function callbackRemove() {
-          _this8._removeBackdrop();
+          _this9._removeBackdrop();
 
           if (callback) {
             callback();
@@ -42070,7 +41521,7 @@ module.exports = angular;
     };
 
     _proto._setScrollbar = function _setScrollbar() {
-      var _this9 = this;
+      var _this10 = this;
 
       if (this._isBodyOverflowing) {
         // Note: DOMNode.style.paddingRight returns the actual value or '' if not set
@@ -42081,13 +41532,13 @@ module.exports = angular;
         $(fixedContent).each(function (index, element) {
           var actualPadding = element.style.paddingRight;
           var calculatedPadding = $(element).css('padding-right');
-          $(element).data('padding-right', actualPadding).css('padding-right', parseFloat(calculatedPadding) + _this9._scrollbarWidth + "px");
+          $(element).data('padding-right', actualPadding).css('padding-right', parseFloat(calculatedPadding) + _this10._scrollbarWidth + "px");
         }); // Adjust sticky content margin
 
         $(stickyContent).each(function (index, element) {
           var actualMargin = element.style.marginRight;
           var calculatedMargin = $(element).css('margin-right');
-          $(element).data('margin-right', actualMargin).css('margin-right', parseFloat(calculatedMargin) - _this9._scrollbarWidth + "px");
+          $(element).data('margin-right', actualMargin).css('margin-right', parseFloat(calculatedMargin) - _this10._scrollbarWidth + "px");
         }); // Adjust body padding
 
         var actualPadding = document.body.style.paddingRight;
@@ -42136,7 +41587,7 @@ module.exports = angular;
       return this.each(function () {
         var data = $(this).data(DATA_KEY$5);
 
-        var _config = _objectSpread({}, Default$3, $(this).data(), typeof config === 'object' && config ? config : {});
+        var _config = _objectSpread2({}, Default$3, {}, $(this).data(), {}, typeof config === 'object' && config ? config : {});
 
         if (!data) {
           data = new Modal(this, _config);
@@ -42177,7 +41628,7 @@ module.exports = angular;
 
 
   $(document).on(Event$5.CLICK_DATA_API, Selector$5.DATA_TOGGLE, function (event) {
-    var _this10 = this;
+    var _this11 = this;
 
     var target;
     var selector = Util.getSelectorFromElement(this);
@@ -42186,7 +41637,7 @@ module.exports = angular;
       target = document.querySelector(selector);
     }
 
-    var config = $(target).data(DATA_KEY$5) ? 'toggle' : _objectSpread({}, $(target).data(), $(this).data());
+    var config = $(target).data(DATA_KEY$5) ? 'toggle' : _objectSpread2({}, $(target).data(), {}, $(this).data());
 
     if (this.tagName === 'A' || this.tagName === 'AREA') {
       event.preventDefault();
@@ -42199,8 +41650,8 @@ module.exports = angular;
       }
 
       $target.one(Event$5.HIDDEN, function () {
-        if ($(_this10).is(':visible')) {
-          _this10.focus();
+        if ($(_this11).is(':visible')) {
+          _this11.focus();
         }
       });
     });
@@ -42223,7 +41674,7 @@ module.exports = angular;
 
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v4.3.1): tools/sanitizer.js
+   * Bootstrap (v4.4.1): tools/sanitizer.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -42261,13 +41712,13 @@ module.exports = angular;
     strong: [],
     u: [],
     ul: []
-    /**
-     * A pattern that recognizes a commonly useful subset of URLs that are safe.
-     *
-     * Shoutout to Angular 7 https://github.com/angular/angular/blob/7.2.4/packages/core/src/sanitization/url_sanitizer.ts
-     */
-
   };
+  /**
+   * A pattern that recognizes a commonly useful subset of URLs that are safe.
+   *
+   * Shoutout to Angular 7 https://github.com/angular/angular/blob/7.2.4/packages/core/src/sanitization/url_sanitizer.ts
+   */
+
   var SAFE_URL_PATTERN = /^(?:(?:https?|mailto|ftp|tel|file):|[^&:/?#]*(?:[/?#]|$))/gi;
   /**
    * A pattern that matches safe data URLs. Only matches image, video and audio types.
@@ -42334,7 +41785,7 @@ module.exports = angular;
     };
 
     for (var i = 0, len = elements.length; i < len; i++) {
-      var _ret = _loop(i, len);
+      var _ret = _loop(i);
 
       if (_ret === "continue") continue;
     }
@@ -42349,7 +41800,7 @@ module.exports = angular;
    */
 
   var NAME$6 = 'tooltip';
-  var VERSION$6 = '4.3.1';
+  var VERSION$6 = '4.4.1';
   var DATA_KEY$6 = 'bs.tooltip';
   var EVENT_KEY$6 = "." + DATA_KEY$6;
   var JQUERY_NO_CONFLICT$6 = $.fn[NAME$6];
@@ -42371,7 +41822,8 @@ module.exports = angular;
     boundary: '(string|element)',
     sanitize: 'boolean',
     sanitizeFn: '(null|function)',
-    whiteList: 'object'
+    whiteList: 'object',
+    popperConfig: '(null|object)'
   };
   var AttachmentMap$1 = {
     AUTO: 'auto',
@@ -42395,7 +41847,8 @@ module.exports = angular;
     boundary: 'scrollParent',
     sanitize: true,
     sanitizeFn: null,
-    whiteList: DefaultWhitelist
+    whiteList: DefaultWhitelist,
+    popperConfig: null
   };
   var HoverState = {
     SHOW: 'show',
@@ -42427,22 +41880,17 @@ module.exports = angular;
     FOCUS: 'focus',
     CLICK: 'click',
     MANUAL: 'manual'
-    /**
-     * ------------------------------------------------------------------------
-     * Class Definition
-     * ------------------------------------------------------------------------
-     */
-
   };
+  /**
+   * ------------------------------------------------------------------------
+   * Class Definition
+   * ------------------------------------------------------------------------
+   */
 
   var Tooltip =
   /*#__PURE__*/
   function () {
     function Tooltip(element, config) {
-      /**
-       * Check for Popper dependency
-       * Popper - https://popper.js.org
-       */
       if (typeof Popper === 'undefined') {
         throw new TypeError('Bootstrap\'s tooltips require Popper.js (https://popper.js.org/)');
       } // private
@@ -42513,7 +41961,7 @@ module.exports = angular;
       clearTimeout(this._timeout);
       $.removeData(this.element, this.constructor.DATA_KEY);
       $(this.element).off(this.constructor.EVENT_KEY);
-      $(this.element).closest('.modal').off('hide.bs.modal');
+      $(this.element).closest('.modal').off('hide.bs.modal', this._hideModalHandler);
 
       if (this.tip) {
         $(this.tip).remove();
@@ -42524,7 +41972,7 @@ module.exports = angular;
       this._hoverState = null;
       this._activeTrigger = null;
 
-      if (this._popper !== null) {
+      if (this._popper) {
         this._popper.destroy();
       }
 
@@ -42577,29 +42025,7 @@ module.exports = angular;
         }
 
         $(this.element).trigger(this.constructor.Event.INSERTED);
-        this._popper = new Popper(this.element, tip, {
-          placement: attachment,
-          modifiers: {
-            offset: this._getOffset(),
-            flip: {
-              behavior: this.config.fallbackPlacement
-            },
-            arrow: {
-              element: Selector$6.ARROW
-            },
-            preventOverflow: {
-              boundariesElement: this.config.boundary
-            }
-          },
-          onCreate: function onCreate(data) {
-            if (data.originalPlacement !== data.placement) {
-              _this._handlePopperPlacementChange(data);
-            }
-          },
-          onUpdate: function onUpdate(data) {
-            return _this._handlePopperPlacementChange(data);
-          }
-        });
+        this._popper = new Popper(this.element, tip, this._getPopperConfig(attachment));
         $(tip).addClass(ClassName$6.SHOW); // If this is a touch-enabled device we add extra
         // empty mouseover listeners to the body's immediate children;
         // only needed because of broken event delegation on iOS
@@ -42747,14 +42173,43 @@ module.exports = angular;
     } // Private
     ;
 
-    _proto._getOffset = function _getOffset() {
+    _proto._getPopperConfig = function _getPopperConfig(attachment) {
       var _this3 = this;
+
+      var defaultBsConfig = {
+        placement: attachment,
+        modifiers: {
+          offset: this._getOffset(),
+          flip: {
+            behavior: this.config.fallbackPlacement
+          },
+          arrow: {
+            element: Selector$6.ARROW
+          },
+          preventOverflow: {
+            boundariesElement: this.config.boundary
+          }
+        },
+        onCreate: function onCreate(data) {
+          if (data.originalPlacement !== data.placement) {
+            _this3._handlePopperPlacementChange(data);
+          }
+        },
+        onUpdate: function onUpdate(data) {
+          return _this3._handlePopperPlacementChange(data);
+        }
+      };
+      return _objectSpread2({}, defaultBsConfig, {}, this.config.popperConfig);
+    };
+
+    _proto._getOffset = function _getOffset() {
+      var _this4 = this;
 
       var offset = {};
 
       if (typeof this.config.offset === 'function') {
         offset.fn = function (data) {
-          data.offsets = _objectSpread({}, data.offsets, _this3.config.offset(data.offsets, _this3.element) || {});
+          data.offsets = _objectSpread2({}, data.offsets, {}, _this4.config.offset(data.offsets, _this4.element) || {});
           return data;
         };
       } else {
@@ -42781,32 +42236,35 @@ module.exports = angular;
     };
 
     _proto._setListeners = function _setListeners() {
-      var _this4 = this;
+      var _this5 = this;
 
       var triggers = this.config.trigger.split(' ');
       triggers.forEach(function (trigger) {
         if (trigger === 'click') {
-          $(_this4.element).on(_this4.constructor.Event.CLICK, _this4.config.selector, function (event) {
-            return _this4.toggle(event);
+          $(_this5.element).on(_this5.constructor.Event.CLICK, _this5.config.selector, function (event) {
+            return _this5.toggle(event);
           });
         } else if (trigger !== Trigger.MANUAL) {
-          var eventIn = trigger === Trigger.HOVER ? _this4.constructor.Event.MOUSEENTER : _this4.constructor.Event.FOCUSIN;
-          var eventOut = trigger === Trigger.HOVER ? _this4.constructor.Event.MOUSELEAVE : _this4.constructor.Event.FOCUSOUT;
-          $(_this4.element).on(eventIn, _this4.config.selector, function (event) {
-            return _this4._enter(event);
-          }).on(eventOut, _this4.config.selector, function (event) {
-            return _this4._leave(event);
+          var eventIn = trigger === Trigger.HOVER ? _this5.constructor.Event.MOUSEENTER : _this5.constructor.Event.FOCUSIN;
+          var eventOut = trigger === Trigger.HOVER ? _this5.constructor.Event.MOUSELEAVE : _this5.constructor.Event.FOCUSOUT;
+          $(_this5.element).on(eventIn, _this5.config.selector, function (event) {
+            return _this5._enter(event);
+          }).on(eventOut, _this5.config.selector, function (event) {
+            return _this5._leave(event);
           });
-        }
-      });
-      $(this.element).closest('.modal').on('hide.bs.modal', function () {
-        if (_this4.element) {
-          _this4.hide();
         }
       });
 
+      this._hideModalHandler = function () {
+        if (_this5.element) {
+          _this5.hide();
+        }
+      };
+
+      $(this.element).closest('.modal').on('hide.bs.modal', this._hideModalHandler);
+
       if (this.config.selector) {
-        this.config = _objectSpread({}, this.config, {
+        this.config = _objectSpread2({}, this.config, {
           trigger: 'manual',
           selector: ''
         });
@@ -42906,7 +42364,7 @@ module.exports = angular;
           delete dataAttributes[dataAttr];
         }
       });
-      config = _objectSpread({}, this.constructor.Default, dataAttributes, typeof config === 'object' && config ? config : {});
+      config = _objectSpread2({}, this.constructor.Default, {}, dataAttributes, {}, typeof config === 'object' && config ? config : {});
 
       if (typeof config.delay === 'number') {
         config.delay = {
@@ -43066,21 +42524,21 @@ module.exports = angular;
    */
 
   var NAME$7 = 'popover';
-  var VERSION$7 = '4.3.1';
+  var VERSION$7 = '4.4.1';
   var DATA_KEY$7 = 'bs.popover';
   var EVENT_KEY$7 = "." + DATA_KEY$7;
   var JQUERY_NO_CONFLICT$7 = $.fn[NAME$7];
   var CLASS_PREFIX$1 = 'bs-popover';
   var BSCLS_PREFIX_REGEX$1 = new RegExp("(^|\\s)" + CLASS_PREFIX$1 + "\\S+", 'g');
 
-  var Default$5 = _objectSpread({}, Tooltip.Default, {
+  var Default$5 = _objectSpread2({}, Tooltip.Default, {
     placement: 'right',
     trigger: 'click',
     content: '',
     template: '<div class="popover" role="tooltip">' + '<div class="arrow"></div>' + '<h3 class="popover-header"></h3>' + '<div class="popover-body"></div></div>'
   });
 
-  var DefaultType$5 = _objectSpread({}, Tooltip.DefaultType, {
+  var DefaultType$5 = _objectSpread2({}, Tooltip.DefaultType, {
     content: '(string|element|function)'
   });
 
@@ -43103,13 +42561,12 @@ module.exports = angular;
     FOCUSOUT: "focusout" + EVENT_KEY$7,
     MOUSEENTER: "mouseenter" + EVENT_KEY$7,
     MOUSELEAVE: "mouseleave" + EVENT_KEY$7
-    /**
-     * ------------------------------------------------------------------------
-     * Class Definition
-     * ------------------------------------------------------------------------
-     */
-
   };
+  /**
+   * ------------------------------------------------------------------------
+   * Class Definition
+   * ------------------------------------------------------------------------
+   */
 
   var Popover =
   /*#__PURE__*/
@@ -43253,7 +42710,7 @@ module.exports = angular;
    */
 
   var NAME$8 = 'scrollspy';
-  var VERSION$8 = '4.3.1';
+  var VERSION$8 = '4.4.1';
   var DATA_KEY$8 = 'bs.scrollspy';
   var EVENT_KEY$8 = "." + DATA_KEY$8;
   var DATA_API_KEY$6 = '.data-api';
@@ -43292,13 +42749,12 @@ module.exports = angular;
   var OffsetMethod = {
     OFFSET: 'offset',
     POSITION: 'position'
-    /**
-     * ------------------------------------------------------------------------
-     * Class Definition
-     * ------------------------------------------------------------------------
-     */
-
   };
+  /**
+   * ------------------------------------------------------------------------
+   * Class Definition
+   * ------------------------------------------------------------------------
+   */
 
   var ScrollSpy =
   /*#__PURE__*/
@@ -43380,7 +42836,7 @@ module.exports = angular;
     ;
 
     _proto._getConfig = function _getConfig(config) {
-      config = _objectSpread({}, Default$6, typeof config === 'object' && config ? config : {});
+      config = _objectSpread2({}, Default$6, {}, typeof config === 'object' && config ? config : {});
 
       if (typeof config.target !== 'string') {
         var id = $(config.target).attr('id');
@@ -43560,7 +43016,7 @@ module.exports = angular;
    */
 
   var NAME$9 = 'tab';
-  var VERSION$9 = '4.3.1';
+  var VERSION$9 = '4.4.1';
   var DATA_KEY$9 = 'bs.tab';
   var EVENT_KEY$9 = "." + DATA_KEY$9;
   var DATA_API_KEY$7 = '.data-api';
@@ -43587,13 +43043,12 @@ module.exports = angular;
     DATA_TOGGLE: '[data-toggle="tab"], [data-toggle="pill"], [data-toggle="list"]',
     DROPDOWN_TOGGLE: '.dropdown-toggle',
     DROPDOWN_ACTIVE_CHILD: '> .dropdown-menu .active'
-    /**
-     * ------------------------------------------------------------------------
-     * Class Definition
-     * ------------------------------------------------------------------------
-     */
-
   };
+  /**
+   * ------------------------------------------------------------------------
+   * Class Definition
+   * ------------------------------------------------------------------------
+   */
 
   var Tab =
   /*#__PURE__*/
@@ -43795,7 +43250,7 @@ module.exports = angular;
    */
 
   var NAME$a = 'toast';
-  var VERSION$a = '4.3.1';
+  var VERSION$a = '4.4.1';
   var DATA_KEY$a = 'bs.toast';
   var EVENT_KEY$a = "." + DATA_KEY$a;
   var JQUERY_NO_CONFLICT$a = $.fn[NAME$a];
@@ -43824,13 +43279,12 @@ module.exports = angular;
   };
   var Selector$a = {
     DATA_DISMISS: '[data-dismiss="toast"]'
-    /**
-     * ------------------------------------------------------------------------
-     * Class Definition
-     * ------------------------------------------------------------------------
-     */
-
   };
+  /**
+   * ------------------------------------------------------------------------
+   * Class Definition
+   * ------------------------------------------------------------------------
+   */
 
   var Toast =
   /*#__PURE__*/
@@ -43850,7 +43304,12 @@ module.exports = angular;
     _proto.show = function show() {
       var _this = this;
 
-      $(this._element).trigger(Event$a.SHOW);
+      var showEvent = $.Event(Event$a.SHOW);
+      $(this._element).trigger(showEvent);
+
+      if (showEvent.isDefaultPrevented()) {
+        return;
+      }
 
       if (this._config.animation) {
         this._element.classList.add(ClassName$a.FADE);
@@ -43864,11 +43323,15 @@ module.exports = angular;
         $(_this._element).trigger(Event$a.SHOWN);
 
         if (_this._config.autohide) {
-          _this.hide();
+          _this._timeout = setTimeout(function () {
+            _this.hide();
+          }, _this._config.delay);
         }
       };
 
       this._element.classList.remove(ClassName$a.HIDE);
+
+      Util.reflow(this._element);
 
       this._element.classList.add(ClassName$a.SHOWING);
 
@@ -43880,22 +43343,19 @@ module.exports = angular;
       }
     };
 
-    _proto.hide = function hide(withoutTimeout) {
-      var _this2 = this;
-
+    _proto.hide = function hide() {
       if (!this._element.classList.contains(ClassName$a.SHOW)) {
         return;
       }
 
-      $(this._element).trigger(Event$a.HIDE);
+      var hideEvent = $.Event(Event$a.HIDE);
+      $(this._element).trigger(hideEvent);
 
-      if (withoutTimeout) {
-        this._close();
-      } else {
-        this._timeout = setTimeout(function () {
-          _this2._close();
-        }, this._config.delay);
+      if (hideEvent.isDefaultPrevented()) {
+        return;
       }
+
+      this._close();
     };
 
     _proto.dispose = function dispose() {
@@ -43914,26 +43374,26 @@ module.exports = angular;
     ;
 
     _proto._getConfig = function _getConfig(config) {
-      config = _objectSpread({}, Default$7, $(this._element).data(), typeof config === 'object' && config ? config : {});
+      config = _objectSpread2({}, Default$7, {}, $(this._element).data(), {}, typeof config === 'object' && config ? config : {});
       Util.typeCheckConfig(NAME$a, config, this.constructor.DefaultType);
       return config;
     };
 
     _proto._setListeners = function _setListeners() {
-      var _this3 = this;
+      var _this2 = this;
 
       $(this._element).on(Event$a.CLICK_DISMISS, Selector$a.DATA_DISMISS, function () {
-        return _this3.hide(true);
+        return _this2.hide();
       });
     };
 
     _proto._close = function _close() {
-      var _this4 = this;
+      var _this3 = this;
 
       var complete = function complete() {
-        _this4._element.classList.add(ClassName$a.HIDE);
+        _this3._element.classList.add(ClassName$a.HIDE);
 
-        $(_this4._element).trigger(Event$a.HIDDEN);
+        $(_this3._element).trigger(Event$a.HIDDEN);
       };
 
       this._element.classList.remove(ClassName$a.SHOW);
@@ -44003,31 +43463,6 @@ module.exports = angular;
     return Toast._jQueryInterface;
   };
 
-  /**
-   * --------------------------------------------------------------------------
-   * Bootstrap (v4.3.1): index.js
-   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
-   * --------------------------------------------------------------------------
-   */
-
-  (function () {
-    if (typeof $ === 'undefined') {
-      throw new TypeError('Bootstrap\'s JavaScript requires jQuery. jQuery must be included before Bootstrap\'s JavaScript.');
-    }
-
-    var version = $.fn.jquery.split(' ')[0].split('.');
-    var minMajor = 1;
-    var ltMajor = 2;
-    var minMinor = 9;
-    var minPatch = 1;
-    var maxMajor = 4;
-
-    if (version[0] < ltMajor && version[1] < minMinor || version[0] === minMajor && version[1] === minMinor && version[2] < minPatch || version[0] >= maxMajor) {
-      throw new Error('Bootstrap\'s JavaScript requires at least jQuery v1.9.1 but less than v4.0.0');
-    }
-  })();
-
-  exports.Util = Util;
   exports.Alert = Alert;
   exports.Button = Button;
   exports.Carousel = Carousel;
@@ -44039,10 +43474,11 @@ module.exports = angular;
   exports.Tab = Tab;
   exports.Toast = Toast;
   exports.Tooltip = Tooltip;
+  exports.Util = Util;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 
-}));
+})));
 //# sourceMappingURL=bootstrap.js.map
 
 
@@ -63366,8 +62802,8 @@ module.exports = g;
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /Applications/MAMP/htdocs/utterfare/assets/js/global/app.js */"./assets/js/global/app.js");
-module.exports = __webpack_require__(/*! /Applications/MAMP/htdocs/utterfare/assets/styles/app.scss */"./assets/styles/app.scss");
+__webpack_require__(/*! /Applications/MAMP/htdocs/utterfare/vendor/assets/js/global/app.js */"./assets/js/global/app.js");
+module.exports = __webpack_require__(/*! /Applications/MAMP/htdocs/utterfare/vendor/assets/styles/app.scss */"./assets/styles/app.scss");
 
 
 /***/ })

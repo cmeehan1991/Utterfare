@@ -84,8 +84,8 @@ class Item_Search{
 		// Get the latitude and longitude
         $lat = $obj['results'][0]['geometry']['location']['lat'];
         $lng = $obj['results'][0]['geometry']['location']['lng'];
-		
-		echo $this->search(10, $lat, $lng, 8);
+		//$distance = 10, $latitude = null, $longitude = null, $ppp = null, $page = 1, $offset = 0, $terms = null, $random = false
+		echo $this->search(10, $lat, $lng, 8, 1, 0, null, true);
 	}
 	
 	private function getSingleItem(){
@@ -102,21 +102,11 @@ class Item_Search{
 		
 		$result = $stmt->fetch();
 		
-		$image_exists = $this->checkImageExists($result['primary_image'][0]);//strpos(@get_headers($result['primary_image'])[0], '200') > -1;
-				
-		if(!$image_exists){
-			
-			$result['exists'] = file_exists($result['primary_image']);
-			$result['primary_image'] = $this->get_vendor_meta($result['vendor_id'], '_profile_picture');
-			
-			$profile_picture = json_decode($result['primary_image']);
-			
-			$profile_picture = $profile_picture->_profile_picture;
-			
-			if($profile_picture == "None" || $this->checkImageExists($profile_picture) == false){
-				$profile_picture = "https://www.utterfare.com/assets/img/UF%20Logo.png";
-			}
-			$result['primary_image'] = $profile_picture;
+					
+		if(!$this->check_image($result['primary_image'], $result['vendor_id'])){
+			$result['primary_image'] = "https://www.utterfare.com/assets/img/UF%20Logo.png";
+		}else{
+			$result['primary_image'] = $this->check_image($result['primary_image'], $result['vendor_id']);	
 		}
 		
 		$result['address'] =  $this->get_vendor_meta($result['vendor_id'], '_address');
@@ -127,7 +117,10 @@ class Item_Search{
 	}
 	
 	private function checkImageExists($image_url){
-		return strpos(@get_headers($image_url), '200') > -1;
+		if(is_array($image_url)){
+			return false;
+		}
+		return strpos(@get_headers($image_url)[0], '200') > -1;
 	}
 	
 	private function doSearch(){
@@ -137,7 +130,6 @@ class Item_Search{
 		$limit = filter_input(INPUT_POST, 'limit');
 		$page = filter_input(INPUT_POST, 'page');
 		$offset = filter_input(INPUT_POST, 'offset');
-
 				
 		// Form the search location
 		$location = urlencode($location);
@@ -149,7 +141,8 @@ class Item_Search{
         $lat = $obj['results'][0]['geometry']['location']['lat'];
         $lng = $obj['results'][0]['geometry']['location']['lng'];
         
-        echo $this->search($distance, $lat, $lng, $limit, $page, $offset, $terms);
+        
+        echo $this->search($distance, $lat, $lng, $limit, $page, $offset, $terms, false);
 	}
 	
 	private function getTopItems(){
@@ -173,7 +166,13 @@ class Item_Search{
 		
 		
 		for($i = 0; $i < count($results); $i++){	
-			$results[$i]['primary_image'] = $this->check_image($results[$i]['primary_image'], $results[$i]['vendor_id']);
+			
+			if(!$this->check_image($results[$i]['primary_image'], $results[$i]['vendor_id'])){
+				$results[$i]['primary_image'] = "https://www.utterfare.com/assets/img/UF%20Logo.png";
+			}else{
+				$results[$i]['primary_image'] = $this->check_image($results[$i]['primary_image'], $results[$i]['vendor_id']);	
+			}
+			
 			$results[$i]['address'] =  $this->get_vendor_meta($results[$i]['vendor_id']);
 		}
 		
@@ -187,7 +186,7 @@ class Item_Search{
 	* If it does not exist then we will either return the vendor profile image 
 	* or we will return the default utterfare logo. 
 	*/
-	private function check_image($image_url, $vendor_id){
+	public function check_image($image_url, $vendor_id){
 	
 		$image_exists = strpos(@get_headers($image_url)[7], '200') > -1 || strpos(@get_headers($image_url)[0], '200') > -1;	
 					
@@ -197,7 +196,8 @@ class Item_Search{
 			
 			$image_url = $profile_picture->_profile_picture;
 			
-			if($image_url == "None" || $this->checkImageExists($image_url) == false){
+		
+			if($image_url == "None"){
 				$image_url = "https://www.utterfare.com/assets/img/UF%20Logo.png";
 			}
 		}
@@ -222,14 +222,14 @@ class Item_Search{
         $lat = $obj['results'][0]['geometry']['location']['lat'];
         $lng = $obj['results'][0]['geometry']['location']['lng'];
 		
-		echo $this->search(10, $lat, $lng, 8);
+		echo $this->search(10, $lat, $lng, 8, 1, 0, null, true);
 	}
 	
 	
 	/*
 	* This is the primary search logic 
 	*/
-	private function search($distance = 10, $latitude = null, $longitude = null, $ppp = null, $page = 1, $offset = 0, $terms = null){
+	private function search($distance = 10, $latitude = null, $longitude = null, $ppp = null, $page = 1, $offset = 0, $terms = null, $random = false){
 		include 'DbConnection.php';
 				
 		$sql = "SELECT DISTINCT item_id, item_name, item_short_description, primary_image, vendors.vendor_id, vendors.vendor_name, md5(vendors.vendor_name) as 'name_hash', vendors.latitude, vendors.longitude
@@ -247,9 +247,13 @@ class Item_Search{
 			}
 			$sql .= ")";
 		}
+		
+		if($random){
+			$sql .= " GROUP BY item_id, vendor_id ORDER BY rand()";
+		}
 	
 		$sql .= " LIMIT $ppp OFFSET $offset";			
-				
+					
 		$stmt = $conn->prepare($sql);
 		$stmt->execute();
 		$stmt->setFetchMode(PDO::FETCH_ASSOC);
@@ -258,8 +262,13 @@ class Item_Search{
 		
 		for($i = 0; $i < count($results); $i++){		
 			
-			$results[$i]['primary_image'] = $this->check_image($results[$i]['primary_image'], $results[$i]['vendor_id']);
-			$results[$i]['address'] =  $this->get_vendor_meta($results[$i]['vendor_id']);
+			$results[$i]['address'] =  $this->get_vendor_meta($results[$i]['vendor_id']);		
+			
+			if(!$this->check_image($results[$i]['primary_image'], $results[$i]['vendor_id']) || strpos($this->check_image($results[$i]['primary_image'], $results[$i]['vendor_id']), '.png') === false){
+				$results[$i]['primary_image'] = "https://www.utterfare.com/assets/img/UF%20Logo.png";
+			}else{
+				$results[$i]['primary_image'] = $this->check_image($results[$i]['primary_image'], $results[$i]['vendor_id']);
+			}
 			
 			if($terms){
 				// Rank the terms
@@ -310,7 +319,7 @@ class Item_Search{
 				$rank += 5; 
 			}
 			
-			if(strpos($item['item_name'] == $term) !== false){
+			if(strpos($item['item_name'], $term) !== false){
 				$rank += 5; 
 			}
 			

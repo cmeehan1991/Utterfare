@@ -1,9 +1,6 @@
-$(document).ready(function(){
-	
-});
 var page = 1;
 
-function getVendorStatus(){
+window.getVendorStatus = function(){
 	console.log(session);
 	if(window.session.length !== 0){
 		session = $.parseJSON(session);
@@ -16,7 +13,7 @@ function getVendorStatus(){
 	return false;
 }
 
-function vendorSignIn(){
+window.vendorSignIn = function(){
 	var data = $('.vendor-login-form').serialize();
 	data += '&action=vendor_sign_in';
 	
@@ -44,7 +41,7 @@ function vendorSignIn(){
 	});
 }
 
-function confirmDelete(){
+window.confirmDelete = function(){
 	$('.delete-item-button').popover({
 		container: 'body',
 		content: 'Are you sure you want to delete this item? This action cannot be undone.<hr><a class="btn btn-outline-danger" href="">Delete Item</a> <a class="btn btn-outline-secondary" onclick="closePopover();">Cancel</a>',
@@ -62,7 +59,7 @@ function notify(){
 	console.log("Notify the user of something");
 }
 
-function getMenuItems(page){
+window.getMenuItems = function(page){
 	
 	this.page = page;
 	
@@ -188,7 +185,7 @@ function getMenuItems(page){
 
 
 
-function confirmDeleteItem(item_id){
+window.confirmDeleteItem = function(item_id){
 	var confirmDelete = window.confirm("Are you sure you want to delete this item? This action CANNOT be undone.");
 	if(confirmDelete){
 		var data = {
@@ -208,7 +205,7 @@ function confirmDeleteItem(item_id){
 	}
 }
 
-function signUserOut(){
+window.signUserOut = function(){
 	var data = {
 		action: 'sign_user_out',
 	};
@@ -221,13 +218,13 @@ function signUserOut(){
 		console.log(error);
 	})
 	.done(function(){
-		window.location.href="/vendor";
+		window.location.href="#!/vendor";
 	});
 	
 	return false;
 }
 
-function getItem(itemId){
+window.getItem = function(itemId){
 	var data = {
 		action: 'get_item',
 		item_id: itemId,
@@ -250,7 +247,7 @@ function getItem(itemId){
 	});
 }
 
-function setPreview(input){
+window.setPreview = function(input){
 	
 	var reader = new FileReader();
 	reader.onload = function(e){
@@ -259,7 +256,7 @@ function setPreview(input){
 	reader.readAsDataURL(input.files[0]);
 }
 
-function addEditItem(form){
+window.addEditItem = function(form){
 	
 	let itemId = $(form).attr('data-item-id');
 	

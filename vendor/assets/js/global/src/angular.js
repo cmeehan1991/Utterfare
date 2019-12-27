@@ -26,16 +26,16 @@ vendor.config(function($routeProvider, $locationProvider){
 	.when('/sign-out', {
 		controller: 'SignOutController', 
 	})
-	.otherwise('/')
+	.otherwise('/404')
 });
 
 
 vendor.controller('vendorItemsController', function($scope){
-	window.getMenuItems(1);
+	window.getMenuItems(1); 
 });
 
 vendor.controller('vendorController', function($scope){
-
+	console.log("Status");
 	var vendorStatus = window.getVendorStatus();
 	console.log(vendorStatus);
 	if(!vendorStatus){

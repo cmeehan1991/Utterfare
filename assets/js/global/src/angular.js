@@ -28,7 +28,7 @@ app.config(function($routeProvider, $locationProvider){
 		controller: 'VendorController'
 	})
 	.when('/vendor/sign-in', {
-		templateUrl: 'vendor/page-templates/sign-in.php',
+		templateUrl: 'vendor/page-templates/login.php',
 		controller: 'VendorSignInController'
 	})
 	.when('/404', {
