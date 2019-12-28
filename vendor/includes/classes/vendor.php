@@ -35,7 +35,7 @@ class Vendor{
 	}
 	
 	private function delete_item(){
-		include('../../../includes/php/DBConnection.php');
+		include('../../../includes/php/DbConnection.php');
 		
 		$item_id = filter_input(INPUT_POST, 'item_id');
 		
@@ -55,7 +55,7 @@ class Vendor{
 	}
 	
 	private function vendor_sign_in(){
-		include('../../../includes/php/DBConnection.php');
+		include('../../../includes/php/DbConnection.php');
 		
 		$username = filter_input(INPUT_POST, 'username');
 		$password = filter_input(INPUT_POST, 'password');
@@ -88,7 +88,7 @@ class Vendor{
 	}
 	
 	private function get_menu_items(){
-		include('../../../includes/php/DBConnection.php');
+		include('../../../includes/php/DbConnection.php');
 		
 		$limit = filter_input(INPUT_POST, 'limit');
 		$offset = filter_input(INPUT_POST, 'offset');
@@ -114,7 +114,7 @@ class Vendor{
 	}
 	
 	private function get_total_items($vendor_id){
-		include('../../../includes/php/DBConnection.php');
+		include('../../../includes/php/DbConnection.php');
 		
 		$sql = "SELECT COUNT(*) AS total_items FROM menu_items WHERE vendor_id = $vendor_id";
 		$stmt = $conn->prepare($sql);
@@ -126,7 +126,7 @@ class Vendor{
 	}
 	
 	private function get_item(){
-		include('../../../includes/php/DBConnection.php');
+		include('../../../includes/php/DbConnection.php');
 		$item_id = filter_input(INPUT_POST, 'item_id');
 		
 		$sql = "SELECT item_name, item_description, primary_image FROM menu_items WHERE item_id = ?";
@@ -198,7 +198,7 @@ class Vendor{
 	
 	
 	private function update_item(){
-		include ('../../../includes/php/DBConnection.php');
+		include ('../../../includes/php/DbConnection.php');
 		$item_id = filter_input(INPUT_POST, 'item-id');
 		$item_name = filter_input(INPUT_POST, 'item-name');
 		$item_description = filter_input(INPUT_POST, 'item-description');
@@ -231,7 +231,7 @@ class Vendor{
 	}
 	
 	private function add_new_item(){
-		include('../../../includes/php/DBConnection.php');
+		include('../../../includes/php/DbConnection.php');
 
 		$item_name = filter_input(INPUT_POST, 'item-name');
 		$item_description = filter_input(INPUT_POST, 'item-description');
@@ -260,7 +260,7 @@ class Vendor{
 	}
 	
 	private function update_item_image($item_id, $item_image){
-		include('../../../includes/php/DBConnection.php');
+		include('../../../includes/php/DbConnection.php');
 		
 		$sql = "UPDATE menu_items SET primary_image = ? WHERE item_id = ?;";
 		

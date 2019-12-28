@@ -15,8 +15,7 @@ class UF_Sessions{
 	
 	
 	private function userSession(){
-		$session_id = session_regenerate_id();
-		
+				
 		$user_is_signed_in = $_SESSION['UF_USER_SIGNED_IN'];
 		
 		if($is_signed_in){
