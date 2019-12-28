@@ -1,7 +1,7 @@
 var loginAttempt = 0;
 
 function validateLoginForm(){
-	console.log('validatingForm');
+
     var username = $("input[name='username']").val();
     var password = $("input[name='password']").val();
     

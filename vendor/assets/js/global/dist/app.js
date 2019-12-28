@@ -714,7 +714,6 @@ function validateUsername(username) {
 var loginAttempt = 0;
 
 function validateLoginForm() {
-  console.log('validatingForm');
   var username = $("input[name='username']").val();
   var password = $("input[name='password']").val();
   var loginFormValid = new Array();
@@ -916,7 +915,6 @@ window.getVendorStatus = function () {
 
   if (window.session.length !== 0) {
     session = $.parseJSON(session);
-    console.log(session);
 
     if (session.UF_VENDOR_USER_SIGNED_IN === true) {
       return session.UF_VENDOR_USER_ID;

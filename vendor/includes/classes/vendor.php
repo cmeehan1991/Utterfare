@@ -77,7 +77,7 @@ class Vendor{
 			
 			$_SESSION['UF_VENDOR_USER_SIGNED_IN'] = true;
 			$_SESSION['UF_VENDOR_USER_ID'] = $result['user_id'];
-			$_SESSION['UF_VENDOR_NAME'] = $result['vendor_name'];
+			$_SESSION['UF_VENDOR_NAME'] =  htmlspecialchars($result['vendor_name']);
 			$_SESSION['UF_VENDOR_ID'] = $result['vendor_id'];
 			
 		}else{

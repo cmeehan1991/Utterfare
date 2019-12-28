@@ -25,5 +25,5 @@ DEFINE('VENDOR_USER_ID', $_SESSION['UF_VENDOR_USER_ID']);
 <script type="text/javascript">
 	var vendor_class_url = '<?php echo VENDOR ?>';
 	var vendor_url = '<?php echo VENDOR_URL?>';
-	var session = '<?php echo json_encode($_SESSION); ?>';
+	var session = '<?php json_encode($_SESSION); ?>';
 </script>

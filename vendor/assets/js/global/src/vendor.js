@@ -1,10 +1,10 @@
 var page = 1;
 
 window.getVendorStatus = function(){
-	console.log(session);
+	console.log(session)
 	if(window.session.length !== 0){
 		session = $.parseJSON(session);
-		console.log(session);
+
 		if(session.UF_VENDOR_USER_SIGNED_IN === true){
 			return session.UF_VENDOR_USER_ID;
 		}
