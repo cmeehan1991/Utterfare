@@ -4,3 +4,4 @@ images/
 deploy.php
 .htaccess
 node_modules/
+vendor/
