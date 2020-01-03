@@ -110,11 +110,12 @@ class Item_Search{
 		
 		$result = $stmt->fetch();
 		
-					
-		if(!$this->check_image($result['primary_image'])){
-			$result['primary_image'] = "https://www.utterfare.com/assets/img/UF%20Logo.png";
+		if(!$this->check_image($results[$i]['primary_image'], $results[$i]['vendor_id']) && ($results[$i]['profile_picture'] == 'None' || $results[$i]['profile_picture'] == null)){
+			$results[$i]['primary_image'] = "https://www.utterfare.com/assets/img/UF%20Logo.png";
+		}elseif(!$this->check_image($results[$i]['primary_image'])){
+			$results[$i]['primary_image'] = $results[$i]['profile_picture'];
 		}else{
-			$result['primary_image'] = $result['primary_image'];	
+			$results[$i]['primary_image'] = $results[$i]['primary_image'];
 		}
 		
 				
@@ -133,13 +134,6 @@ class Item_Search{
 		
 		echo json_encode($result);
 		
-	}
-	
-	private function checkImageExists($image_url){
-		if(is_array($image_url)){
-			return false;
-		}
-		return strpos(@get_headers($image_url)[0], '200') > -1;
 	}
 	
 	private function doSearch(){
@@ -284,7 +278,9 @@ class Item_Search{
 			$results[$i]['address'] .= ' ' . $results[$i]['postal_code'];
 				
 			
-			if(!$this->check_image($results[$i]['primary_image'], $results[$i]['vendor_id']) && ($results[$i]['profile_picture'] == 'None' || $results[$i]['profile_picture'] == null)){
+			
+			$results[$i]['original_primary_image'] = $results[$i]['primary_image'];
+			if(!$this->check_image($results[$i]['primary_image']) && ($results[$i]['profile_picture'] == 'None' || $results[$i]['profile_picture'] == null || $this->check_image($results[$i]['profile_picture']) == false)){
 				$results[$i]['primary_image'] = "https://www.utterfare.com/assets/img/UF%20Logo.png";
 			}elseif(!$this->check_image($results[$i]['primary_image'])){
 				$results[$i]['primary_image'] = $results[$i]['profile_picture'];
@@ -292,6 +288,7 @@ class Item_Search{
 				$results[$i]['primary_image'] = $results[$i]['primary_image'];
 			}
 			
+			$results[$i]['profile_picture_exists'] = $this->check_image($results[$i]['profile_picture']);
 			
 			if($terms){
 				// Rank the terms
