@@ -15,12 +15,8 @@ window.getTopItems = function(user_location){
 	console.log(window.search_url);
 	console.log("Search");
 	$.post(window.search_url, data, function(response){
-		console.log(response);
 		$.each(response, function(k, v){
 						
-			var address_parts = $.parseJSON(v.address);
-			
-			var address = address_parts._city + ", " + address_parts._state.toUpperCase();
 			top_items += '<div class="col mx-auto d-flex">';
 			top_items += '<div class="card featured-item">';
 			top_items += '<img src="' + v.primary_image + '" class="card-img-top" alt="' + v.item_name + '">';
@@ -29,7 +25,7 @@ window.getTopItems = function(user_location){
 			top_items += '<h3>' + v.item_name + '</h3>'
 			top_items += '</div>';
 			top_items += '<div class="card-text">';
-			top_items += '<i class="featured-item__location">' + address + '</i><br/>';
+			top_items += '<i class="featured-item__location">' + v.address + '</i><br/>';
 			top_items += '<strong class="featured-item__vendor">' + v.vendor_name + '</strong><br/>';
 			top_items += '<p class="featured-item__short-description">' + v.item_short_description + '</p>';
 			top_items += '<a href="#!/single?id=' + v.item_id + '" type="button" class="btn btn-light">More Info</a>'; 
@@ -65,11 +61,11 @@ function getRecommendations(user_location){
 	var count = 0;
 	
 	$.post(window.search_url, data, function(response){
-
+		
 		if(response != ''){
+		
 			$.each(response, function(key, value){
-				var address_parts = $.parseJSON(value.address);
-				var address = address_parts._city + ", " + address_parts._state.toUpperCase();
+				var address = value.address;
 				
 				recommendations += '<div class="col-md-3 mx-auto d-flex">';
 				recommendations += '<div class="card recommendation">'; 
