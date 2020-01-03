@@ -6,7 +6,7 @@
 	</div>
 	<div class="row">
 		<div class="col-md-12">
-			<form name="company-profile-form" onsubmit="return saveCompanyProfile(this);">
+			<form name="company-profile-form" onsubmit="return window.saveCompanyProfile(this);" enctype="multipart/form-data">
 				<div class="row">
 					<div class="col-md-6">
 						<div class="form-group">
@@ -105,13 +105,14 @@
 					</div>
 					<div class="col-md-6">
 						<div class="form-group">
-							<label for="profile-picture">Profile Picture</label>
-							<img class="profile-picture">
-							<input name="profile-picture" type="file" aria-describedby="profilePictureDescription">
+							<label for="profile-picture">Profile Picture</label><br/>
+							<img class="profile-picture"><br>
+							<input name="profile-picture" type="file" aria-describedby="profilePictureDescription" onchange="window.setProfilePicturePreview(this);">
 							<small id="profilePictureDescription" class="form-text text-muted">Image size recommendations 400px X 400px, 800px X 800px, or 1400px X 1400px.<br/>All images will be cropped to a 1:1 ratio when saved.</small>
 						</div>
 					</div>
 				</div>
+				<button type="submit" class="btn btn-outline-success">Save</button>
 			</form>
 		</div>
 	</div>

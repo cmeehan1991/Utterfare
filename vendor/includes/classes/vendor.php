@@ -29,13 +29,150 @@ class Vendor{
 				case 'delete_item':
 					$this->delete_item();
 					break;
+				case 'get_company_profile':
+					$this->get_company_profile();
+					break;
+				case 'save_company_profile':
+					$this->save_company_profile();
+					break;
 				default: break;
 			}
 		}
 	}
 	
+	/* 
+	 * Create a new file for the company profile picture
+	 */ 
+	private function save_profile_picture($profile_picture, $company_id){
+		
+		// Get the image contents
+		$image_file = file_get_contents($profile_picture['tmp_name']);
+		
+		// Get the image name
+		$image_name = $profile_picture['name'];
+		
+		// Get the image type: .png, .jpg, etc.
+		$extension = pathinfo($image_name, PATHINFO_EXTENSION);
+		
+		$png_image = null;
+		
+		// Convert the image to a .png
+		switch ($extension) {
+	        case "jpg":
+	            $png_image = imagecreatefromjpeg($profile_picture['tmp_name']);
+	            break;
+	        case "jpeg":
+	            $png_image = imagecreatefromjpeg($profile_picture['tmp_name']);
+	            break;
+	        case "gif":
+	            $png_image = imagecreatefromgif($profile_picture['tmp_name']);
+	            break;
+	        case "png":
+	            $png_image = imagecreatefrompng($profile_picture['tmp_name']);
+	            break;
+	        default:
+	            break;
+	    }
+		
+		$directory = dirname(getcwd(), 4);
+		$path = 'uploads/images/' . date('Y') . '/' . date('m');
+		
+		$file_directory = $directory . '/' . $path;
+		
+		if(!file_exists($file_directory)){
+			mkdir($file_directory, 0777, true);
+		}
+		
+		$file_path = md5($vendor_id) . ".png";
+		
+		$save_image = imagepng($png_image, $file_directory . '/' . $file_path);
+		
+		if($save_image){		
+			return isset($_SERVER['HTTPS']) ? 'https' : 'http' . '://' . $_SERVER['HTTP_HOST'] . '/' . $path . '/' . $file_path;
+		}else{
+			return false;
+		}
+		
+
+	}
+	
+	/*
+	 * Save the company data 
+	 */
+	private function save_company_profile(){
+		include('../functions/DBConnection.php');
+
+		$company_name = filter_input(INPUT_POST, 'company-name');
+		$primary_address = filter_input(INPUT_POST, 'street-address');
+		$secondary_address = filter_input(INPUT_POST, 'secondary-address');
+		$city = filter_input(INPUT_POST, 'city');
+		$state = filter_input(INPUT_POST, 'state');
+		$postal_code = filter_input(INPUT_POST, 'postal-code');
+		$telephone = filter_input(INPUT_POST, 'telephone');
+		$email_address = filter_input(INPUT_POST, 'email');	
+		$website = filter_input(INPUT_POST, 'website');
+		$profile_picture = $_FILES['profile-picture'];
+		$company_id = $_SESSION['UF_VENDOR_ID'];
+		
+		
+		$sql = "UPDATE vendors SET vendor_name = ?, primary_address = ?, secondary_address = ?, city = ?, state = ?, postal_code = ?, telephone = ?, email_address = ?, website_url = ?";
+				
+		if($profile_picture['size'] > 0){
+			$profile_picture = $this->save_profile_picture($profile_picture, $company_id);
+			$sql .= ", profile_picture = ? WHERE vendor_id = ?";
+		}else{
+			$sql .= " WHERE vendor_id = ?";
+		}
+		
+		$stmt = $conn->prepare($sql);
+		
+		$stmt->bindParam(1, $company_name);
+		$stmt->bindParam(2, $primary_address);
+		$stmt->bindParam(3, $secondary_address);
+		$stmt->bindParam(4, $city);
+		$stmt->bindParam(5, $state);
+		$stmt->bindParam(6, $postal_code);
+		$stmt->bindParam(7, $telephone);
+		$stmt->bindParam(8, $email_address);
+		$stmt->bindParam(9, $website);
+		
+		if($profile_picture['size'] > 0){
+			
+			$stmt->bindParam(10, $profile_picture);
+			$stmt->bindParam(11, $company_id);
+		}else{
+		
+			$stmt->bindParam(10, $company_id);
+		
+		}
+		
+		$update = $stmt->execute();
+		echo json_encode(array(
+			'updated'	=> $update, 
+			'profile_picture'	=> $profile_picture, 
+		));			
+	}
+	
+	
+	private function get_company_profile(){
+		include('../functions/DBConnection.php');
+		
+		$company_id = $_SESSION['UF_VENDOR_ID'];
+
+		$sql = "SELECT vendor_name, primary_address, secondary_address, city, state, postal_code, telephone, email_address, website_url, profile_picture FROM vendors WHERE vendor_id = ?";
+		
+		$stmt = $conn->prepare($sql);
+		$stmt->bindParam(1, $company_id);
+		
+		$stmt->execute();
+		
+		$result = $stmt->fetch();
+
+		echo json_encode($result);
+	}
+	
 	private function delete_item(){
-		include('../../../includes/php/DbConnection.php');
+		include('../functions/DBConnection.php');
 		
 		$item_id = filter_input(INPUT_POST, 'item_id');
 		
@@ -55,7 +192,7 @@ class Vendor{
 	}
 	
 	private function vendor_sign_in(){
-		include('../../../includes/php/DbConnection.php');
+		include('../functions/DBConnection.php');
 		
 		$username = filter_input(INPUT_POST, 'username');
 		$password = filter_input(INPUT_POST, 'password');
@@ -74,11 +211,12 @@ class Vendor{
 		if($result['user_id']){
 			
 			$result['success'] = true;
-			
+			$_SESSION['user_id'] = $result['user_id'];
 			$_SESSION['UF_VENDOR_USER_SIGNED_IN'] = true;
 			$_SESSION['UF_VENDOR_USER_ID'] = $result['user_id'];
-			$_SESSION['UF_VENDOR_NAME'] =  htmlspecialchars($result['vendor_name']);
-			$_SESSION['UF_VENDOR_ID'] = $result['vendor_id'];
+			$_SESSION['UF_VENDOR_ID'] = $result['user_id'];
+			
+			$result['session']	 = $_SESSION;
 			
 		}else{
 			$result['success'] = false;
@@ -88,7 +226,7 @@ class Vendor{
 	}
 	
 	private function get_menu_items(){
-		include('../../../includes/php/DbConnection.php');
+		include('../functions/DBConnection.php');
 		
 		$limit = filter_input(INPUT_POST, 'limit');
 		$offset = filter_input(INPUT_POST, 'offset');
@@ -114,7 +252,7 @@ class Vendor{
 	}
 	
 	private function get_total_items($vendor_id){
-		include('../../../includes/php/DbConnection.php');
+		include('../functions/DBConnection.php');
 		
 		$sql = "SELECT COUNT(*) AS total_items FROM menu_items WHERE vendor_id = $vendor_id";
 		$stmt = $conn->prepare($sql);
@@ -126,7 +264,7 @@ class Vendor{
 	}
 	
 	private function get_item(){
-		include('../../../includes/php/DbConnection.php');
+		include('../functions/DBConnection.php');
 		$item_id = filter_input(INPUT_POST, 'item_id');
 		
 		$sql = "SELECT item_name, item_description, primary_image FROM menu_items WHERE item_id = ?";
@@ -198,7 +336,7 @@ class Vendor{
 	
 	
 	private function update_item(){
-		include ('../../../includes/php/DbConnection.php');
+		include ('../functions/DBConnection.php');
 		$item_id = filter_input(INPUT_POST, 'item-id');
 		$item_name = filter_input(INPUT_POST, 'item-name');
 		$item_description = filter_input(INPUT_POST, 'item-description');
@@ -231,7 +369,7 @@ class Vendor{
 	}
 	
 	private function add_new_item(){
-		include('../../../includes/php/DbConnection.php');
+		include('../functions/DBConnection.php');
 
 		$item_name = filter_input(INPUT_POST, 'item-name');
 		$item_description = filter_input(INPUT_POST, 'item-description');
@@ -260,7 +398,7 @@ class Vendor{
 	}
 	
 	private function update_item_image($item_id, $item_image){
-		include('../../../includes/php/DbConnection.php');
+		include('../functions/DBConnection.php');
 		
 		$sql = "UPDATE menu_items SET primary_image = ? WHERE item_id = ?;";
 		

@@ -18,7 +18,7 @@ include 'header.php';
 					<a class="nav-link" href="#!/company"><i class="fas fa-address-card"></i> Company Profile</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-item" href="" onclick="return signUserOut();">Sign Out</a>
+					<a class="nav-link" href="" onclick="return signUserOut();"><i class="fas fa-sign-out-alt"></i> Sign Out</a>
 				</li>
 			</ul>
 			

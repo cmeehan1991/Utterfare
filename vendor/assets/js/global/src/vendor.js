@@ -1,10 +1,14 @@
 var page = 1;
 
 window.getVendorStatus = function(){
-	console.log(session)
-	if(window.session.length !== 0){
-		session = $.parseJSON(session);
 
+	if(window.session.length !== 0){
+		
+		try{
+			session = $.parseJSON(window.session);		
+		}catch(e){
+			json = window.session;
+		}
 		if(session.UF_VENDOR_USER_SIGNED_IN === true){
 			return session.UF_VENDOR_USER_ID;
 		}
@@ -17,24 +21,21 @@ window.vendorSignIn = function(){
 	var data = $('.vendor-login-form').serialize();
 	data += '&action=vendor_sign_in';
 	
-	console.log(data);
-	console.log(window.vendor_class_url);
-	
 	var success = false;
-	
+		
 	$.post(window.vendor_class_url, data, function(response){
-		console.log(response);
-		console.log(response.success);
 		success = response.success;
+		window.session = response.session.toString();
 	}, 'json')
 	.fail(function(error){
 		console.log('error');
 		console.log(error);
 	})
 	.done(function(){
-		console.log(success);
 		if(success === true){
-			window.location.href= "/vendor";
+			window.location.href= "#!/";
+			window.location.reload();
+			
 		}else{
 			notify();
 		}
@@ -56,7 +57,9 @@ function closePopover(){
 }
 
 function notify(){
-	console.log("Notify the user of something");
+	window.alert("The username and password do not match our records. Please try again. ");
+	$('input[name=password]').val('');
+	$('input[name=username]').select();
 }
 
 window.getMenuItems = function(page){
@@ -81,7 +84,6 @@ window.getMenuItems = function(page){
 	pagination.className = 'pagination';
 	
 	var totalItems = 0;
-	
 	
 	
 	$.post(window.vendor_class_url, data, function(results){
@@ -210,6 +212,8 @@ window.signUserOut = function(){
 		action: 'sign_user_out',
 	};
 	
+	console.log("Sign user")
+	
 	$.post(window.vendor_class_url, data, function(results){
 		console.log(results);
 	})
@@ -218,7 +222,8 @@ window.signUserOut = function(){
 		console.log(error);
 	})
 	.done(function(){
-		window.location.href="#!/vendor";
+		window.location.href="/#!/";
+		location.reload();
 	});
 	
 	return false;
@@ -259,8 +264,6 @@ window.setPreview = function(input){
 window.addEditItem = function(form){
 	
 	let itemId = $(form).attr('data-item-id');
-	
-	
 	
 	var formData = new FormData(form);
 	
@@ -312,4 +315,87 @@ window.addEditItem = function(form){
 			}
 		}
 	});
+}
+
+/**
+ * Get the company profile and fill in the input fields
+ */
+window.getCompanyProfile = function(){
+
+	let data = {
+		action: 'get_company_profile',
+	};
+	
+	var profile = null;
+	$.post(window.vendor_class_url, data, function(response){
+
+		profile = response;
+	},'json')
+	.fail(function(error){
+		console.log(error);
+	})
+	.done(function(){
+		$('input[name=company-name]').val(profile.vendor_name);
+		$('input[name=street-address]').val(profile.primary_address);
+		$('input[name=secondary-address]').val(profile.secondary_address);
+		$('input[name=city]').val(profile.city);
+		$('select[name=state]').val(profile.state);
+		$('input[name=postal-code]').val(profile.postal_code);
+		$('input[name=telephone]').val(profile.telephone);
+		$('input[name=email]').val(profile.email_address);
+		$('input[name=website]').val(profile.website_url);
+		$('.profile-picture').attr('src', profile.profile_picture);
+
+	});
+}
+
+/**
+ * Save the company profile 
+ */
+window.saveCompanyProfile = function(form){
+	console.log(form);
+	var formData = new FormData(form);	
+	formData.append('action', 'save_company_profile');
+	
+	let res = null;
+	
+	$.ajax({
+		url: window.vendor_class_url, 
+		data: formData, 
+		type: 'POST', 
+		processData: false,
+		cache: false, 
+		contentType: false,
+		dataType: 'json',
+		success: function(response){
+			res = response;
+		}, error: function(error){
+			console.log(error);
+		}, complete: function(){
+			
+			$('.profile-toast').toast({
+				delay: 5000,
+			});
+			if(res.updated === true && res.profile_picture != false){
+				$('.profile-toast .toast-body').text('Profile updated.');
+			}else if(res.update === true && res.profile_picture === false){
+				$('.profile-toast .toast-body').text('Your profile was updated, but there was an error saving the picture. Please try again.');
+			}else if(res.updated === false){
+				$('.profile-toast .toast-body').text('Error updating profile. Please try again.');
+			}
+			
+			$('.profile-toast').toast('show');
+		}
+	})
+	
+}
+
+window.setProfilePicturePreview = function(input){
+	
+	var reader = new FileReader();
+	reader.onload = function(e){
+		$('.profile-picture').attr('src', e.target.result);
+	}
+	
+	reader.readAsDataURL(input.files[0]);
 }

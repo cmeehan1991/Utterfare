@@ -21,7 +21,7 @@ vendor.config(function($routeProvider, $locationProvider){
 	})
 	.when('/company', {
 		templateUrl: 'page-templates/company.php', 
-		controller: 'vendorItemsController'
+		controller: 'companyProfileController'
 	})
 	.when('/sign-out', {
 		controller: 'SignOutController', 
@@ -35,12 +35,12 @@ vendor.controller('vendorItemsController', function($scope){
 });
 
 vendor.controller('vendorController', function($scope){
-	console.log("Status");
-	var vendorStatus = window.getVendorStatus();
-	console.log(vendorStatus);
-	if(!vendorStatus){
-		window.location.href = "#!/sign-in"
+
+	var vendorStatus = window.getVendorStatus();	
+	if(vendorStatus === false){
+		window.location.href = "#!/sign-in";
 	}
+	
 });
 
 vendor.controller('editItemController', function($scope, $routeParams){
@@ -48,7 +48,16 @@ vendor.controller('editItemController', function($scope, $routeParams){
 });
 
 vendor.controller('vendorLoginController', function($scope){
-	console.log("Login Controller");
+
+	if(window.getVendorStatus() != false){
+		window.location.href="#!/";
+	}
+	
+	console.log(window.session);
+});
+
+vendor.controller('companyProfileController', function($scope){
+	window.getCompanyProfile();
 });
 
 
