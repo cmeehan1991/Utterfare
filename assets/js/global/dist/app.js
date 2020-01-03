@@ -1020,10 +1020,11 @@ window.showSingleItem = function (itemId) {
 
 
 function populateSingleItemInformation(data) {
+  console.log(data);
   var data = JSON.parse(data);
+  console.log(data.address);
   $('.item-name').text(data.item_name);
-  $('.item-image').attr('src', data.primary_image).attr('alt', data.item_name); //$('.item-image').attr('src', 'http://localhost/utterfare/assets/img/new-york-strip.jpg').attr('alt', data.item_name);
-
+  $('.item-image').attr('src', data.primary_image).attr('alt', data.item_name);
   latlng = {
     lat: parseFloat(data.latitude),
     lng: parseFloat(data.longitude)
@@ -1036,10 +1037,8 @@ function populateSingleItemInformation(data) {
     zoom: 14
   });
 
-  if (JSON.parse(data.address).length > 0) {
-    var address = JSON.parse(data.address)._address;
-
-    $('.vendor-address').attr('href', "http://maps.google.com/maps?q=" + address).text(address);
+  if (data.address.length > 0) {
+    $('.vendor-address').attr('href', "http://maps.google.com/maps?q=" + data.address).text(data.address);
   } else {
     var geocoder = new google.maps.Geocoder();
     geocoder.geocode({

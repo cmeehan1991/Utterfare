@@ -100,7 +100,7 @@ class Item_Search{
 		include 'DbConnection.php';
 		$item_id = filter_input(INPUT_POST, 'item_id');
 		
-		$sql = "SELECT item_name, item_description, primary_image, menu_items.vendor_id, vendors.vendor_name, latitude, longitude FROM menu_items INNER JOIN vendors ON vendors.vendor_id = menu_items.vendor_id WHERE item_id = ?";
+		$sql = "SELECT item_name, item_description, primary_image, menu_items.vendor_id, vendors.vendor_name, latitude, longitude, vendors.telephone, vendors.primary_address, vendors.secondary_address, vendors.city, vendors.state, vendors.postal_code FROM menu_items INNER JOIN vendors ON vendors.vendor_id = menu_items.vendor_id WHERE item_id = ?";
 		
 		$stmt = $conn->prepare($sql);
 		$stmt->bindParam(1, $item_id);
@@ -111,14 +111,25 @@ class Item_Search{
 		$result = $stmt->fetch();
 		
 					
-		if(!$this->check_image($result['primary_image'], $result['vendor_id'])){
+		if(!$this->check_image($result['primary_image'])){
 			$result['primary_image'] = "https://www.utterfare.com/assets/img/UF%20Logo.png";
 		}else{
-			$result['primary_image'] = $this->check_image($result['primary_image'], $result['vendor_id']);	
+			$result['primary_image'] = $result['primary_image'];	
 		}
 		
-		$result['address'] =  $this->get_vendor_meta($result['vendor_id'], '_address');
-		$result['telephone'] =  $this->get_vendor_meta($result['vendor_id'], '_telephone');
+				
+		$result['address'] = $result['primary_address'];
+		
+		if($result['secondary_address']){
+			$result['address'] .= ', ' . $results[$i]['secondary_address'];
+		}
+		
+		$result['address'] .= ', ' . $result['city'];
+		$result['address'] .= ', ' . $result['state'];
+		$result['address'] .= ' ' . $result['postal_code'];
+		
+		$result['telephone'] =  $result['telephone'];
+		
 		
 		echo json_encode($result);
 		
