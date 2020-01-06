@@ -74,7 +74,7 @@ class Vendor{
 	            break;
 	    }
 		
-		$directory = dirname(getcwd(), 4);
+		$directory = dirname(getcwd(), 5);
 		$path = 'uploads/images/' . date('Y') . '/' . date('m');
 		
 		$file_directory = $directory . '/' . $path;
@@ -88,7 +88,7 @@ class Vendor{
 		$save_image = imagepng($png_image, $file_directory . '/' . $file_path);
 		
 		if($save_image){		
-			return isset($_SERVER['HTTPS']) ? 'https' : 'http' . '://' . $_SERVER['HTTP_HOST'] . '/' . $path . '/' . $file_path;
+			return isset($_SERVER['HTTPS']) ? 'https' . ";//" . $_SERVER['HTTP_HOST'] . '/' . $path . '/' . $file_path : 'http' . '://' . $_SERVER['HTTP_HOST'] . '/' . $path . '/' . $file_path;
 		}else{
 			return false;
 		}
@@ -117,7 +117,7 @@ class Vendor{
 		
 		$sql = "UPDATE vendors SET vendor_name = ?, primary_address = ?, secondary_address = ?, city = ?, state = ?, postal_code = ?, telephone = ?, email_address = ?, website_url = ?";
 				
-		if($profile_picture['size'] > 0){
+		if($profile_picture || $profile_picture['size'] > 0){
 			$profile_picture = $this->save_profile_picture($profile_picture, $company_id);
 			$sql .= ", profile_picture = ? WHERE vendor_id = ?";
 		}else{
@@ -313,7 +313,7 @@ class Vendor{
 	            break;
 	    }
 		
-		$directory = dirname(getcwd(), 3);
+		$directory = dirname(getcwd(), 5);
 		$path = 'uploads/images/' . date('Y') . '/' . date('m');
 		
 		$file_directory = $directory . '/' . $path;
@@ -327,7 +327,7 @@ class Vendor{
 		$save_image = imagepng($png_image, $file_directory . '/' . $file_path);
 		
 		if($save_image){		
-			return isset($_SERVER['HTTPS']) ? 'https' : 'http' . '://' . $_SERVER['HTTP_HOST'] . '/' . $path . '/' . $file_path;
+			return isset($_SERVER['HTTPS']) ? 'https://' . $_SERVER['HTTP_HOST'] . '/' . $path . '/' . $file_path: 'http' . '://' . $_SERVER['HTTP_HOST'] . '/' . $path . '/' . $file_path;
 		}else{
 			return null;
 		}
@@ -347,7 +347,7 @@ class Vendor{
 		$new_image = null;
 		if($primary_image['size'] > 0){
 			$new_image = $this->save_image($primary_image, $item_id, $_SESSION['UF_VENDOR_ID']);
-
+			
 			$sql .= ', primary_image = :primary_image';
 		} 
 		

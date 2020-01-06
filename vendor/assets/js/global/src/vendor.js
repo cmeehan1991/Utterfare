@@ -287,7 +287,7 @@ window.addEditItem = function(form){
 		contentType: false,
 		dataType: 'json',
 		success: function(response){
-			
+			console.log(response);
 			if(response.item_id !== undefined){
 				results = response.item_id;
 			}else if(response.success !== undefined){

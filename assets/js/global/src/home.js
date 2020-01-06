@@ -13,8 +13,9 @@ window.getTopItems = function(user_location){
 	var top_items = '';
 	
 	console.log(window.search_url);
-	console.log("Search");
+
 	$.post(window.search_url, data, function(response){
+				
 		$.each(response, function(k, v){
 						
 			top_items += '<div class="col mx-auto d-flex">';
@@ -61,7 +62,7 @@ function getRecommendations(user_location){
 	var count = 0;
 	
 	$.post(window.search_url, data, function(response){
-		
+		console.log(response);
 		if(response != ''){
 		
 			$.each(response, function(key, value){
