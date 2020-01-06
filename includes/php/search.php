@@ -110,15 +110,15 @@ class Item_Search{
 		
 		$result = $stmt->fetch();
 		
-		if(!$this->check_image($results[$i]['primary_image'], $results[$i]['vendor_id']) && ($results[$i]['profile_picture'] == 'None' || $results[$i]['profile_picture'] == null)){
-			$results[$i]['primary_image'] = "https://www.utterfare.com/assets/img/UF%20Logo.png";
-		}elseif(!$this->check_image($results[$i]['primary_image'])){
-			$results[$i]['primary_image'] = $results[$i]['profile_picture'];
+		if(!$this->check_image($result['primary_image'], $result['vendor_id']) && ($result['profile_picture'] == 'None' || $result['profile_picture'] == null)){
+			$result['primary_image'] = "https://www.utterfare.com/assets/img/UF%20Logo.png";
+		}elseif(!$this->check_image($result[$i]['primary_image'])){
+			$result['primary_image'] = $results['profile_picture'];
 		}else{
-			$results[$i]['primary_image'] = $results[$i]['primary_image'];
+			$result['primary_image'] = $result['primary_image'];
 		}
 		
-				
+			
 		$result['address'] = $result['primary_address'];
 		
 		if($result['secondary_address']){
