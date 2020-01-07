@@ -34,6 +34,12 @@ app.config(function($routeProvider, $locationProvider){
 	.when('/404', {
 		templateUrl: 'page-templates/404.php'
 	})
+	.when('/help', {
+		templateUrl: "page-templates/help.php"
+	})
+	.when('/about', {
+		templateUrl: "page-templates/about.php"
+	})
 	.otherwise('/404');
 
 	

@@ -393,12 +393,14 @@ class Users{
 		if($stmt->rowCount() > 0){
 			$response = array(
 				'user_id' 		=> $results['user_id'],
-				'response' 	=> 'SUCCESS'
+				'response' 	=> 'SUCCESS',
+				'SUCCESS'	=> true, 
 			);
 		}else{
 			$response = array(
 				'user_id' 		=> 0,
-				'RESPONSE' 	=> 'FAIL'
+				'RESPONSE' 	=> 'FAIL',
+				'SUCCESS'=> false,
 			);
 		}
 		echo json_encode($response);
