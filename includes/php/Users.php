@@ -117,7 +117,7 @@ class Users{
 		include('DbConnection.php');
 		$user_id = filter_input(INPUT_POST, 'user_id');
 		
-		$sql = "SELECT first_name, last_name, primary_address, secondary_address, city, state, postal_code, gender, email, telephone_number FROM all_users WHERE user_id = :user_id";
+		$sql = "SELECT first_name, last_name, primary_address, secondary_address, city, state, postal_code, gender, email, telephone_number, birthday FROM all_users WHERE user_id = :user_id";
 		
 		$stmt = $conn->prepare($sql);
 		$stmt->bindParam(":user_id", $user_id);
