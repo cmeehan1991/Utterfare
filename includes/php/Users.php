@@ -117,7 +117,7 @@ class Users{
 		include('DbConnection.php');
 		$user_id = filter_input(INPUT_POST, 'user_id');
 		
-		$sql = "SELECT first_name, last_name, primary_address, secondary_address, city, state, postal_code, gender, email, telephone_number, birthday FROM all_users WHERE user_id = :user_id";
+		$sql = "SELECT first_name, last_name, primary_address, secondary_address, city, state, postal_code, gender, email, telephone_number, IF(birthday IS NULL, DATE_FORMAT(NOW(), '%Y-%m-%d'), DATE_FORMAT(birthday, '%Y-%m-%d')) FROM all_users WHERE user_id = :user_id";
 		
 		$stmt = $conn->prepare($sql);
 		$stmt->bindParam(":user_id", $user_id);
@@ -142,6 +142,7 @@ class Users{
 	*/
 	private function setUser(){
 		include('DbConnection.php');
+		
 		$user_id = filter_input(INPUT_POST, 'user_id');
 		$first_name = filter_input(INPUT_POST, 'first_name');
 		$last_name = filter_input(INPUT_POST, 'last_name');
@@ -154,9 +155,9 @@ class Users{
 		$telephone_number = filter_input(INPUT_POST, 'telephone_number');
 		$gender = filter_input(INPUT_POST, 'gender');
 		$birthday = filter_input(INPUT_POST, 'birthday');
+
 		
-		
-		$sql = "UPDATE all_users SET first_name = :first_name, last_name = :last_name, primary_address = :primary_address, secondary_address = :secondary_address, city = :city, state = :state, postal_code = :postal_code, email = :email, telephone_number = :telephone_number, birthday = :birthday, gender = :gender WHERE user_id = :user_id";
+		$sql = "UPDATE all_users SET first_name = :first_name, last_name = :last_name, primary_address = :primary_address, secondary_address = :secondary_address, city = :city, state = :state, postal_code = :postal_code, email = :email, telephone_number = :telephone_number, gender = :gender WHERE user_id = :user_id";
 		
 		$stmt = $conn->prepare($sql);
 		$stmt->bindParam(":user_id", $user_id);
@@ -169,10 +170,14 @@ class Users{
 		$stmt->bindParam(":postal_code", $postal_code);
 		$stmt->bindParam(":email", $email);
 		$stmt->bindParam(":telephone_number", $telephone_number);
-		$stmt->bindParam(":birthday", $birthday);
 		$stmt->bindParam(":gender", $gender);
-		
-		$results = $stmt->execute();
+		try{
+			echo "execute";
+			$results = $stmt->execute();
+		}catch(Exception $ex){
+			echo "exception";
+			var_dump($ex->getMessage());
+		}
 		
 		$response = array();
 		if($results){
