@@ -1,10 +1,10 @@
 <?php 
-	// action=reset_password_request&email=cmeehan1991@gmail.com
 
 class Users{
 	function __construct(){
 		$action = filter_input(INPUT_POST, 'action');
-		$this->init($action);		
+		$this->init($action);	
+			
 	}
 	
 	private function init($action){
@@ -146,7 +146,7 @@ class Users{
 		$first_name = filter_input(INPUT_POST, 'first_name');
 		$last_name = filter_input(INPUT_POST, 'last_name');
 		$primary_address = filter_input(INPUT_POST, 'primary_address');
-		$secondary_address = filter_input(INPUT_POST, '$secondary_address');
+		$secondary_address = filter_input(INPUT_POST, 'secondary_address');
 		$city = filter_input(INPUT_POST, 'city');
 		$state = filter_input(INPUT_POST, 'state');
 		$postal_code = filter_input(INPUT_POST, 'postal_code');
