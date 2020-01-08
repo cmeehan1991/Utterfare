@@ -18,7 +18,7 @@ set('ssh_multiplexing', true);
 
 set('git_recursive', false);
 
-set('branch', 'master');
+set('branch', 'dev');
 
 set('default_stage', 'dev ');
 

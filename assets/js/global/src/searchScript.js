@@ -6,14 +6,6 @@ var params={};
 var setMarkers = [];
 var markers = [];
 
-
-$(document).ready(function () {
-    $('.search-form__input').focusin(function(){
-		//showSuggestions();
-		$('.search-form__input').attr('placeholder', 'Try "Impossible Burger"');
-    });       
-});
-
 $(window).on('load', function(){
 	var url = window.location.href;
 	var parameters;
@@ -23,7 +15,7 @@ $(window).on('load', function(){
 		parameters = getSearchParameters(url);
 
 		var offset = 25 * (parameters.page - 1);
-		//performSearch(parameters.terms, decodeURIComponent(parameters.location), parameters.distance, parseInt(parameters.page), 25, parseInt(offset));
+		initMap(parameters.terms, decodeURIComponent(parameters.location), parameters.distance, parseInt(parameters.page), 25, parseInt(offset));
 		
 		if($('.search-form__input').val() === undefined || $('.search-form__input').val() === null || $('.search-form__input').val() === ""){
 			$('.search-form__input').val(decodeURIComponent(parameters.terms));
@@ -43,7 +35,7 @@ $(document).mouseup(function(e){
 	}
 });
 
-function getSearchParameters(url){
+window.getSearchParameters = function(url){
 	var allParameters = url.split("?")[1].split("&");
 	
 	
@@ -110,19 +102,20 @@ function changeLocation(){
 */
 
 
-function goToSearchPage(terms, searchLocation, distance, page, limit, offset){	
+window.goToSearchPage = function(terms, searchLocation, distance, page, limit, offset){	
 	var url = window.location.protocol + "//" + window.location.host + window.location.pathname + "#!/results";
 	var searchParameters = "?action=search&terms=" + encodeURI(terms) + "&page=" + page + "&location=" + encodeURI(searchLocation.replace(/[(,)+]/g, '')) + "&distance=" + distance;
 	
 	window.location.href = url + searchParameters;
-	
 }
 
 /*
 * Perform the search based on the passed values
 */
-function performSearch(terms, searchLocation, distance, page, limit, offset){			
-		
+function performSearch(terms, searchLocation, distance, page, limit, offset, map){			
+	
+	$("#loadingModal").modal("show");
+	
 	var data = {
 		'action' : 'search',
 		'location': searchLocation,
@@ -132,120 +125,113 @@ function performSearch(terms, searchLocation, distance, page, limit, offset){
 		'distance': distance,
 		'offset': offset
 	};
-	
-	
+		
 	var display = '';
-	var map;
 
-	// Initialize the map		
-	initMap(searchLocation);
+	console.log(data);
+	
 
-	// Run the search
-	$.ajax({
-		url: window.search_url,
-		data: data,
-		method: 'post',
-		dataType: 'json',
-		success: function (response) {
-
-			if(response.length > 0 ){
-				$.each(response, function(index, result){
+	// Initialize the map			
+	$.post(window.search_url, data, function(response){
+		console.log("Response");	
+		console.log(response);	
+		if(response.length > 0 ){
+			$.each(response, function(index, result){
 	
-					display += '<li class="results-list--item" data-item-id="' + result.item_id + '">';
-					
-					display += '<div class="card mb-3"></div><div class="row no-gutters">';
-					
-					display += '<div class="col-md-4">';
 	
-					display += '<img src="' + result.primary_image + '" class="card-img" alt="' + result.item_name + '">';
-					
-					display += "</div>";
-					
-					display += '<div class="col-md-8">';
-					
-					display += '<div class="card-body">';
-					
-					display += '<h3 class="card-title">' + result.item_name + '</h3>';
-	
-					display += '<h4 class="card-title card-title--vendor-name">' + result.vendor_name + '</h4>';
-										
-					display += '<p class="card-text"><small class="text-muted"></small></p>';
-					
-					display += '<p class="card-text">' + result.item_short_description + '</p>';					
-					
-					display += "</div></div>";
-					
-					display += '</div></div></li>';
-					
+				display += '<li class="results-list--item" data-item-id="' + result.item_id + '">';
 				
-					addMarkers({
-						'lat': result.latitude,
-						'lng': result.longitude, 
-						'title': result.vendor_name, 
-					});
-				});
+				display += '<div class="card mb-3"></div><div class="row no-gutters">';
+				
+				display += '<div class="col-md-4">';
+
+				display += '<img src="' + result.primary_image + '" class="card-img" alt="' + result.item_name + '">';
+				
+				display += "</div>";
+				
+				display += '<div class="col-md-8">';
+				
+				display += '<div class="card-body">';
+				
+				display += '<h3 class="card-title">' + result.item_name + '</h3>';
+
+				display += '<h4 class="card-title card-title--vendor-name">' + result.vendor_name + '</h4>';
+									
+				display += '<p class="card-text"><small class="text-muted"></small></p>';
+				
+				display += '<p class="card-text">' + result.item_short_description + '</p>';					
+				
+				display += "</div></div>";
+				
+				display += '</div></div></li>';
+				 
+				
+				window.addMarkers({
+					'lat': result.latitude,
+					'lng': result.longitude, 
+					'title': result.vendor_name, 
+				}, map);
+				
+			});
 			}else{
 				display += "<h3>It looks like there is nothing there.</h3><p>Try expanding your search location or searching for something else.</p>";
 			}
-			
-		}, 
-		error: function (jqXHR, error, errorThrown) {
-			console.log("error");
-			console.log(jqXHR);
-			console.log(error);
-			console.log(errorThrown);
-			
-		}, 
-		complete: function(){
+	}, 'json')
+	.fail(function(error){
+		console.log("Search Error (performSearch())");
+		console.log(error);
+		
+		console.log("Data");
+		console.log(data);
+	})
+	.done(function(){
+		
+		$('.results-list').html(display);		
+		
+					
+		$('.results-list--item').on('mouseenter', function(){
 
-			
-			$('.content').append(results);
-			results.hide();
-			$('.results-list').html(display);		
-			
-						
-			$('.results-list--item').on('mouseenter', function(){
+			var title = $(this).find('.card-title--vendor-name').text();
 
-				var title = $(this).find('.card-title--vendor-name').text();
+			markers.forEach(function(marker){
 
-				markers.forEach(function(marker){
+				if(marker.title === title){
 
-					if(marker.title === title){
-
-						marker.setAnimation(google.maps.Animation.BOUNCE);
-					}else{
-						marker.setAnimation(null);
-					}
-				});
-			});
-			
-			
-			$('.results-list--item').on('click', function(){
-				var itemId = $(this).attr('data-item-id');
-
-				window.location.href="#!/single?id=" + itemId;
-			});
-			
-			$('.results-list--item').on('mouseleave', function(){
-				markers.forEach(function(marker){
+					marker.setAnimation(google.maps.Animation.BOUNCE);
+				}else{
 					marker.setAnimation(null);
-				});
-			});						
-			window.loadingIndicator.detach();
-			
-		}
+				}
+			});
+		});
+		
+		
+		$('.results-list--item').on('click', function(){
+			var itemId = $(this).attr('data-item-id');
+
+			window.location.href="#!/single?id=" + itemId;
+		});
+		
+		$('.results-list--item').on('mouseleave', function(){
+			markers.forEach(function(marker){
+				marker.setAnimation(null);
+			});
+		});		
+		
+		$("#loadingModal").modal("hide");				
 	});
 }
 /*
 * Initialize the results map*/
-function initMap(searchLocation){
+window.initMap = function(terms, searchLocation, distance, page, limit, offset){
+
 	
 	var url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + encodeURIComponent(searchLocation) + '&key=AIzaSyBNOJbx_2Q5h8f0ONZ4Abf5ULE0w4B-VTc';
 		
 	var latlng = {};
-	
+	var map; 
 	if(document.getElementById('map') !== undefined && document.getElementById('map') !== null){
 		$.get(url, null, function(success){
+			
 			if(success.results[0].geometry !== undefined){
 				latlng.lat = success.results[0].geometry.location.lat;
 				latlng.lng = success.results[0].geometry.location.lng;
@@ -255,11 +241,48 @@ function initMap(searchLocation){
 			}
 		})
 		.done(function(){
-			map = new google.maps.Map(document.getElementById('map'), {
+			var map = new google.maps.Map(document.getElementById('map'), {
 				center: latlng, 
 				zoom: 12
 			});
 			
+			// Add a marker for the user's current search location
+			var image = 'assets/img/maps-and-flags.png';
+		
+			var marker = new google.maps.Marker({
+				position: latlng, 
+				title: "Your Search Location", 
+				map: map, 
+				visible: true,
+				icon:image,
+			});
+			marker.addListener('click', function(){
+				var infowindow = new google.maps.InfoWindow({
+					content: marker.title,
+				});
+				
+				infowindow.open(map, marker);
+			});
+						
+			markers.push(marker);
+
+
+			// Add a circle for the search radius
+			// Convert the miles to meters
+			var radius = distance * 1609.34
+			
+			// Instantiate the circle
+			var circle = new google.maps.Circle({
+				map: map, 
+				radius: radius,
+				fillColor: '#AA0000',
+			});
+			
+			// Add the circle to the map
+			circle.bindTo('center', marker, 'position');
+			
+			// Perform the search
+			performSearch(terms, searchLocation, distance, page, limit, offset, map)
 		});
 	}
 }
@@ -268,26 +291,28 @@ function initMap(searchLocation){
 * Add marrkers to the map. 
 * We will only add each marker once by checking the restaurante title
 */
-function addMarkers(data){
-		var position = new google.maps.LatLng(data.lat, data.lng);
-		var marker = new google.maps.Marker({
-			position: position,
-			title: data.title,
-			animation: google.maps.Animation.DROP,
+window.addMarkers = function(data, map){
+	
+	var position = new google.maps.LatLng(data.lat, data.lng);
+	var marker = new google.maps.Marker({
+		position: position,
+		title: data.title,
+		animation: google.maps.Animation.DROP,
+		map: map,
+		visible: true,
+	});
+		
+	marker.addListener('click', function(){
+		var infowindow = new google.maps.InfoWindow({
+			content: data.title
 		});
 		
+		infowindow.open(map, marker);
+	});
 		
-		marker.addListener('click', function(){
-			var infowindow = new google.maps.InfoWindow({
-				content: data.title
-			});
-			
-			infowindow.open(map, marker);
-		});
-		
+	
 		
 	if($.inArray(data.title, setMarkers) <= 0){		
-		marker.setMap(map);
 		setMarkers.push(data.title);
 		markers.push(marker);
 	}

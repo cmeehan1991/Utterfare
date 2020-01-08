@@ -2,3 +2,13 @@ html, body, h1, h2, h3, h4, h5, p, span, a, li{
 	font-family: "Arial", Arial, sans-serif;
 	font-weight: 100;
 }
+
+#loadingModal .modal-dialog .modal-content{
+	background:rgba(210,210,210, 0.5);
+	border:none;
+}
+
+#loadingModal .spinner-border{
+	width:150px;
+	height:150px;
+}

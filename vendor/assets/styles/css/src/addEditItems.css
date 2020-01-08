@@ -1,0 +1,41 @@
+.currentItems{
+	table-layout: fixed;
+}
+
+.currentItems thead tr.table-heading td{
+    font-weight: bold;
+    padding-left:5px;
+    padding-right:5px;
+}
+
+.currentItems__body tr td{
+    padding:5px !important;
+}
+
+.currentItems__body tr:nth-child(even), .currentItems__body tr:nth-child(even) td{
+	background:#ccc;
+	cursor:pointer;
+}
+
+.currentItems__body tr:nth-child(even) td.actions{
+	background:#fff;
+	width:fit-content;
+}
+
+.currentItems__body tr td:first-child{
+	width:100px !important;
+}
+
+.itemNameInput, .itemDescriptionInput{
+	width:100%;
+}
+
+.item-image{
+	min-width:150px;
+	max-width:150px;
+	width:150px;
+	min-height: 150px;
+	max-height: 150px;
+	height:150px;
+}
+

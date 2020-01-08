@@ -14,7 +14,11 @@ DEFINE('SEARCH_URL', PROTOCOL . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'
 DEFINE('SINGLE_URL', PROTOCOL . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'] . 'includes/php/single-item.php');
 DEFINE('USER_URL', PROTOCOL . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'] . 'includes/php/user.php');
 DEFINE('USER_ID', $_SESSION['user_id']);
-DEFINE('SIGNED_IN',  $_SESSION['IS_SIGNED_IN']);
+
+DEFINE('USER_SIGNED_IN',  $_SESSION['UF_USER_SIGNED_IN']);
+DEFINE('VENDOR_SIGNED_IN',  $_SESSION['UF_VENDER_SIGNED_IN']);
+
+
 ?>
 
 <script type="text/javascript">
@@ -22,4 +26,5 @@ DEFINE('SIGNED_IN',  $_SESSION['IS_SIGNED_IN']);
 	var base_url = '<?php echo BASE_URL ?>';
 	var single_item_url = '<?php echo SINGLE_URL?>';
 	var user_url = '<?php echo USER_URL?>';
+	var session = '<?php echo json_encode($_SESSION); ?>';
 </script>

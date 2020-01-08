@@ -1,6 +1,4 @@
-$(document).ready(function(){});
-
-function getSingleVendorItems(){
+window.getSingleVendorItems = function(){
 	var items_section = $('.related-vendor-items');
 	items_section.detach();
 	$('.related-items').append(window.loading_indicator);
@@ -14,8 +12,9 @@ function getSingleVendorItems(){
 		
 		
 	var related_items = '';
-	$.post(window.single_item_url, params, function(data, textStatus, jqXHR){
-		$.each(data, function(index, item){
+	$.post(window.single_item_url, params, function(response){
+		console.log(response);
+		$.each(response, function(index, item){
 			related_items += '<li class="related-vendor-item">'; 
 			related_items += '<div class="card" style="width: 18rem;">';
 			related_items += '<img src="' + item.primary_image + '" class="card-img-top" alt="' + item.item_name + '">';
@@ -29,8 +28,8 @@ function getSingleVendorItems(){
 		});
 	}, 'json')
 	.done(function(){
-		window.loadingIndicator.detach();
-		$('.related-items').append(items_section);
+	
+		$('.related-items').html(items_section);
 		items_section.html(related_items);
 		
 		$('.item-btn').on('click', function(e){
@@ -45,8 +44,7 @@ function getSingleVendorItems(){
 /*
 * Get the item information to be shown on the single item page
 */
-function showSingleItem(itemId){
-	
+window.showSingleItem = function(itemId){
 	var singleUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + "#!/single";
 	window.location.href = singleUrl + "?id=" + itemId;
 	
@@ -65,14 +63,14 @@ function showSingleItem(itemId){
 * Handle the single item data 
 */
 function populateSingleItemInformation(data){
-	var data = JSON.parse(data);
-	
 	console.log(data);
-	
+	var data = JSON.parse(data);
+		
+		
+	console.log(data.address);
 	$('.item-name').text(data.item_name);
 	$('.item-image').attr('src', data.primary_image).attr('alt', data.item_name);
-	//$('.item-image').attr('src', 'http://localhost/utterfare/assets/img/new-york-strip.jpg').attr('alt', data.item_name);
-	$('.vendor-address').attr('href', "http://maps.google.com/maps?q=" + JSON.parse(data.address)._address).text(JSON.parse(data.address)._address);
+		
 	latlng = {
 		lat: parseFloat(data.latitude),
 		lng: parseFloat(data.longitude),
@@ -83,14 +81,29 @@ function populateSingleItemInformation(data){
 		zoom:14
 	});
 	
+	if(data.address.length > 0){
+
+			$('.vendor-address').attr('href', "http://maps.google.com/maps?q=" + data.address).text(data.address);
+		
+	}else{
+			
+		var geocoder = new google.maps.Geocoder();
+		
+		geocoder.geocode({ 'latLng': latlng	}, function(result, status){
+			var address = result[0].formatted_address;	
+			$('.vendor-address').attr('href', "http://maps.google.com/maps?q=" + address).text(address);
+		});
 	
-	addMarkers({lat: data.latitude, lng: data.longitude, title: data.vendor_name});
+	}	
+	
+	window.addMarkers({lat: data.latitude, lng: data.longitude, title: data.vendor_name}, map);
+	
 	$('.item-description').text(data.item_description);
 }
 
 
 
-function getItemReviews(){
+window.getItemReviews = function(){
 	var url = window.location.href;
 	var params = window.getSearchParameters(url);
 	params = {
@@ -124,14 +137,16 @@ function getItemReviews(){
 	});
 }
 
-function getItemRating(){
+window.getItemRating = function(){
 	var url = window.location.href;
-	params = {
+	var params = getSearchParameters(url);
+	
+	var data = {
 		item_id: params.id, 
 		action: 'get_item_ratings'
 	};
 		
-	$.post(window.single_item_url, params, function(data, textStatus, jqXHR){
+	$.post(window.single_item_url, data, function(data, textStatus, jqXHR){
 		
 	}, 'json')
 	.done(function(){

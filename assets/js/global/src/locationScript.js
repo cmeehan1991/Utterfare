@@ -3,11 +3,7 @@ var userLocation;
 var userSearchLocation;
 var searchDistance = 10;
 
-$(document).ready(function () {
-    geolocation();
-});
-
-function setManualSearchLocation(){
+window.setManualSearchLocation = function(){
 	userLocation = $('input[name="location"]').val();
 	var distance = $('select[name="distance"]').val();
 	if(userLocation !== undefined && userLocation !== null){
@@ -44,10 +40,15 @@ function isNumeric(input){
     return !isNaN(parseFloat(input)) && isFinite(input);
 }
 
-function geolocation() {
+window.geolocation = function() {
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(showPosition);
+        navigator.geolocation.getCurrentPosition(showPosition, locationErrorCallback, {timeout: 1000000, enableHighAccurace: true});
     } 
+}
+
+function locationErrorCallback(err){
+	  console.warn(`ERROR(${err.code}): ${err.message}`);
+	  console.log(err);
 }
 
 function showPosition(position) {
@@ -58,6 +59,8 @@ function showPosition(position) {
 }
 
 function codeLatLng(lat, lng) {
+	
+	console.log("lat lng");
     var geocoder = new google.maps.Geocoder();
     var latLng = new google.maps.LatLng(lat, lng);
     geocoder.geocode({'latLng': latLng}, function (results, status) {
@@ -76,9 +79,11 @@ function codeLatLng(lat, lng) {
 					window.userSearchLocation = $scope.location;
 					window.searchDistance = 10;
 				});
-
+				
                 if($('.results').is(":visible") === false){
-               		window.curateHomepageSections(userLocation);
+	                window.userLocation = userLocation;
+	                window.searchDistance = 10;
+               		window.getTopItems(userLocation);
                 }
             }
         }
@@ -98,11 +103,11 @@ function changeLocation() {
 * Create the location popoever. 
 * This popover will allow the user to input a location and distance manually.
 */
-function showLocationPopover(){
+window.showLocationPopover = function(){
 	var locationInputContent = "<label for='userSearchLocationInput'><strong>Location:</strong>";
-	locationInputContent += "<input type='text'name='userSearchLocationInput' value='" + window.userLocation + "'>";
+	locationInputContent += "<input type='text' class='form-control' name='userSearchLocationInput' value='" + window.userLocation + "'>";
 	locationInputContent += "<label for='userSearchDistance'><strong>Distance</strong></label>";
-	locationInputContent += "<select name='userSearchDistance' value='" + window.searchDistance + "'}>";
+	locationInputContent += "<select class='custom-select' name='userSearchDistance'>";
 	locationInputContent += "<option value='1'>1 Mile</option>";
 	locationInputContent += "<option value='2'>2 Mile</option>";
 	locationInputContent += "<option value='5'>5 Miles</option>";
@@ -111,6 +116,7 @@ function showLocationPopover(){
 	locationInputContent += "<option value='20'>20 Miles</option>";
 	locationInputContent += "</select>";
 	
+		
 	$('.location-link').popover({
 		content: locationInputContent,
 		title: "Search Area",
@@ -118,12 +124,15 @@ function showLocationPopover(){
 		placement: 'bottom',
 		sanitize: false,
 	},'toggle');
-	
+		
 	$('.location-link').on('hide.bs.popover', function(){
 		window.userSearchLocation = $('input[name="userSearchLocationInput"]').val();
-		window.searchDistance = $('input[name="userSearchDistance"]').val();
+		window.searchDistance = $('select[name="userSearchDistance"]').val();
 		
+		$('.location-link').text(window.searchDistance + " miles from " + window.userSearchLocation);
 		console.log(window.searchDistance);
+		$('select[name=userSearchDistance] option[value=' + window.searchDistance + ']').attr('selected', 'selected');
+		console.log($('select[name=userSearchDistance]').val());
 	});
 }
 
