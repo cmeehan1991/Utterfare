@@ -155,7 +155,7 @@ class Item_Search{
         $lng = $obj['results'][0]['geometry']['location']['lng'];
         
         
-        echo $this->search($distance, $lat, $lng, $limit, $page, $offset, $terms, false);
+        echo $this->search($distance, $lat, $lng, $limit, $page, $offset, $terms, false, $location);
 	}
 	
 	private function getTopItems(){
@@ -226,14 +226,14 @@ class Item_Search{
         $lat = $obj['results'][0]['geometry']['location']['lat'];
         $lng = $obj['results'][0]['geometry']['location']['lng'];
 		
-		echo $this->search(10, $lat, $lng, 8, 1, 0, null, true);
+		echo $this->search(10, $lat, $lng, 8, 1, 0, null, true, $location);
 	}
 	
 	
 	/*
 	* This is the primary search logic 
 	*/
-	private function search($distance = 10, $latitude = null, $longitude = null, $ppp = null, $page = 1, $offset = 0, $terms = null, $random = false){
+	private function search($distance = 10, $latitude = null, $longitude = null, $ppp = null, $page = 1, $offset = 0, $terms = null, $random = false, $location = null){
 		include 'DbConnection.php';
 				
 		$sql = "SELECT DISTINCT item_id, item_name, item_short_description, primary_image, vendors.vendor_id, vendors.vendor_name, md5(vendors.vendor_name) as 'name_hash', vendors.latitude, vendors.longitude, vendors.primary_address, vendors.secondary_address, vendors.city, vendors.state, vendors.postal_code, vendors.profile_picture
@@ -306,9 +306,15 @@ class Item_Search{
 			// We nee dto reverse the array because usort orders from lowest to highest. 
 			$results = array_reverse($results);
 		}
-				
+		
+		
 		
 		echo json_encode($results);
+		
+		if($terms != null){
+			$this->searchData($terms, $location, $lat, $lng, $distance, $results);
+		}
+		
 	}
 	
 	private function rank_item($item, $terms){
@@ -400,25 +406,14 @@ class Item_Search{
 		
 	}
 	
-	/*
-	private addRecentSearch($terms){
-		if(isset($_SESSION['RECENT_SEARCHES'])){
-			$recent_searches = $_SESSION['RECENT_SEARCHES'];
-			
-			// Check for the search
-			$key = array_search($terms, $recent_searches);
-			
-			if($key){
-				unset($recent_searches[$key]);
-			}
-			
-			// Add the search to the top of the list. 
-			array_push($recent_searches, $terms);
-			
-		}else{
-			$_SESSION['RECENT_SEARCHES'] = array($terms);
-		}
+	private function searchData($terms, $location, $lat, $lng, $distance, $results){
+		include 'SearchAnalytics.php';
+		$analytics = new SearchAnalytics();
+		
+		$search_id = $analytics->save_query($terms, $distance, $lat, $lng, $full_location);
+		$analytics->save_search_results($results, $search_id);		
 	}
-	*/
+
+	
 	
 } new Item_search();
