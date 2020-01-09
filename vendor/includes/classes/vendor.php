@@ -136,7 +136,7 @@ class Vendor{
 		$stmt->bindParam(8, $email_address);
 		$stmt->bindParam(9, $website);
 		
-		if($profile_picture['size'] > 0){
+		if($profile_picture){
 			
 			$stmt->bindParam(10, $profile_picture);
 			$stmt->bindParam(11, $company_id);
@@ -214,7 +214,7 @@ class Vendor{
 			$_SESSION['user_id'] = $result['user_id'];
 			$_SESSION['UF_VENDOR_USER_SIGNED_IN'] = true;
 			$_SESSION['UF_VENDOR_USER_ID'] = $result['user_id'];
-			$_SESSION['UF_VENDOR_ID'] = $result['user_id'];
+			$_SESSION['UF_VENDOR_ID'] = $result['vendor_id'];
 			
 			$result['session']	 = $_SESSION;
 			
