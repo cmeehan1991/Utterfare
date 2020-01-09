@@ -42,6 +42,7 @@ host('production')
 	->hostname('utterfare.com')
 	->stage('production')
 	->user('cmeehan')
+	->branch('master')
 	->port('2222')
     ->set('deploy_path', '/home1/cmeehan/public_html')
     ->set('shared_files', []);    
