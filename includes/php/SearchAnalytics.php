@@ -9,13 +9,59 @@ class SearchAnalytics{
 				break;
 			case 'getSearchCount':
 				$this->search_appearances();
-				break;
-				case 'get_platforms':
+			break;
+			case 'get_platforms':
 				$this->get_search_result_platform();
+				break;
+			case 'save_search':
+				$this->save_search();
+				break;
+			case 'save_search_results':
+				$this->save_search_results();
 				break;
 			default:break;
 		}
 
+	}
+	
+	public function save_search_results($results, $search_id, $page = 1){
+		include('DbConnection.php');
+		
+		foreach($results as $result){
+			$vendor_id = $result['vendor_id'];
+			$item_id = $result['item_id'];
+			$rank = $result['rank'];
+			
+			$sql = "INSERT INTO searchdata_results (vendor_id, item_id, rank, search_id, page) VALUES(?, ?, ?, ?, ?);";
+			
+			$stmt = $conn->prepare($sql);
+			$stmt->bindParam(1, $vendor_id);
+			$stmt->bindParam(2, $item_id);
+			$stmt->bindParam(3, $rank);
+			$stmt->bindParam(4, $search_id);
+			$stmt->bindParam(5, $page);
+			
+			$stmt->execute();
+		}
+		
+	}
+	
+	public function save_query($terms, $distance, $lat, $lng, $full_location){
+		include("DbConnection.php");
+		
+		$sql = "INSERT INTO searchdata_queries (terms, distance, full_address, lat, lng) VALUES(?, ?, ?, ?, ?);";
+		
+		$stmt = $conn->prepare($sql);
+		
+		$stmt->bindParam(1, $terms);
+		$stmt->bindParam(2, $distance);
+		$stmt->bindParam(3, $full_location);
+		$stmt->bindParam(4, $lat);
+		$stmt->bindParam(5, $lng);
+		
+		$stmt->execute();
+		
+		return $conn->lastInsertId();	
 	}
 	
 	function get_terms_data(){
