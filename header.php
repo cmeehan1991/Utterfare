@@ -13,7 +13,7 @@
 	</head>
 	<body ng-app="utterfare">
 		<nav class="navbar navbar-expand-md navbar-light bg-light">
-			<a class="navbar-brand" href="http://localhost/utterfare">
+			<a class="navbar-brand" href="<?php echo BASE_URL;?>">
 				<h1 class="sr-only">Utterfare</h1>
 				<img  class="profile-image__small" src="<?php echo BASE_URL; ?>assets/img/favicon.ico" alt="Utterfare"/>
 			</a>
