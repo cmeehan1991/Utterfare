@@ -10,7 +10,10 @@
   "dependencies_base": "node_modules",
   "dependencies_dest": "assets/js",
   "devDependencies": {
+    "@angular/core": "^8.2.14",
+    "@angular/router": "^8.2.14",
     "angular": "^1.7.9",
+    "angular-gtag": "^1.0.4",
     "angular-route": "^1.6.9",
     "babel-cli": "^6.26.0",
     "babel-preset-react-app": "^3.1.2",
@@ -56,5 +59,8 @@
   "bugs": {
     "url": "https://github.com/cmeehan1991/Utterfare/issues"
   },
-  "homepage": "https://github.com/cmeehan1991/Utterfare#readme"
+  "homepage": "https://github.com/cmeehan1991/Utterfare#readme",
+  "dependencies": {
+    "rxjs": "^6.5.4"
+  }
 }

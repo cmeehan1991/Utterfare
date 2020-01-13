@@ -58,15 +58,10 @@ app.controller('UserController', function($scope){
 });
 
 app.controller('HomeController', function($scope){	
-	gtag('set', 'page', '/');
-	gtag('send', 'pageview');
-	
 	window.curateHomepageSections();
 });
 
 app.controller('ResultsController', function($scope, $routeParams){
-	gtag('set', 'page', '/results.php');
-	gtag('send', 'pageview');
 	
 	var params = $routeParams;
 		
@@ -79,8 +74,9 @@ app.controller('ResultsController', function($scope, $routeParams){
 
 app.controller('SingleController', function($scope, $routeParams){
 	
-	gtag('set', 'page', '/single.php');
-	gtag('send', 'pageview');
+		window.dataLayer.push({
+		'page':'/single'
+	})
 	
 	window.scrollTo(0,0);
 	window.showSingleItem($routeParams.id);

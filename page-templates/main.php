@@ -6,26 +6,17 @@
 	</div>
 	<div class="row">
 		<div class="col-md-10 mx-auto">
-			<div class="row featured-items-row--top-items"></div><!-- Featured Items Row -->
+			<div class="featured-items-row--top-items"></div><!-- Featured Items Row -->
 		</div>
 	</div>
 	<!-- Recommendations -->
 	<div class="row">
-		<div class="col-md-6 mr-auto">
+		<div class="col-md-6 mr-auto ml-5">
 			<h2 class="section-heading">Recommended for you</h2>
 		</div>
 	</div>
 	<div class="row">
-		<div id="#recommendationsCarousel" class="carousel slide" data-ride="carousel">
-			<div class="carousel-inner recommendations-carousel__inner"></div> <!-- .carousel-inner -->	
-			<a class="carousel-control-prev" href="#recommendationsCarousel" role="button" data-slide="prev">
-				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-				<span class="sr-only">Previous</span>
-			</a>
-			<a class="carousel-control-next" href="#recommendationsCarousel" role="button" data-slide="next">
-				<span class="carousel-control-next-icon" aria-hidden="true"></span>
-				<span class="sr-only">Next</span>
-			</a>			
+		<div class="col-md-10 mx-auto recommendations-section">
 		</div>
 	</div>
 </div>

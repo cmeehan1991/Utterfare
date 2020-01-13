@@ -1,12 +1,22 @@
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-74857924-3"></script>
 <script>
+	
   window.dataLayer = window.dataLayer || [];
+  
+  window.dataLayer.push({
+	  'xxx':'yyy',
+  });
+  
   function gtag(){dataLayer.push(arguments);}
+  
   gtag('js', new Date());
 
   gtag('config', 'UA-74857924-3');
+
 </script>
+
+
 <!-- Facebook Pixel Code -->
 <script>
   !function(f,b,e,v,n,t,s)

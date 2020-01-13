@@ -42,33 +42,12 @@ host('production')
 	->hostname('utterfare.com')
 	->stage('production')
 	->user('cmeehan')
-	->branch('master')
 	->port('2222')
     ->set('deploy_path', '/home1/cmeehan/public_html')
     ->set('shared_files', []);    
     
 // Tasks
 
-task('test', function(){
-	writeln('Hello world');
-});
-
-task('pwd', function(){
-	$result = run('pwd');
-	writeln("Current dir: $result");
-});
-
-task('move_to_live_dev', function(){
-	run('cp -af public_html/ufdev/current/. /home1/cmeehan/public_html/ufdev/');
-});
-
-task('move_to_live_production', function(){
-	run('cp -af public_html/current/. /home1/cmeehan/public_html/');
-});
-
-task('test_task', function(){
-	writeln('this is a test');
-});
 
 desc('Deploy your project');
 task('deploy', [
@@ -82,11 +61,8 @@ task('deploy', [
     'deploy:clear_paths',
     'deploy:symlink',
     'deploy:unlock',
-    'cleanup',
     'success'
 ]);
 
 // [Optional] If deploy fails automatically unlock.
 after('deploy:failed', 'deploy:unlock');
-
-after('cleanup', 'move_to_live_production');

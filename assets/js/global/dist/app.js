@@ -176,13 +176,9 @@ app.controller('UserController', function ($scope) {
   window.getUserData();
 });
 app.controller('HomeController', function ($scope) {
-  gtag('set', 'page', '/');
-  gtag('send', 'pageview');
   window.curateHomepageSections();
 });
 app.controller('ResultsController', function ($scope, $routeParams) {
-  gtag('set', 'page', '/results.php');
-  gtag('send', 'pageview');
   var params = $routeParams; // Perform the search
   //terms, searchLocation, distance, page, limit, offset
 
@@ -190,8 +186,9 @@ app.controller('ResultsController', function ($scope, $routeParams) {
   window.initMap(params.terms, window.userSearchLocation, window.searchDistance, params.page, 25, 0);
 });
 app.controller('SingleController', function ($scope, $routeParams) {
-  gtag('set', 'page', '/single.php');
-  gtag('send', 'pageview');
+  window.dataLayer.push({
+    'page': '/single'
+  });
   window.scrollTo(0, 0);
   window.showSingleItem($routeParams.id);
   window.getSingleVendorItems();
@@ -257,10 +254,8 @@ window.getTopItems = function (user_location) {
     'action': 'get_top_items'
   };
   var top_items = '';
-  console.log(window.search_url);
   $.post(window.search_url, data, function (response) {
     $.each(response, function (k, v) {
-      top_items += '<div class="col mx-auto d-flex">';
       top_items += '<div class="card featured-item">';
       top_items += '<img src="' + v.primary_image + '" class="card-img-top" alt="' + v.item_name + '">';
       top_items += '<div class="card-body">';
@@ -272,7 +267,7 @@ window.getTopItems = function (user_location) {
       top_items += '<strong class="featured-item__vendor">' + v.vendor_name + '</strong><br/>';
       top_items += '<p class="featured-item__short-description">' + v.item_short_description + '</p>';
       top_items += '<a href="#!/single?id=' + v.item_id + '" type="button" class="btn btn-light">More Info</a>';
-      top_items += '</div></div></div></div>';
+      top_items += '</div></div></div>';
     });
   }, 'json').fail(function (error) {
     console.log("Failed");
@@ -292,20 +287,17 @@ function getRecommendations(user_location) {
     "action": "get_recommendations",
     "location": user_location
   };
-  var recommendations = "<div class='carousel-item active'><div class='row'>";
+  var recommendations = '';
   var count = 0;
   $.post(window.search_url, data, function (response) {
-    console.log(response);
-
     if (response != '') {
       $.each(response, function (key, value) {
         var address = value.address;
-        recommendations += '<div class="col-md-3 mx-auto d-flex">';
-        recommendations += '<div class="card recommendation">';
+        recommendations += '<div class="recommendation">';
         recommendations += '<img src="' + value.primary_image + '" class="card-img-top" alt="' + value.item_name + '">';
-        recommendations += '<div class="card-body">';
-        recommendations += '<div class="card-title"><h3>' + value.item_name + '</h3></div>';
-        recommendations += '<div class="card-text">';
+        recommendations += '<div class="recommendation-body">';
+        recommendations += '<div class="recommendation-title"><h3>' + value.item_name + '</h3></div>';
+        recommendations += '<div class="recommendation-text">';
         recommendations += '<i class="recommendation__location">' + address + "</i>";
         recommendations += '<h4 class="recommendation__vendor">' + value.vendor_name + "</h4>";
         recommendations += '<p>' + value.item_short_description + '</p>';
@@ -315,16 +307,6 @@ function getRecommendations(user_location) {
         recommendations += '</div>'; // .card-body
 
         recommendations += '</div>'; // .recommendation
-
-        recommendations += '</div>'; // .col-md-3
-
-        count += 1;
-
-        if (count === 4) {
-          recommendations += "</div></div><div class='carousel-item'><div class='row'>";
-        } else if (count === 8) {
-          recommendations += "</div></div>";
-        }
       });
     } else {
       recommendations = '';
@@ -334,7 +316,7 @@ function getRecommendations(user_location) {
     console.log(error);
   }).done(function () {
     if (recommendations != '') {
-      $('.recommendations-carousel__inner').html(recommendations);
+      $('.recommendations-section').html(recommendations);
     }
 
     $('#loadingModal').modal('hide');
