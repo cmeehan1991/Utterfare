@@ -5,9 +5,5 @@ deploy.php
 .htaccess
 node_modules/
 vendor/
-vendor/includes/classes/vendor.php
-vendor/assets/js/global/app.js
-vendor/assets/js/global/dist/app.js
-vendor/assets/js/global/src/angular.js
-vendor/assets/js/global/src/vendor.js
-vendor/includes/classes/vendor.php
+uploads/
+

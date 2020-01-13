@@ -176,9 +176,13 @@ app.controller('UserController', function ($scope) {
   window.getUserData();
 });
 app.controller('HomeController', function ($scope) {
+  gtag('set', 'page', '/');
+  gtag('send', 'pageview');
   window.curateHomepageSections();
 });
 app.controller('ResultsController', function ($scope, $routeParams) {
+  gtag('set', 'page', '/results.php');
+  gtag('send', 'pageview');
   var params = $routeParams; // Perform the search
   //terms, searchLocation, distance, page, limit, offset
 
@@ -186,6 +190,8 @@ app.controller('ResultsController', function ($scope, $routeParams) {
   window.initMap(params.terms, window.userSearchLocation, window.searchDistance, params.page, 25, 0);
 });
 app.controller('SingleController', function ($scope, $routeParams) {
+  gtag('set', 'page', '/single.php');
+  gtag('send', 'pageview');
   window.scrollTo(0, 0);
   window.showSingleItem($routeParams.id);
   window.getSingleVendorItems();
@@ -62581,8 +62587,8 @@ module.exports = g;
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /Applications/MAMP/htdocs/utterfare/assets/js/global/app.js */"./assets/js/global/app.js");
-module.exports = __webpack_require__(/*! /Applications/MAMP/htdocs/utterfare/assets/styles/app.scss */"./assets/styles/app.scss");
+__webpack_require__(/*! /Applications/MAMP/htdocs/Utterfare/assets/js/global/app.js */"./assets/js/global/app.js");
+module.exports = __webpack_require__(/*! /Applications/MAMP/htdocs/Utterfare/assets/styles/app.scss */"./assets/styles/app.scss");
 
 
 /***/ })
