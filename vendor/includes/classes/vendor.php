@@ -35,10 +35,307 @@ class Vendor{
 				case 'save_company_profile':
 					$this->save_company_profile();
 					break;
+				case 'get_vendor_searches_by_day':
+					$this->get_vendor_searches_by_day();	
+					break;
+				case 'get_vendor_results_per_search':
+					$this->get_vendor_results_per_search();
+					break;
+				case 'get_top_search_terms':
+					$this->getTopSearchTerms();
+					break;
+				case 'claim_listing':
+					$this->claimListing();
+					break;
+				case 'registerNewUser':
+					$this->register_new_user();
+				case 'check_email_address':
+					$this->check_vendor_email();
+					break;
+				case 'register_new_vendor':
+					$this->register_new_vendor();
+					break;				
 				default: break;
 			}
 		}
 	}
+	
+	private function register_new_user($email, $password, $first_name, $last_name, $vendor_id){
+		include ('../functions/DBConnection.php');
+		
+		$user_id = $this->check_vendor_email($email, true);
+		
+		if($user_id){
+			return $user_id;
+		}
+		
+		$sql = "INSERT INTO vendor_users(username, password, email_address, first_name, last_name, vendor_id) VALUES(?, ?, ?, ?, ?, ?);";
+		
+		$stmt = $conn->prepare($sql);
+		
+		$stmt->bindParam(1, $email);
+		$stmt->bindParam(2, $password);
+		$stmt->bindParam(3, $email);
+		$stmt->bindParam(4, $first_name);
+		$stmt->bindParam(5, $last_name);
+		$stmt->bindParam(6, $vendor_id);
+	}
+	
+	private function register_new_vendor(){
+		include('../functions/DBConnection.php');
+		
+		// Get the arguments
+		$vendor_name = filter_input(INPUT_POST, 'venueName');
+		$website = filter_input(INPUT_POST, 'website');
+		$telephone = filter_input(INPUT_POST, 'telephone');
+		$first_name = filter_input(INPUT_POST, 'firstName');
+		$last_name = filter_input(INPUT_POST, 'lastName');
+		$email_address = filter_input(INPUT_POST, 'email');
+		$password = filter_input(INPUT_POST, 'password');
+		$primary_address = filter_input(INPUT_POST, 'primaryAddress');
+		$secondary_address = filter_input(INPUT_POST, 'secondaryAddress');
+		$country = filter_input(INPUT_POST, 'country');
+		$city = filter_input(INPUT_POST, 'city');
+		$state = filter_input(INPUT_POST, 'state');
+		$postal_code = filter_input(INPUT_POST, 'postalCode');
+		
+		$location = $primary_address;
+		
+		if($secondary_address){
+			$location .= ',' . $secondary_address;
+		}
+		
+		$location .= ',' . $city;
+		
+		if($state){
+			$location .= ',' . $state;
+		}
+		
+		$location .= ',' . $postal_code;
+		
+		$location .= ',' . $country;
+		
+		$latlng = $this->getLatLng($location);
+		
+		
+		// SQL Statement to insert the new vendor
+		$sql = "INSERT INTO vendors(vendor_name, latitude, longitude, primary_address, secondary_address, city, state, postal_code, country, telephone, email_address, website_url) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
+		
+		$stmt = $conn->prepare($sql);
+		
+		$stmt->bindParam(1, $vendor_name);
+		$stmt->bindParam(2, $latlng['lat']);	
+		$stmt->bindParam(3, $latlng['lng']);	
+		$stmt->bindParam(4, $primary_address);	
+		$stmt->bindParam(5, $secondary_address);	
+		$stmt->bindParam(6, $city);	
+		$stmt->bindParam(7, $state);	
+		$stmt->bindParam(8, $postal_code);	
+		$stmt->bindParam(9, $county);	
+		$stmt->bindParam(10, $telephone);	
+		$stmt->bindParam(11, $email_address);	
+		$stmt->bindParam(12, $website);			
+
+		$exec = $stmt->execute();
+		
+		if($exec){
+			$vendor_id = $conn->lastInsertId();
+			$user_id = $this->register_new_user($email, $password, $first_name, $last_name, $vendor_id);
+			
+			echo json_encode(array(
+				'success'	=> true, 
+				'vendor_id'	=> $vendor_id, 
+				'user_id'	=> $user_id,
+			));
+		}else{
+			echo json_encode(array(
+				'success'	=> false,
+			));
+		}
+		
+	}
+	
+	/**
+	 * Convert a physical address to an array of latitude & longitude coordinates
+	 * 
+	 * @params $location - string value of the physical address
+	 * 
+	 * @returns 
+	 */	
+	private function getLatLng($location){
+		
+				// Form the search location
+		$location = urlencode($location);
+		
+		// Get the JSON contents and decode for reading		
+		$json = file_get_contents("https://maps.googleapis.com/maps/api/geocode/json?address=$location&key=AIzaSyBNOJbx_2Q5h8f0ONZ4Abf5ULE0w4B-VTc");
+		
+		$obj = json_decode($json, true);
+		
+		// Get the latitude and longitude
+        $lat = $obj['results'][0]['geometry']['location']['lat'];
+        $lng = $obj['results'][0]['geometry']['location']['lng'];
+        
+        return array('lat'=>$lat, 'lng'=>$lng);
+		
+	}
+	
+	
+	/**
+	 * Check the vendor email to see if it already exists
+	 */ 
+	private function check_vendor_email($email = null, $internal = false){
+		include ('../functions/DBConnection.php');
+		if($email == null){
+			$email = filter_input(INPUT_POST, 'emailAddress');
+		}
+		
+		$sql = "SELECT vendor_id FROM vendor_users WHERE email_address = ?";
+
+		$stmt = $conn->prepare($sql);
+		
+		$stmt->bindParam(1, $email);
+				
+		$exec = $stmt->execute();
+		
+		if($internal == true){
+			$result = $stmt->fetch();
+			
+			return $result['vendor_id'];
+		}	
+			
+		echo $stmt->rowCount();
+
+	}
+	
+	private function notifyNewVendor($email, $first_name, $last_name, $venue_name){
+		$msg = "<html>";
+		
+		$msg .= "<p>Dear $first_name $last_name,";
+		$msg .= "<br/>";
+		$msg .= "<p>Thank you for registering the new venue, $venue_name, with <a href='https://www.utterfare.com'>Utterfare.com</a>. You can now <a href='https://vendor.utterfare.com'>log in</a> with your username/email and password that you registered with to maintain your listing. Please let us know if there is anything we can do to help you!</p>";
+		$msg .= "<br/><br/>";
+		$msg .= "Sincerely,";
+		$msg .= "<br/>";
+		$msg .= "Connor Meehan (Co-Owner) & the Utterfare Team";
+		
+				
+		$headers = "MIME-Version: 1.0" . "\r\n";
+		$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+		
+		// More headers
+		$headers .= 'From: <listings@utterfare.com>' . "\r\n";
+		
+		
+		mail('listings@utterfare.com', 'New Vendor Registration', $msg, $headers);
+		
+	}
+	
+	
+	private function claimListing(){
+		
+		$venue = filter_input(INPUT_POST, 'venueName');
+		$email = filter_input(INPUT_POST, 'emailAddress');
+		$telephone = filter_input(INPUT_POST, 'telephoneNumber');
+		$first_name = filter_input(INPUT_POST, 'firstName');
+		$last_name = filter_input(INPUT_POST, 'lastName');
+		
+		
+		$msg = "<html>"; 
+		$msg .= "<head><title>Listing Claim Email</title></head>";
+		$msg .= "<body>";
+		$msg .= "<table>";
+		$msg .= "<tr>";
+		$msg .= "<td><b>Venue:</b></td><td>$venue</td>";
+		$msg .= "</tr>";
+		$msg .= "<tr>";
+		$msg .= "<td><b>First Name:</b></td><td>$first_name</td>";
+		$msg .= "</tr>";
+		$msg .= "<tr>";
+		$msg .= "<td><b>Last Name:</b></td><td>$last_name</td>";
+		$msg .= "</tr>";
+		$msg .= "<tr>";
+		$msg .= "<td><b>Telephone:</b></td><td>$telephone</td>";
+		$msg .= "</tr>";
+		$msg .= "<tr>";
+		$msg .= "<td><b>Email Address: </b></td><td>$email</td>";
+		$msg .= "</tr>";
+		$msg .= "</table>";
+		$msg .= "</body>";
+		$msg .= "</html>";
+		
+		$headers = "MIME-Version: 1.0" . "\r\n";
+		$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+		
+		// More headers
+		$headers .= 'From: <listings@utterfare.com>' . "\r\n";
+		$success = mail('listings@utterfare.com', 'Listing Request Form', $msg, $headers);
+		
+		if($success == true){
+			$this->notifyRequestee($email);
+		}
+		
+		echo $success;
+	}
+	
+	private function notifyRequestee($email){
+		$msg = "Thank you for contacting us. Your request has been received and a representative will be in touch with you.";
+		$headers = "From: <listings@utterfare.com>";
+		
+		mail($email, 'Utterfare Form Request', $msg, $headers);
+	}
+	
+	private function getTopSearchTerms(){
+		include('../functions/DBConnection.php');
+		
+		$sql = "SELECT count(terms) as num_times, terms FROM utterfare.searchdata_queries WHERE terms IS NOT NULL GROUP BY terms ORDER BY num_times";
+		
+		$stmt = $conn->prepare($sql);
+		
+		$stmt->execute();
+		
+		$results = $stmt->fetchall();
+		
+		echo json_encode($results);
+	}
+	
+	private function get_vendor_results_per_search(){
+		include ('../functions/DBConnection.php');
+		
+		$vendor_id = $_SESSION['UF_VENDOR_ID'];
+		
+		$sql = "SELECT COUNT(search_id) as 'num_times', DATE_FORMAT(search_date, '%m-%d') AS date_of_search FROM searchdata_results WHERE vendor_id = ? AND search_date >= DATE(NOW()) + INTERVAL -7 DAY GROUP BY date_of_search";
+		
+		$stmt = $conn->prepare($sql);
+		
+		$stmt->bindParam(1, $vendor_id);
+		
+		$stmt->execute();
+		
+		$results = $stmt->fetchall();
+		
+		echo json_encode($results);
+	}
+	
+	private function get_vendor_searches_by_day(){
+		include ('../functions/DBConnection.php');
+		
+		
+		$vendor_id = $_SESSION['UF_VENDOR_ID'];
+				
+		$sql = "SELECT COUNT(DISTINCT search_id) as 'num_times', DATE_FORMAT(search_date, '%m-%d') AS date_of_search FROM searchdata_results WHERE vendor_id = ? AND search_date >= DATE(NOW()) + INTERVAL -7 DAY GROUP BY date_of_search";
+		
+	
+		$stmt = $conn->prepare($sql);
+		$stmt->bindParam(1, $vendor_id);
+		
+		$stmt->execute();
+		$results = $stmt->fetchall();			
+				
+				
+		echo json_encode($results);
+	}
+	
 	
 	/* 
 	 * Create a new file for the company profile picture
@@ -88,7 +385,7 @@ class Vendor{
 		$save_image = imagepng($png_image, $file_directory . '/' . $file_path);
 		
 		if($save_image){		
-			return isset($_SERVER['HTTPS']) ? 'https' . ";//" . $_SERVER['HTTP_HOST'] . '/' . $path . '/' . $file_path : 'http' . '://' . $_SERVER['HTTP_HOST'] . '/' . $path . '/' . $file_path;
+			return isset($_SERVER['HTTPS']) ? 'https' . "://" . 'www.utterfare.com' . '/' . $path . '/' . $file_path : 'http' . '://' . 'www.utterfare.com' . '/' . $path . '/' . $file_path;
 		}else{
 			return false;
 		}
@@ -327,7 +624,7 @@ class Vendor{
 		$save_image = imagepng($png_image, $file_directory . '/' . $file_path);
 		
 		if($save_image){		
-			return isset($_SERVER['HTTPS']) ? 'https://' . $_SERVER['HTTP_HOST'] . '/' . $path . '/' . $file_path: 'http' . '://' . $_SERVER['HTTP_HOST'] . '/' . $path . '/' . $file_path;
+			return isset($_SERVER['HTTPS']) ? 'https://' . 'www.utterfare.com' . '/' . $path . '/' . $file_path: 'http' . '://' . 'www.utterfare.com' . '/' . $path . '/' . $file_path;
 		}else{
 			return null;
 		}

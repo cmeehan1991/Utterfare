@@ -17,6 +17,296 @@ window.getVendorStatus = function(){
 	return false;
 }
 
+window.goToSignupPage = function(page){
+	var currentPage = page - 1;
+
+
+	$('fieldset').each(function(){
+		if($(this).attr('id') !== page){
+			$(this).hide();
+		}else{
+			$(this).fadeIn();
+		}
+	});
+	
+}
+
+window.confirm_password = function(){
+	var password = $("input[name=password]").val();
+	var confirmPassword = $("input[name=confirmPassword]").val();
+		
+	if(password == confirmPassword && password.length >= 8){
+		$('.password-match-text').text('Your passwords match');
+		$('.password-match-text').removeClass('text-body');
+		$('.password-match-text').removeClass('text-danger');
+		$('.password-match-text').addClass('text-success');
+		$('.password-next-button').removeClass('disabled');
+		$('.password-next-button').attr('disabled', false);
+	}else{
+		$('.password-match-text').text('Your passwords do not match');
+		$('.password-match-text').removeClass('text-body');
+		$('.password-match-text').removeClass('text-success');
+		$('.password-match-text').addClass('text-danger');
+		$('.password-next-button').addClass('disabled');
+		$('.password-next-button').attr('disabled', true);
+	}
+	
+}
+
+window.checkEmailAddress = function(emailInput){
+
+
+
+	var data = {
+		emailAddress: $(emailInput).val(),
+		action: 'check_email_address'
+	};
+	
+	
+	var matches = false;
+	$.post(window.vendor_class_url, data, function(response){
+		matches = response;
+	})
+	.fail(function(error){
+		console.log(error);
+	})
+	.done(function(){
+
+		if(matches > 0){
+			$('.email-notification').show();
+		}else{
+			$('.email-notification').hide();
+		}
+		
+	});
+	
+	return false;
+	
+}
+
+
+window.registerNewVendor = function(form){
+	var data = $(form).serialize();
+	data += "&country=" + $("#country").val();
+	data += "&state=" + $("#state").val();
+	data += "&action=register_new_vendor";
+	
+	var res = true;
+	
+	$.post(window.vendor_class_url, data, function(response){
+		res = response;
+	}, 'json')
+	.fail(function(error){
+		console.log(error);
+	})
+	.done(function(){
+		
+		if(res.success == true){
+			window.location.href="#!/sign-in";
+		}else{
+			$('.sign-up-alert').fadeIn();
+		}
+		
+	});
+	
+	
+	return false;
+}
+
+window.activateForm = function(form){
+	var form = $('form[name=' + form + ']');
+	
+	var confirmCheckbox = form.find("input[name=formConfirmation");
+		
+	// Set the status of the submit button based on the confirmation checkbox
+	form.find("button[type=submit]").attr('disabled', !confirmCheckbox.is(":checked"));
+	
+}
+
+window.showStatesOption = function(countrySelect){
+	var country = $(countrySelect).val();
+	
+	if(country != "United States of America"){
+		$(".state-form-group").fadeOut('fast');
+	}else if (country === "United States of America" && $("#state").is(":hidden")){
+		$(".state-form-group").fadeIn('fast');
+	}
+}
+
+window.claimListing = function(form){
+	var data = $(form).serialize();
+	data += "&action=claim_listing";
+	
+	var res;
+	
+	$.post(window.vendor_class_url, data, function(response){
+		res = response;
+	},'json')
+	.fail(function(error){
+		console.log("Error");
+		console.log(error);
+	})
+	.done(function(){
+		if(res == true){
+			$('.claim-listing-alert').addClass('alert-success');
+			$('.claim-listing-alert').text("Your request has been submitted. A representative will contact you within 24-48 hours.");	
+			$(form).fadeOut('fast');
+		}else{
+			$('.claim-listing-alert').addClass('alert-danger');
+			$('.claim-listing-alert').text("There was an error submitting your request. Please try again later.");	
+		}	
+		$('.claim-listing-alert').fadeIn('slow');
+	});
+	
+	return false;
+}
+
+window.getVendorData = function(){
+	numberOfSearchsThisWeek();
+	totalResultsPerSearch();
+	topSearchTerms();
+} 
+
+function topSearchTerms(){
+	var data = {
+		action: 'get_top_search_terms', 		
+	}
+	
+	var chart_data = new Array();
+	var chart_labels = new Array();
+	
+	$.post(window.vendor_class_url, data, function(response){
+		$.each(response, function(k,v){
+			chart_data.push(parseInt(v.num_times));
+			chart_labels.push(v.terms);
+		})
+	}, 'json')
+	.fail(function(error){
+		console.log("Error");
+		console.log(error);
+		console.log(error['responseText']);
+	})
+	.done(function(){
+			var backgroundColor = [
+			'blue',
+			'red',
+			'green',
+			'yellow',
+			'darkblue',
+			'orange',
+			'lightgreen'
+		];
+		populateChart(chart_data, chart_labels, 'topTermsChart', 'pie', '# Results per Search',  backgroundColor);
+	});
+
+}
+
+function totalResultsPerSearch(){
+	var data = {
+		action: 'get_vendor_results_per_search'
+	};
+	
+	var chart_data = new Array();
+	var chart_labels = new Array();
+	
+	$.post(window.vendor_class_url, data, function(response){
+		$.each(response, function(k,v){
+			chart_data.push(parseInt(v.num_times));
+			chart_labels.push(v.date_of_search);
+		})
+	}, 'json')
+	.fail(function(error){
+		console.log("Error");
+		console.log(error);
+		console.log(error['responseText']);
+	})
+	.done(function(){
+				var backgroundColor = [
+			'rgba(51, 51, 255, 1.0)',
+		];
+		
+		var borderColor = [
+			 'rgba(0, 0, 255, 1)',
+		];
+		populateChart(chart_data, chart_labels, 'perSearchChart', 'horizontalBar', '# Results per Search',  backgroundColor, borderColor);
+	});
+
+}
+
+
+function numberOfSearchsThisWeek(){
+	
+	var data = {
+		action: 'get_vendor_searches_by_day', 
+	}
+	
+	var chart_data = new Array();
+	var chart_labels = new Array();
+	
+	$.post(window.vendor_class_url, data, function(response){
+		$.each(response, function(k,v){
+			chart_data.push(parseInt(v.num_times));
+			chart_labels.push(v.date_of_search);
+		})
+	}, 'json')
+	.fail(function(error){
+		console.log("Error");
+		console.log(error);
+		console.log(error['responseText']);
+	})
+	.done(function(){
+				var backgroundColor = [
+			'rgba(51, 51, 255, 1.0)',
+			'rgba(51, 51, 255, 1.0)',
+			'rgba(51, 51, 255, 1.0)',
+			'rgba(51, 51, 255, 1.0)',
+			'rgba(51, 51, 255, 1.0)',
+			'rgba(51, 51, 255, 1.0)',
+			'rgba(51, 51, 255, 1.0)'
+		];
+		
+		var borderColor = [
+			 'rgba(0, 0, 255, 1)',
+			 'rgba(0, 0, 255, 1)',
+			 'rgba(0, 0, 255, 1)',
+			 'rgba(0, 0, 255, 1)',
+			 'rgba(0, 0, 255, 1)',
+			 'rgba(0, 0, 255, 1)',
+			 'rgba(0, 0, 255, 1)'
+		];
+		populateChart(chart_data, chart_labels, 'thisWeekChart', 'line', '# Searches By Day', backgroundColor, borderColor, false);
+	});
+	
+}
+
+window.populateChart = function(dataset, labels, chart, type, dataset_label, backgroundColor, fill){
+		
+	var ctx = document.getElementById(chart).getContext('2d');
+	var myChart = new Chart(ctx, {
+	    type: type,
+	    fillText: "No data to display",
+	    data: {
+	        labels: labels,
+	        datasets: [{
+	            label: dataset_label,
+	            data: dataset,
+	            backgroundColor: backgroundColor,
+	            borderWidth: 1,
+	            fill: fill
+	        }]
+	    },
+	    options: {
+	        scales: {
+	            yAxes: [{
+	                ticks: {
+	                    beginAtZero: true
+	                }
+	            }]
+	        }
+	    }
+	});
+}
+
 window.vendorSignIn = function(){
 	var data = $('.vendor-login-form').serialize();
 	data += '&action=vendor_sign_in';
