@@ -48,7 +48,6 @@ host('production')
     
 // Tasks
 
-
 desc('Deploy your project');
 task('deploy', [
     'deploy:info',

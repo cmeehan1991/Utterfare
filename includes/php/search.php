@@ -312,7 +312,7 @@ class Item_Search{
 		echo json_encode($results);
 		
 		if($terms != null){
-			$this->searchData($terms, $location, $lat, $lng, $distance, $results);
+			$this->searchData($terms, $location, $latitude, $longitude, $distance, $results);
 		}
 		
 	}
