@@ -14,10 +14,19 @@ window.getTopItems = function(user_location){
 	
 	$.post(window.search_url, data, function(response){
 				
+		var count = 0;
+				
 		$.each(response, function(k, v){
 						
 			top_items += '<div class="card featured-item">';
-			top_items += '<img src="' + v.primary_image + '" class="card-img-top" alt="' + v.item_name + '">';
+			if(count == 2){
+				top_items += "<div class='row no-gutters'>";
+				top_items += "<div class='col-sm-12 col-md-4'>";
+			}
+			top_items += '<img src="' + v.primary_image + '" class="card-img-top" alt="' + v.item_name + '">';			
+			if(count == 2){
+				top_items += "</div><div class='col-sm-12 col-md-8'>";
+			}
 			top_items += '<div class="card-body">';
 			top_items += '<div class="card-title">';
 			top_items += '<h3>' + v.item_name + '</h3>'
@@ -28,6 +37,10 @@ window.getTopItems = function(user_location){
 			top_items += '<p class="featured-item__short-description">' + v.item_short_description + '</p>';
 			top_items += '<a href="#!/single?id=' + v.item_id + '" type="button" class="btn btn-light">More Info</a>'; 
 			top_items += '</div></div></div>';
+			if(count == 2){
+				top_items += "</div></div>";
+			}
+			count += 1;
 
 		});
 	}, 'json')
@@ -66,16 +79,12 @@ function getRecommendations(user_location){
 				var address = value.address;
 				
 				recommendations += '<div class="recommendation">'; 
+				recommendations += '<a href="#!/single?id=' + value.item_id + '">'
 				recommendations += '<img src="' + value.primary_image + '" class="card-img-top" alt="' + value.item_name + '">';
 				recommendations += '<div class="recommendation-body">';
 				recommendations += '<div class="recommendation-title"><h3>' + value.item_name + '</h3></div>';
-				recommendations += '<div class="recommendation-text">'; 
-				recommendations += '<i class="recommendation__location">' + address + "</i>";
-				recommendations += '<h4 class="recommendation__vendor">' + value.vendor_name + "</h4>";
-				recommendations += '<p>' + value.item_short_description + '</p>';
-				recommendations += '<a href="#!/single?id=' + value.item_id + '" type="button" class="btn btn-light">More Info</a>'; 
-				recommendations += '</div>'; // .card-text
 				recommendations += '</div>'; // .card-body
+				recommendations += '</a>'; 
 				recommendations += '</div>'; // .recommendation
 			});
 		}else{
