@@ -94,3 +94,17 @@
 		</div>
 	</div>
 </div>
+
+<div class="toast mx-auto" id="open-in-app-toast" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="false">
+	<div class="toast-header">
+		<img src="assets/img/UF%20Logo.png" alt="UF Logo" width="25" height="25" />		
+		<strong class="mr-auto">Open in App</strong>
+		<button type="button" class="ml-2 mb-1 close btn-light" data-dismiss="toast" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="toast-body">
+		<p>Use the Utterfare&trade; app for the best experience.</p>
+		<a href="" class="btn btn-outline-light open-in-app-button">Open in App</a>
+	</div>
+</div>
