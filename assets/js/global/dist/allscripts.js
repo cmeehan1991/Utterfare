@@ -244,6 +244,21 @@ app.controller('UserController', ["$scope", function ($scope) {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
+$('document').ready(function () {
+  var ua = navigator.userAgent.toLowerCase();
+
+  if (navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
+    showOpenInApp('https://apps.apple.com/us/app/utterfare/id1361703260');
+  } else if (ua.indexOf('android') > -1) {
+    showOpenInApp('https://play.google.com/store/apps/details?id=com.cbmwebdevelopment.utterfare');
+  }
+});
+
+function showOpenInApp(link) {
+  $('#open-in-app-toast').toast('show');
+  $('.open-in-app-button').attr('href', link);
+}
+
 window.curateHomepageSections = function (user_location) {
   $('#loadingModal').modal('show');
   window.geolocation(); //getTopItems(user_location);
