@@ -32,6 +32,36 @@
 	width:150px;
 	height:150px;
 }
+
+
+#open-in-app-toast{
+	position:fixed;
+	bottom:0;
+	left:0;
+	right:0;
+	width:90%;
+	background-color:rgba(0,0,0,0.5);
+	color:#fffff;
+}
+
+#open-in-app-toast .toast-header{
+	background-color:rgba(0,0,0,0.75);
+	color:  #ffffff !important;
+}
+
+#open-in-app-toast .toast-header button span{
+	color:#ffffff;
+}
+
+#open-in-app-toast .toast-body{
+	color:#ffffff;
+}
+
+.open-in-app-button{
+	width:100%;
+}
+
+
 .bg-light{
 	background-color: #ffffff !important;
 }
