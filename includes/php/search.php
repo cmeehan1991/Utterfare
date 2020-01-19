@@ -100,7 +100,7 @@ class Item_Search{
 		include 'DbConnection.php';
 		$item_id = filter_input(INPUT_POST, 'item_id');
 		
-		$sql = "SELECT item_name, item_description, primary_image, menu_items.vendor_id, vendors.vendor_name, latitude, longitude, vendors.telephone, vendors.primary_address, vendors.secondary_address, vendors.city, vendors.state, vendors.postal_code, CONCAT(vendors.primary_address, IF(vendors.secondary_address IS NOT NULL, concat(', ', vendors.secondary_address), ''), ', ', vendors.city, ', ', vendors.state, ' ', vendors.postal_code) AS 'address', FROM menu_items INNER JOIN vendors ON vendors.vendor_id = menu_items.vendor_id WHERE item_id = ?";
+		$sql = "SELECT item_name, item_description, primary_image, menu_items.vendor_id, vendors.vendor_name, latitude, longitude, vendors.telephone, vendors.primary_address, vendors.secondary_address, vendors.city, vendors.state, vendors.postal_code, vendors.profile_picture, CONCAT(vendors.primary_address, IF(vendors.secondary_address IS NOT NULL, concat(', ', vendors.secondary_address), ''), ', ', vendors.city, ', ', vendors.state, ' ', vendors.postal_code) AS 'address' FROM menu_items INNER JOIN vendors ON vendors.vendor_id = menu_items.vendor_id WHERE item_id = ?";
 		
 		$stmt = $conn->prepare($sql);
 		$stmt->bindParam(1, $item_id);
@@ -109,6 +109,7 @@ class Item_Search{
 		$stmt->setFetchMode(PDO::FETCH_ASSOC);
 		
 		$result = $stmt->fetch();
+		
 		if($this->check_image($result['primary_image'])){
 			$result['primary_image'] = $result['primary_image'];
 		}elseif($this->check_image($result['profile_picture'])){

@@ -13,7 +13,6 @@ window.getSingleVendorItems = function(){
 		
 	var related_items = '';
 	$.post(window.single_item_url, params, function(response){
-		console.log(response);
 		$.each(response, function(index, item){
 			related_items += '<li class="related-vendor-item">'; 
 			related_items += '<div class="card" style="width: 18rem;">';
@@ -53,7 +52,11 @@ window.showSingleItem = function(itemId){
 		'action': 'getSingleItem', 
 		'item_id': itemId,
 	};
-	$.post(queryUrl, data, 'json')
+	$.post(queryUrl, data, function(response){	
+	}, 'json')
+	.fail(function(error){
+		console.log(error)
+	})
 	.done(function(response){
 		populateSingleItemInformation(response);
 	});
@@ -62,12 +65,8 @@ window.showSingleItem = function(itemId){
 /*
 * Handle the single item data 
 */
-function populateSingleItemInformation(data){
-	console.log(data);
-	var data = JSON.parse(data);
+function populateSingleItemInformation(data){	
 		
-		
-	console.log(data.address);
 	$('.item-name').text(data.item_name);
 	$('.item-image').attr('src', data.primary_image).attr('alt', data.item_name);
 		

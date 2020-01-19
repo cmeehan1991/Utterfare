@@ -186,9 +186,6 @@ app.controller('ResultsController', function ($scope, $routeParams) {
   window.initMap(params.terms, window.userSearchLocation, window.searchDistance, params.page, 25, 0);
 });
 app.controller('SingleController', function ($scope, $routeParams) {
-  window.dataLayer.push({
-    'page': '/single'
-  });
   window.scrollTo(0, 0);
   window.showSingleItem($routeParams.id);
   window.getSingleVendorItems();
@@ -995,7 +992,6 @@ window.getSingleVendorItems = function () {
   };
   var related_items = '';
   $.post(window.single_item_url, params, function (response) {
-    console.log(response);
     $.each(response, function (index, item) {
       related_items += '<li class="related-vendor-item">';
       related_items += '<div class="card" style="width: 18rem;">';
@@ -1031,7 +1027,9 @@ window.showSingleItem = function (itemId) {
     'action': 'getSingleItem',
     'item_id': itemId
   };
-  $.post(queryUrl, data, 'json').done(function (response) {
+  $.post(queryUrl, data, function (response) {}, 'json').fail(function (error) {
+    console.log(error);
+  }).done(function (response) {
     populateSingleItemInformation(response);
   });
 };
@@ -1041,9 +1039,6 @@ window.showSingleItem = function (itemId) {
 
 
 function populateSingleItemInformation(data) {
-  console.log(data);
-  var data = JSON.parse(data);
-  console.log(data.address);
   $('.item-name').text(data.item_name);
   $('.item-image').attr('src', data.primary_image).attr('alt', data.item_name);
   latlng = {

@@ -73,11 +73,7 @@ app.controller('ResultsController', function($scope, $routeParams){
 });
 
 app.controller('SingleController', function($scope, $routeParams){
-	
-		window.dataLayer.push({
-		'page':'/single'
-	})
-	
+		
 	window.scrollTo(0,0);
 	window.showSingleItem($routeParams.id);
 	window.getSingleVendorItems();
