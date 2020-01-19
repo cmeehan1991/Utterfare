@@ -100,7 +100,7 @@ class Item_Search{
 		include 'DbConnection.php';
 		$item_id = filter_input(INPUT_POST, 'item_id');
 		
-		$sql = "SELECT item_name, item_description, primary_image, menu_items.vendor_id, vendors.vendor_name, latitude, longitude, vendors.telephone, vendors.primary_address, vendors.secondary_address, vendors.city, vendors.state, vendors.postal_code FROM menu_items INNER JOIN vendors ON vendors.vendor_id = menu_items.vendor_id WHERE item_id = ?";
+		$sql = "SELECT item_name, item_description, primary_image, menu_items.vendor_id, vendors.vendor_name, latitude, longitude, vendors.telephone, vendors.primary_address, vendors.secondary_address, vendors.city, vendors.state, vendors.postal_code, CONCAT(vendors.primary_address, IF(vendors.secondary_address IS NOT NULL, concat(', ', vendors.secondary_address), ''), ', ', vendors.city, ', ', vendors.state, ' ', vendors.postal_code) AS 'address', FROM menu_items INNER JOIN vendors ON vendors.vendor_id = menu_items.vendor_id WHERE item_id = ?";
 		
 		$stmt = $conn->prepare($sql);
 		$stmt->bindParam(1, $item_id);
@@ -109,28 +109,13 @@ class Item_Search{
 		$stmt->setFetchMode(PDO::FETCH_ASSOC);
 		
 		$result = $stmt->fetch();
-		
-		if(!$this->check_image($result['primary_image'], $result['vendor_id']) && ($result['profile_picture'] == 'None' || $result['profile_picture'] == null)){
-			$result['primary_image'] = "https://www.utterfare.com/assets/img/UF%20Logo.png";
-		}elseif(!$this->check_image($result[$i]['primary_image'])){
-			$result['primary_image'] = $results['profile_picture'];
-		}else{
+		if($this->check_image($result['primary_image'])){
 			$result['primary_image'] = $result['primary_image'];
-		}
-		
-			
-		$result['address'] = $result['primary_address'];
-		
-		if($result['secondary_address']){
-			$result['address'] .= ', ' . $results[$i]['secondary_address'];
-		}
-		
-		$result['address'] .= ', ' . $result['city'];
-		$result['address'] .= ', ' . $result['state'];
-		$result['address'] .= ' ' . $result['postal_code'];
-		
-		$result['telephone'] =  $result['telephone'];
-		
+		}elseif($this->check_image($result['profile_picture'])){
+			$result['primary_image'] = $$result['profile_picture'];
+		}else{
+			$result['primary_image'] = 'https://www.utterfare.com/assets/img/UF%20Logo.png';
+		}	
 		
 		echo json_encode($result);
 		
@@ -181,13 +166,14 @@ class Item_Search{
 		for($i = 0; $i < count($results); $i++){	
 			
 					
-			if(!$this->check_image($results[$i]['primary_image'], $results[$i]['vendor_id']) && ($results[$i]['profile_picture'] == 'None' || $results[$i]['profile_picture'] == null)){
-				$results[$i]['primary_image'] = "https://www.utterfare.com/assets/img/UF%20Logo.png";
-			}elseif(!$this->check_image($results[$i]['primary_image'])){
+			if($this->check_image($results[$i]['primary_image'])){
+				$results[$i]['primary_image'] = $results[$i]['primary_image'];
+			}elseif($this->check_image($results[$i]['profile_picture'])){
 				$results[$i]['primary_image'] = $results[$i]['profile_picture'];
 			}else{
-				$results[$i]['primary_image'] = $results[$i]['primary_image'];
-			}			
+				$results[$i]['primary_image'] = 'https://www.utterfare.com/assets/img/UF%20Logo.png';
+			}
+							
 			$results[$i]['address'] = $results[$i]['city'] . ', ' . $results[$i]['state'];
 		}
 		
@@ -204,6 +190,8 @@ class Item_Search{
 	public function check_image($image_url){
 	
 		$image_exists = strpos(@get_headers($image_url)[7], '200') > -1 || strpos(@get_headers($image_url)[0], '200') > -1;	
+
+		
 
 		return $image_exists;	
 	}
@@ -236,7 +224,7 @@ class Item_Search{
 	private function search($distance = 10, $latitude = null, $longitude = null, $ppp = null, $page = 1, $offset = 0, $terms = null, $random = false, $location = null){
 		include 'DbConnection.php';
 				
-		$sql = "SELECT DISTINCT item_id, item_name, item_short_description, primary_image, vendors.vendor_id, vendors.vendor_name, md5(vendors.vendor_name) as 'name_hash', vendors.latitude, vendors.longitude, vendors.primary_address, vendors.secondary_address, vendors.city, vendors.state, vendors.postal_code, vendors.profile_picture
+		$sql = "SELECT DISTINCT item_id, item_name, item_short_description, primary_image, vendors.vendor_id, vendors.vendor_name, md5(vendors.vendor_name) as 'name_hash', vendors.latitude, vendors.longitude, vendors.primary_address, vendors.secondary_address, vendors.city, vendors.state, vendors.postal_code, CONCAT(vendors.primary_address, IF(vendors.secondary_address IS NOT NULL, concat(', ', vendors.secondary_address), ''), ', ', vendors.city, ', ', vendors.state, ' ', vendors.postal_code) AS 'address', vendors.profile_picture
 		FROM menu_items 
 		INNER JOIN vendors ON vendors.vendor_id = menu_items.vendor_id
 		INNER JOIN vendor_meta ON vendor_meta.vendor_id = vendors.vendor_id
@@ -264,38 +252,26 @@ class Item_Search{
 		
 		$results = $stmt->fetchall();
 		
-		for($i = 0; $i < count($results); $i++){		
-			
-			
-			$results[$i]['address'] = $results[$i]['primary_address'];
-			
-			if($results[$i]['secondary_address']){
-				$results[$i]['address'] .= ', ' . $results[$i]['secondary_address'];
-			}
-			
-			$results[$i]['address'] .= ', ' . $results[$i]['city'];
-			$results[$i]['address'] .= ', ' . $results[$i]['state'];
-			$results[$i]['address'] .= ' ' . $results[$i]['postal_code'];
-				
+		for($i = 0; $i < count($results); $i++){						
 			
 			
 			$results[$i]['original_primary_image'] = $results[$i]['primary_image'];
-			if(!$this->check_image($results[$i]['primary_image']) && ($results[$i]['profile_picture'] == 'None' || $results[$i]['profile_picture'] == null || $this->check_image($results[$i]['profile_picture']) == false)){
-				$results[$i]['primary_image'] = "https://www.utterfare.com/assets/img/UF%20Logo.png";
-			}elseif(!$this->check_image($results[$i]['primary_image'])){
+			
+			if($this->check_image($results[$i]['primary_image'])){
+				$results[$i]['primary_image'] = $results[$i]['primary_image'];
+			}elseif($this->check_image($results[$i]['profile_picture'])){
 				$results[$i]['primary_image'] = $results[$i]['profile_picture'];
 			}else{
-				$results[$i]['primary_image'] = $results[$i]['primary_image'];
+				$results[$i]['primary_image'] = 'https://www.utterfare.com/assets/img/UF%20Logo.png';
 			}
-			
-			$results[$i]['profile_picture_exists'] = $this->check_image($results[$i]['profile_picture']);
-			
+						
 			if($terms){
 				// Rank the terms
 				$results[$i]['rank'] = $this->rank_item($results[$i], $terms);
 			}
 		}
-
+		
+		
 		if($terms){
 			
 			// If this is an actual search we are going to sort the array by rank
@@ -319,8 +295,14 @@ class Item_Search{
 	
 	private function rank_item($item, $terms){
 		$rank = 0;	
-				
-		if($item['item_name'] == $terms){
+		
+		$terms = strtolower($terms);
+		
+		foreach($item as $k=>$v){
+			$item[$k] = strtolower($v);
+		}		
+		
+		if(strtolower($item['item_name']) == strtolower($terms)){
 			$rank += 20; 
 		}
 		
@@ -330,7 +312,7 @@ class Item_Search{
 		}
 		
 		
-		if(strpos($item['item_description'], $terms) > -1){
+		if(strpos($item['item_short_description'], $terms) > -1){
 			$rank += 10;	
 		}
 		
@@ -342,6 +324,8 @@ class Item_Search{
 		
 		foreach($split_terms as $term){
 			
+			
+			
 			if($item['item_name'] == $term){
 				$rank += 5; 
 			}
@@ -350,7 +334,7 @@ class Item_Search{
 				$rank += 5; 
 			}
 			
-			if(strpos($item['item_description'], $term) !== false){
+			if(strpos($item['item_short_description'], $term) !== false){
 				$rank += 1;	
 			}
 			
