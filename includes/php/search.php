@@ -27,7 +27,7 @@ class Item_Search{
 		$num_items =  filter_input(INPUT_POST, 'num_items');
 		$page = filter_input(INPUT_POST, 'page');
 		$offset = ($page-1) * $num_items;
-		
+		$distance = 10;
 				
 		// Form the search location
 		$location = urlencode($location);
@@ -41,7 +41,15 @@ class Item_Search{
         
         
 		//$distance = 10, $latitude = null, $longitude = null, $ppp = null, $page = 1, $offset = 0, $terms = null, $random = false
-		echo $this->search(10, $lat, $lng, $num_items, $page, $offset, null, true);
+		$results = $this->search($distance, $lat, $lng, $num_items, $page, $offset, null, true);
+		
+		if(empty(json_decode($results))){
+			while(empty(json_decode($results))){
+				$distance += 100;
+				$results = $this->search($distance, $lat, $lng, $num_items, $page, $offset, null, true);
+			}
+		}
+		echo $results;
 	
 	}
 	
@@ -106,6 +114,7 @@ class Item_Search{
         $lat = $obj['results'][0]['geometry']['location']['lat'];
         $lng = $obj['results'][0]['geometry']['location']['lng'];
 		//$distance = 10, $latitude = null, $longitude = null, $ppp = null, $page = 1, $offset = 0, $terms = null, $random = false
+		
 		echo $this->search(10, $lat, $lng, 8, 1, 0, null, true);
 	}
 	
@@ -169,9 +178,7 @@ class Item_Search{
 		$stmt->setFetchMode(PDO::FETCH_ASSOC);
 				
 		$results = $stmt->fetchall();
-		
-		
-		
+			
 		
 		for($i = 0; $i < count($results); $i++){	
 			
@@ -287,7 +294,7 @@ class Item_Search{
 			$results = array_reverse($results);
 		}
 				
-		echo json_encode($results);
+		return json_encode($results);
 		
 		if($terms != null){
 			$this->searchData($terms, $location, $latitude, $longitude, $distance, $results);
