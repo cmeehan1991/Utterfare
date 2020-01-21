@@ -22,6 +22,29 @@ class Item_Search{
 		
 	}	
 	
+	private function getMobileHomeFeedItems(){
+		$location = filter_input(INPUT_POST, 'location');
+		$num_items =  filter_input(INPUT_POST, 'num_items');
+		$page = filter_input(INPUT_POST, 'page');
+		$offset = ($page-1) * $num_items;
+		
+				
+		// Form the search location
+		$location = urlencode($location);
+		
+		$json = file_get_contents("https://maps.googleapis.com/maps/api/geocode/json?address=$location&key=AIzaSyBNOJbx_2Q5h8f0ONZ4Abf5ULE0w4B-VTc");
+		$obj = json_decode($json, true);
+		
+		// Get the latitude and longitude
+        $lat = $obj['results'][0]['geometry']['location']['lat'];
+        $lng = $obj['results'][0]['geometry']['location']['lng'];
+        
+        
+		//$distance = 10, $latitude = null, $longitude = null, $ppp = null, $page = 1, $offset = 0, $terms = null, $random = false
+		echo $this->search(10, $lat, $lng, $num_items, $page, $offset, null, true);
+	
+	}
+	
 	private function getExplorerItems(){
 		include 'DbConnection.php'; 
 		
@@ -113,8 +136,8 @@ class Item_Search{
 		$location = filter_input(INPUT_POST, 'location');
 		$terms = filter_Input(INPUT_POST, 'terms');
 		$limit = filter_input(INPUT_POST, 'limit');
-		$page = filter_input(INPUT_POST, 'page');
-		$offset = filter_input(INPUT_POST, 'offset');
+		$page = filter_input(INPUT_POST, 'page');		
+		$offset = ($page - 1) * $limit;
 				
 		// Form the search location
 		$location = urlencode($location);
@@ -212,6 +235,7 @@ class Item_Search{
 		INNER JOIN vendors ON vendors.vendor_id = menu_items.vendor_id
 		INNER JOIN vendor_meta ON vendor_meta.vendor_id = vendors.vendor_id
 		WHERE DEGREES((ACOS(SIN(RADIANS($latitude))*SIN(RADIANS(vendors.latitude))+ COS(RADIANS($latitude))*COS(RADIANS(vendors.latitude))*COS(RADIANS((vendors.longitude)-($longitude)))))) * 60 * 1.1515 <= $distance";
+		
 
 		if($terms){
 			$split_terms = explode(' ', $terms);
@@ -226,7 +250,7 @@ class Item_Search{
 		if($random){
 			$sql .= " GROUP BY item_id, vendor_id ORDER BY rand()";
 		}
-	
+		
 		$sql .= " LIMIT $ppp OFFSET $offset";			
 				
 		$stmt = $conn->prepare($sql);
