@@ -145,7 +145,7 @@ function performSearch(terms, searchLocation, distance, page, limit, offset, map
 				
 				display += '<div class="col-md-4">';
 
-				display += '<img src="' + result.primary_image + '" class="card-img" alt="' + result.item_name + '">';
+				display += '<img src="' + result.primary_image + '" onerror="this.src = \'assets/img/UF%20Logo.png\'" class="card-img" alt="' + result.item_name + '">';
 				
 				display += "</div>";
 				

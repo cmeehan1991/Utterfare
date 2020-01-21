@@ -42,7 +42,7 @@ window.getTopItems = function(user_location){
 				top_items += "<div class='row no-gutters'>";
 				top_items += "<div class='col-sm-12 col-md-4'>";
 			}
-			top_items += '<img src="' + v.primary_image + '" class="card-img-top" alt="' + v.item_name + '">';			
+			top_items += '<img src="' + v.primary_image + '" onerror="this.src = \'assets/img/UF%20Logo.png\'" class="card-img-top" alt="' + v.item_name + '">';			
 			if(count == 2){
 				top_items += "</div><div class='col-sm-12 col-md-8'>";
 			}
@@ -99,7 +99,7 @@ function getRecommendations(user_location){
 				
 				recommendations += '<div class="recommendation">'; 
 				recommendations += '<a href="#!/single?id=' + value.item_id + '">'
-				recommendations += '<img src="' + value.primary_image + '" class="card-img-top" alt="' + value.item_name + '">';
+				recommendations += '<img src="' + value.primary_image + '" onerror="this.src = \'assets/img/UF%20Logo.png\'" class="card-img-top" alt="' + value.item_name + '">';
 				recommendations += '<div class="recommendation-body">';
 				recommendations += '<div class="recommendation-title"><h3>' + value.item_name + '</h3></div>';
 				recommendations += '</div>'; // .card-body

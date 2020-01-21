@@ -8,28 +8,18 @@ class Item_Search{
 	private function init(){
 		$action = filter_input(INPUT_POST, 'action');
 		
-		
-		switch($action){
-			case 'get_recommendations': 
-				$this->getRecommendations();
-				break;
-			case 'search':
-				$this->doSearch();
-				break;
-			case 'getSingleItem': 
-				$this->getSingleItem();
-				break;
-			case 'get_top_items': 
-				$this->getTopItems();
-				break;
-			case 'get_local_items': 
-				$this->getLocalItems();
-				break;
-			case 'getExplorerItems': 
-				$this->getExplorerItems();
-				break;
-			default: break;
+		if(strpos($action, '_')){
+			$action = str_replace('_', '', ucwords($action, '_'));
 		}
+
+		if($action == 'search'){
+			$action = 'doSearch';
+		}
+		
+		if($action){
+			$this->$action();
+		}
+		
 	}	
 	
 	private function getExplorerItems(){
@@ -100,7 +90,7 @@ class Item_Search{
 		include 'DbConnection.php';
 		$item_id = filter_input(INPUT_POST, 'item_id');
 		
-		$sql = "SELECT item_name, item_description, primary_image, menu_items.vendor_id, vendors.vendor_name, latitude, longitude, vendors.telephone, vendors.primary_address, vendors.secondary_address, vendors.city, vendors.state, vendors.postal_code, vendors.profile_picture, CONCAT(vendors.primary_address, IF(vendors.secondary_address IS NOT NULL, concat(', ', vendors.secondary_address), ''), ', ', vendors.city, ', ', vendors.state, ' ', vendors.postal_code) AS 'address' FROM menu_items INNER JOIN vendors ON vendors.vendor_id = menu_items.vendor_id WHERE item_id = ?";
+		$sql = "SELECT item_name, item_description, menu_items.vendor_id, vendors.vendor_name, latitude, longitude, vendors.telephone, vendors.primary_address, vendors.secondary_address, vendors.city, vendors.state, vendors.postal_code, IF(primary_image IS NULL, IF(vendors.profile_picture IS NULL OR vendors.profile_picture = 'None' OR vendors.profile_picture = '', null, vendors.profile_picture), primary_image) as 'primary_image', CONCAT(vendors.primary_address, IF(vendors.secondary_address IS NOT NULL, concat(', ', vendors.secondary_address), ''), ', ', vendors.city, ', ', vendors.state, ' ', vendors.postal_code) AS 'address' FROM menu_items INNER JOIN vendors ON vendors.vendor_id = menu_items.vendor_id WHERE item_id = ?";
 		
 		$stmt = $conn->prepare($sql);
 		$stmt->bindParam(1, $item_id);
@@ -110,11 +100,7 @@ class Item_Search{
 		
 		$result = $stmt->fetch();
 		
-		if($this->check_image($result['primary_image'])){
-			$result['primary_image'] = $result['primary_image'];
-		}elseif($this->check_image($result['profile_picture'])){
-			$result['primary_image'] = $$result['profile_picture'];
-		}else{
+		if($result['primary_image'] == null){
 			$result['primary_image'] = 'https://www.utterfare.com/assets/img/UF%20Logo.png';
 		}	
 		
@@ -147,7 +133,7 @@ class Item_Search{
 	private function getTopItems(){
 		include 'DbConnection.php';
 		
-		$sql = "SELECT DISTINCT menu_items.item_id, menu_items.vendor_id, vendors.vendor_name, item_name, item_short_description, primary_image, SUM(item_reviews.rating) AS 'rating' , vendors.profile_picture, vendors.city, vendors.state
+		$sql = "SELECT DISTINCT menu_items.item_id, menu_items.vendor_id, vendors.vendor_name, item_name, item_short_description, SUM(item_reviews.rating) AS 'rating' , vendors.city, vendors.state, IF(primary_image IS NULL, IF(vendors.profile_picture IS NULL OR vendors.profile_picture = 'None' OR vendors.profile_picture = '', null, vendors.profile_picture), primary_image) as 'primary_image'
 				FROM menu_items 
 				INNER JOIN vendors ON vendors.vendor_id = menu_items.vendor_id
 				LEFT JOIN item_reviews ON item_reviews.item_id = menu_items.item_id 
@@ -167,11 +153,7 @@ class Item_Search{
 		for($i = 0; $i < count($results); $i++){	
 			
 					
-			if($this->check_image($results[$i]['primary_image'])){
-				$results[$i]['primary_image'] = $results[$i]['primary_image'];
-			}elseif($this->check_image($results[$i]['profile_picture'])){
-				$results[$i]['primary_image'] = $results[$i]['profile_picture'];
-			}else{
+			if($results[$i]['primary_image'] == null){
 				$results[$i]['primary_image'] = 'https://www.utterfare.com/assets/img/UF%20Logo.png';
 			}
 							
@@ -225,7 +207,7 @@ class Item_Search{
 	private function search($distance = 10, $latitude = null, $longitude = null, $ppp = null, $page = 1, $offset = 0, $terms = null, $random = false, $location = null){
 		include 'DbConnection.php';
 				
-		$sql = "SELECT DISTINCT item_id, item_name, item_short_description, primary_image, vendors.vendor_id, vendors.vendor_name, md5(vendors.vendor_name) as 'name_hash', vendors.latitude, vendors.longitude, vendors.primary_address, vendors.secondary_address, vendors.city, vendors.state, vendors.postal_code, CONCAT(vendors.primary_address, IF(vendors.secondary_address IS NOT NULL, concat(', ', vendors.secondary_address), ''), ', ', vendors.city, ', ', vendors.state, ' ', vendors.postal_code) AS 'address', vendors.profile_picture
+		$sql = "SELECT DISTINCT item_id, item_name, item_short_description, vendors.vendor_id, vendors.vendor_name, md5(vendors.vendor_name) as 'name_hash', vendors.latitude, vendors.longitude, vendors.primary_address, vendors.secondary_address, vendors.city, vendors.state, vendors.postal_code, CONCAT(vendors.primary_address, IF(vendors.secondary_address IS NOT NULL, concat(', ', vendors.secondary_address), ''), ', ', vendors.city, ', ', vendors.state, ' ', vendors.postal_code) AS 'address', IF(primary_image IS NULL, IF(vendors.profile_picture IS NULL OR vendors.profile_picture = 'None' OR vendors.profile_picture = '', null, vendors.profile_picture), primary_image) as 'primary_image'
 		FROM menu_items 
 		INNER JOIN vendors ON vendors.vendor_id = menu_items.vendor_id
 		INNER JOIN vendor_meta ON vendor_meta.vendor_id = vendors.vendor_id
@@ -240,7 +222,7 @@ class Item_Search{
 			}
 			$sql .= ")";
 		}
-		
+				
 		if($random){
 			$sql .= " GROUP BY item_id, vendor_id ORDER BY rand()";
 		}
@@ -258,13 +240,10 @@ class Item_Search{
 			
 			$results[$i]['original_primary_image'] = $results[$i]['primary_image'];
 			
-			if($this->check_image($results[$i]['primary_image'])){
-				$results[$i]['primary_image'] = $results[$i]['primary_image'];
-			}elseif($this->check_image($results[$i]['profile_picture'])){
-				$results[$i]['primary_image'] = $results[$i]['profile_picture'];
-			}else{
+			if($results[$i]['primary_image'] == null){
 				$results[$i]['primary_image'] = 'https://www.utterfare.com/assets/img/UF%20Logo.png';
 			}
+			
 						
 			if($terms){
 				// Rank the terms
@@ -283,9 +262,7 @@ class Item_Search{
 			// We nee dto reverse the array because usort orders from lowest to highest. 
 			$results = array_reverse($results);
 		}
-		
-		
-		
+				
 		echo json_encode($results);
 		
 		if($terms != null){
