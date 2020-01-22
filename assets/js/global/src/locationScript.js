@@ -18,6 +18,7 @@ window.saveSearchLocation = function(){
 		$('.search-form__input').attr('data-location', userSearchLocation);
 		$('.search-form__input').attr('data-distance', searchDistance);
 		$('#locationModal').modal('toggle');
+		window.userSearchLocation = userSearchLocation;
 	}
 }
 

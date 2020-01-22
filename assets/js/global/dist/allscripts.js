@@ -205,11 +205,11 @@ app.controller('SearchController', ["$scope", "$http", "$location", function ($s
   }
 
   $scope.search = function (data) {
-    window.userLocation = $('.location-link').text();
+    var location = window.userSearchLocation;
     var terms = data.terms === undefined ? $('.search-form__input').val() : data.terms;
 
     if (terms !== undefined && terms != null && terms != "") {
-      window.goToSearchPage(terms, window.userLocation, 10, 1, 25, 0);
+      window.goToSearchPage(terms, location, 10, 1, 25, 0);
     } else {
       $('#noticeModal').modal('show');
     }
@@ -376,6 +376,7 @@ window.saveSearchLocation = function () {
     $('.search-form__input').attr('data-location', userSearchLocation);
     $('.search-form__input').attr('data-distance', searchDistance);
     $('#locationModal').modal('toggle');
+    window.userSearchLocation = userSearchLocation;
   }
 };
 

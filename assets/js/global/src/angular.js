@@ -96,12 +96,13 @@ app.controller('SearchController',  function($scope, $http, $location){
 	}
 		
 	$scope.search = function(data){		
-		window.userLocation = $('.location-link').text();
+		var location = window.userSearchLocation;
 
 		var terms = data.terms === undefined ?  $('.search-form__input').val() : data.terms; 
 		
-		if(terms !== undefined && terms != null && terms != ""){		
-			window.goToSearchPage(terms, window.userLocation, 10, 1, 25, 0);
+		if(terms !== undefined && terms != null && terms != ""){	
+
+			window.goToSearchPage(terms, location, 10, 1, 25, 0);
 		}else{
 			$('#noticeModal').modal('show');
 		}

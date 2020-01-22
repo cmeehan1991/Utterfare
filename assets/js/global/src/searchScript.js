@@ -203,7 +203,7 @@ function performSearch(terms, searchLocation, distance, page, limit, offset, map
 /*
 * Initialize the results map*/
 window.initMap = function(terms, searchLocation, distance, page, limit, offset){
-
+	
 	var url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + encodeURIComponent(searchLocation) + '&key=AIzaSyBNOJbx_2Q5h8f0ONZ4Abf5ULE0w4B-VTc';
 		
 	var latlng = {};
