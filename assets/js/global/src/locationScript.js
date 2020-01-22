@@ -3,19 +3,24 @@ var userLocation;
 var userSearchLocation;
 var searchDistance = 10;
 
-window.setManualSearchLocation = function(){
-	userLocation = $('input[name="location"]').val();
-	var distance = $('select[name="distance"]').val();
-	if(userLocation !== undefined && userLocation !== null){
-		$('.search-form__input').data('location', userLocation);
-		$('.search-form__input').data('distance', distance);
-		window.distance = distance;
-		window.getRecommendations(userLocation);
-	}
-	
-	$('#locationModal').modal('hide');
-	return false;
+window.showLocationModal = function(){
+	$('input[name=search-location]').val(userSearchLocation);
+	$('select[name=search-distance]').val(searchDistance);
+	$('#locationModal').modal('toggle');
 }
+
+window.saveSearchLocation = function(){
+	userSearchLocation = $('input[name=search-location]').val();
+	searchDistance = $('select[name=search-distance]').val();
+	
+	if(userSearchLocation !== undefined && userSearchLocation !== null){
+		$('.location-link').text(userSearchLocation);
+		$('.search-form__input').attr('data-location', userSearchLocation);
+		$('.search-form__input').attr('data-distance', searchDistance);
+		$('#locationModal').modal('toggle');
+	}
+}
+
 
 function validateInput(input, e) {
     var matchesNumber = input.match(/\d+/g);
@@ -42,7 +47,7 @@ function isNumeric(input){
 
 window.geolocation = function() {
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(showPosition, locationErrorCallback, {timeout: 1000, enableHighAccurace: false});
+        navigator.geolocation.getCurrentPosition(showPosition, locationErrorCallback, {timeout: 10000, enableHighAccurace: false});
     } 
 }
 
@@ -83,6 +88,10 @@ function codeLatLng(lat, lng) {
 	                window.userLocation = userLocation;
 	                window.searchDistance = 10;
                		window.getTopItems(userLocation);
+               		
+               		
+			   		$('.search-form__input').attr('data-location', userSearchLocation);
+					$('.search-form__input').attr('data-distance', searchDistance);
                 }
             }
         }

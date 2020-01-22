@@ -10,24 +10,30 @@
       </div>
       <form name="searchLocationForm" onsubmit="return setManualSearchLocation()">
 	      <div class="modal-body">
-		      <p>
-		      	<label for="location"><strong>City &amp; State or Zip Code</strong></label>
-			  	<input type="text" name="location" required>
-		      </p>
-		      <p>
-			      <label for="distance"><strong>Distance</strong></label>
-			      <select name="distance" required> 
+		      <div class="form-group row">
+				     <div class="col">
+				      <label for="location">Search Location</label>
+				      <input type="text" name="search-location" class="form-control" aria-describedby="location-help">
+				      <small id="location-help" class="form-text text-muted">ex. 6 Kent Ct, Hilton Head Island, SC; Raleigh, NC</small>
+			      </div>
+		      </div>
+		      <div class="form-group">
+			      <label for="search-distance">Distance</label>
+			      <select class="custom-select" name="search-distance" required> 
 				      <option value="1">1 Mile</option>
-				      <option value="2">2 Mile</option>
-				      <option value="5">3 Mile</option>
-				      <option value="10" selected>10 Mile</option>
-				      <option value="15">15 Mile</option>
-				      <option value="20">20 Mile</option>
+				      <option value="2">2 Miles</option>
+				      <option value="5">3 Miles</option>
+				      <option value="10">10 Miles</option>
+				      <option value="15">15 Miles</option>
+				      <option value="20">20 Miles</option>
 			      </select>
+		      </div>
+		      <p>
+
 	      </div>
 	      <div class="modal-footer">
 	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-	        <button type="submit" class="btn btn-primary">Save changes</button>
+	        <button type="button" class="btn btn-primary" onclick="saveSearchLocation()">Save changes</button>
 	      </div>
       </form>
     </div>
