@@ -18,10 +18,8 @@ function showOpenInApp(link){
 }
 
 window.curateHomepageSections = function(user_location){	
-	$('#loadingModal').modal('show');	
+	$('#loadingModal').modal('toggle');	
 	window.geolocation();
-	//getTopItems(user_location);
-	
 }
 
 window.getTopItems = function(user_location){
@@ -60,7 +58,6 @@ window.getTopItems = function(user_location){
 				top_items += "</div></div>";
 			}
 			count += 1;
-
 		});
 	}, 'json')
 	.fail(function(error){
@@ -119,7 +116,7 @@ function getRecommendations(user_location){
 		if(recommendations != ''){
 			$('.recommendations-section').html(recommendations);
 		}		
-		$('#loadingModal').modal('hide');
+		$('#loadingModal').modal('toggle');
 	});
 		
 }

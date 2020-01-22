@@ -206,7 +206,6 @@ app.controller('SearchController', function ($scope, $http, $location) {
 
   $scope.search = function (data) {
     window.userLocation = $('.location-link').text();
-    console.log(data.terms === undefined);
     var terms = data.terms === undefined ? $('.search-form__input').val() : data.terms;
 
     if (terms !== undefined && terms != null && terms != "") {
@@ -257,8 +256,8 @@ function showOpenInApp(link) {
 }
 
 window.curateHomepageSections = function (user_location) {
-  $('#loadingModal').modal('show');
-  window.geolocation(); //getTopItems(user_location);
+  $('#loadingModal').modal('toggle');
+  window.geolocation();
 };
 
 window.getTopItems = function (user_location) {
@@ -344,7 +343,7 @@ function getRecommendations(user_location) {
       $('.recommendations-section').html(recommendations);
     }
 
-    $('#loadingModal').modal('hide');
+    $('#loadingModal').modal('toggle');
   });
 }
 
@@ -419,6 +418,8 @@ function locationErrorCallback(err) {
 function showPosition(position) {
   var lat = position.coords.latitude;
   var lng = position.coords.longitude;
+  console.log(lat);
+  console.log(lng);
   codeLatLng(lat, lng);
 }
 
@@ -745,15 +746,6 @@ function showSuggestions() {
     });
   }
 }
-
-function changeLocation() {
-  var searchDistance = $('.search-form__input').data('distance');
-  var searchLocation = $('.search-form__input').data('location');
-  $('select[name="distance"]').val(searchDistance);
-  $('input[name="location"]').val(searchLocation);
-  $('#locationModal').modal('show');
-  window.userLocation = searchLocation;
-}
 /**
 * Populate the top picks section
 */
@@ -770,7 +762,6 @@ window.goToSearchPage = function (terms, searchLocation, distance, page, limit, 
 
 
 function performSearch(terms, searchLocation, distance, page, limit, offset, map) {
-  $("#loadingModal").modal("show");
   var data = {
     'action': 'search',
     'location': searchLocation,
@@ -780,13 +771,9 @@ function performSearch(terms, searchLocation, distance, page, limit, offset, map
     'distance': distance,
     'offset': offset
   };
-  var display = '';
-  console.log(data); // Initialize the map			
+  var display = ''; // Initialize the map			
 
   $.post(window.search_url, data, function (response) {
-    console.log("Response");
-    console.log(response);
-
     if (response.length > 0) {
       $.each(response, function (index, result) {
         display += '<li class="results-list--item" data-item-id="' + result.item_id + '">';
@@ -837,7 +824,6 @@ function performSearch(terms, searchLocation, distance, page, limit, offset, map
         marker.setAnimation(null);
       });
     });
-    $("#loadingModal").modal("hide");
   });
 }
 /*

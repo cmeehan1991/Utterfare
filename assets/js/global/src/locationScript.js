@@ -59,7 +59,9 @@ function locationErrorCallback(err){
 function showPosition(position) {
     var lat = position.coords.latitude;
     var lng = position.coords.longitude;
-
+	
+	console.log(lat);
+	console.log(lng);
     codeLatLng(lat, lng);
 }
 

@@ -97,7 +97,7 @@ app.controller('SearchController',  function($scope, $http, $location){
 		
 	$scope.search = function(data){		
 		window.userLocation = $('.location-link').text();
-		console.log(data.terms === undefined);
+
 		var terms = data.terms === undefined ?  $('.search-form__input').val() : data.terms; 
 		
 		if(terms !== undefined && terms != null && terms != ""){		

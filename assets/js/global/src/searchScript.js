@@ -86,22 +86,9 @@ function showSuggestions(){
 	}
 }
 
-function changeLocation(){
-	var searchDistance = $('.search-form__input').data('distance');
-	var searchLocation = $('.search-form__input').data('location');
-	
-	$('select[name="distance"]').val(searchDistance);
-	$('input[name="location"]').val(searchLocation);
-	
-	$('#locationModal').modal('show');
-	window.userLocation = searchLocation;
-}
-
 /**
 * Populate the top picks section
 */
-
-
 window.goToSearchPage = function(terms, searchLocation, distance, page, limit, offset){	
 	var url = window.location.protocol + "//" + window.location.host + window.location.pathname + "#!/results";
 	var searchParameters = "?action=search&terms=" + encodeURI(terms) + "&page=" + page + "&location=" + encodeURI(searchLocation.replace(/[(,)+]/g, '')) + "&distance=" + distance;
@@ -113,9 +100,7 @@ window.goToSearchPage = function(terms, searchLocation, distance, page, limit, o
 * Perform the search based on the passed values
 */
 function performSearch(terms, searchLocation, distance, page, limit, offset, map){			
-	
-	$("#loadingModal").modal("show");
-	
+		
 	var data = {
 		'action' : 'search',
 		'location': searchLocation,
@@ -128,13 +113,9 @@ function performSearch(terms, searchLocation, distance, page, limit, offset, map
 		
 	var display = '';
 
-	console.log(data);
-	
 
 	// Initialize the map			
 	$.post(window.search_url, data, function(response){
-		console.log("Response");	
-		console.log(response);	
 		if(response.length > 0 ){
 			$.each(response, function(index, result){
 	
@@ -185,7 +166,7 @@ function performSearch(terms, searchLocation, distance, page, limit, offset, map
 		console.log(data);
 	})
 	.done(function(){
-		
+				
 		$('.results-list').html(display);		
 		
 					
@@ -216,15 +197,13 @@ function performSearch(terms, searchLocation, distance, page, limit, offset, map
 				marker.setAnimation(null);
 			});
 		});		
-		
-		$("#loadingModal").modal("hide");				
+					
 	});
 }
 /*
 * Initialize the results map*/
 window.initMap = function(terms, searchLocation, distance, page, limit, offset){
 
-	
 	var url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + encodeURIComponent(searchLocation) + '&key=AIzaSyBNOJbx_2Q5h8f0ONZ4Abf5ULE0w4B-VTc';
 		
 	var latlng = {};
