@@ -206,7 +206,6 @@ app.controller('SearchController', ["$scope", "$http", "$location", function ($s
 
   $scope.search = function (data) {
     window.userLocation = $('.location-link').text();
-    console.log(data.terms === undefined);
     var terms = data.terms === undefined ? $('.search-form__input').val() : data.terms;
 
     if (terms !== undefined && terms != null && terms != "") {
@@ -257,8 +256,8 @@ function showOpenInApp(link) {
 }
 
 window.curateHomepageSections = function (user_location) {
-  $('#loadingModal').modal('show');
-  window.geolocation(); //getTopItems(user_location);
+  $('#loadingModal').modal('toggle');
+  window.geolocation();
 };
 
 window.getTopItems = function (user_location) {
@@ -344,7 +343,7 @@ function getRecommendations(user_location) {
       $('.recommendations-section').html(recommendations);
     }
 
-    $('#loadingModal').modal('hide');
+    $('#loadingModal').modal('toggle');
   });
 }
 
@@ -362,19 +361,22 @@ var userLocation;
 var userSearchLocation;
 var searchDistance = 10;
 
-window.setManualSearchLocation = function () {
-  userLocation = $('input[name="location"]').val();
-  var distance = $('select[name="distance"]').val();
+window.showLocationModal = function () {
+  $('input[name=search-location]').val(userSearchLocation);
+  $('select[name=search-distance]').val(searchDistance);
+  $('#locationModal').modal('toggle');
+};
 
-  if (userLocation !== undefined && userLocation !== null) {
-    $('.search-form__input').data('location', userLocation);
-    $('.search-form__input').data('distance', distance);
-    window.distance = distance;
-    window.getRecommendations(userLocation);
+window.saveSearchLocation = function () {
+  userSearchLocation = $('input[name=search-location]').val();
+  searchDistance = $('select[name=search-distance]').val();
+
+  if (userSearchLocation !== undefined && userSearchLocation !== null) {
+    $('.location-link').text(userSearchLocation);
+    $('.search-form__input').attr('data-location', userSearchLocation);
+    $('.search-form__input').attr('data-distance', searchDistance);
+    $('#locationModal').modal('toggle');
   }
-
-  $('#locationModal').modal('hide');
-  return false;
 };
 
 function validateInput(input, e) {
@@ -402,8 +404,8 @@ function isNumeric(input) {
 window.geolocation = function () {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(showPosition, locationErrorCallback, {
-      timeout: 1000000,
-      enableHighAccurace: true
+      timeout: 10000,
+      enableHighAccurace: false
     });
   }
 };
@@ -416,11 +418,12 @@ function locationErrorCallback(err) {
 function showPosition(position) {
   var lat = position.coords.latitude;
   var lng = position.coords.longitude;
+  console.log(lat);
+  console.log(lng);
   codeLatLng(lat, lng);
 }
 
 function codeLatLng(lat, lng) {
-  console.log("lat lng");
   var geocoder = new google.maps.Geocoder();
   var latLng = new google.maps.LatLng(lat, lng);
   geocoder.geocode({
@@ -443,6 +446,8 @@ function codeLatLng(lat, lng) {
           window.userLocation = userLocation;
           window.searchDistance = 10;
           window.getTopItems(userLocation);
+          $('.search-form__input').attr('data-location', userSearchLocation);
+          $('.search-form__input').attr('data-distance', searchDistance);
         }
       }
     }
@@ -741,15 +746,6 @@ function showSuggestions() {
     });
   }
 }
-
-function changeLocation() {
-  var searchDistance = $('.search-form__input').data('distance');
-  var searchLocation = $('.search-form__input').data('location');
-  $('select[name="distance"]').val(searchDistance);
-  $('input[name="location"]').val(searchLocation);
-  $('#locationModal').modal('show');
-  window.userLocation = searchLocation;
-}
 /**
 * Populate the top picks section
 */
@@ -766,7 +762,6 @@ window.goToSearchPage = function (terms, searchLocation, distance, page, limit, 
 
 
 function performSearch(terms, searchLocation, distance, page, limit, offset, map) {
-  $("#loadingModal").modal("show");
   var data = {
     'action': 'search',
     'location': searchLocation,
@@ -776,13 +771,9 @@ function performSearch(terms, searchLocation, distance, page, limit, offset, map
     'distance': distance,
     'offset': offset
   };
-  var display = '';
-  console.log(data); // Initialize the map			
+  var display = ''; // Initialize the map			
 
   $.post(window.search_url, data, function (response) {
-    console.log("Response");
-    console.log(response);
-
     if (response.length > 0) {
       $.each(response, function (index, result) {
         display += '<li class="results-list--item" data-item-id="' + result.item_id + '">';
@@ -833,7 +824,6 @@ function performSearch(terms, searchLocation, distance, page, limit, offset, map
         marker.setAnimation(null);
       });
     });
-    $("#loadingModal").modal("hide");
   });
 }
 /*
