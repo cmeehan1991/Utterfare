@@ -237,10 +237,9 @@ class Item_Search{
 	private function search($distance = 10, $latitude = null, $longitude = null, $ppp = null, $page = 1, $offset = 0, $terms = null, $random = false, $location = null){
 		include 'DbConnection.php';
 				
-		$sql = "SELECT DISTINCT item_id, item_name, item_short_description, vendors.vendor_id, vendors.vendor_name, md5(vendors.vendor_name) as 'name_hash', vendors.latitude, vendors.longitude, vendors.primary_address, vendors.secondary_address, vendors.city, vendors.state, vendors.postal_code, CONCAT(vendors.primary_address, IF(vendors.secondary_address IS NOT NULL, concat(', ', vendors.secondary_address), ''), ', ', vendors.city, ', ', vendors.state, ' ', vendors.postal_code) AS 'address', IF(primary_image IS NULL, IF(vendors.profile_picture IS NULL OR vendors.profile_picture = 'None' OR vendors.profile_picture = '', null, vendors.profile_picture), primary_image) as 'primary_image'
+		$sql = "SELECT DISTINCT item_id, item_name, IF(item_short_description IS NULL, CONVERT(item_description USING utf8), item_short_description) as item_short_description, vendors.vendor_id, vendors.vendor_name, md5(vendors.vendor_name) as 'name_hash', vendors.latitude, vendors.longitude, vendors.primary_address, vendors.secondary_address, vendors.city, vendors.state, vendors.postal_code, CONCAT(vendors.primary_address, IF(vendors.secondary_address IS NOT NULL, concat(', ', vendors.secondary_address), ''), ', ', vendors.city, ', ', vendors.state, ' ', vendors.postal_code) AS 'address', IF(primary_image IS NULL, IF(vendors.profile_picture IS NULL OR vendors.profile_picture = 'None' OR vendors.profile_picture = '', null, vendors.profile_picture), primary_image) as 'primary_image'
 		FROM menu_items 
 		INNER JOIN vendors ON vendors.vendor_id = menu_items.vendor_id
-		INNER JOIN vendor_meta ON vendor_meta.vendor_id = vendors.vendor_id
 		WHERE DEGREES((ACOS(SIN(RADIANS($latitude))*SIN(RADIANS(vendors.latitude))+ COS(RADIANS($latitude))*COS(RADIANS(vendors.latitude))*COS(RADIANS((vendors.longitude)-($longitude)))))) * 60 * 1.1515 <= $distance";
 		
 

@@ -402,8 +402,8 @@ function isNumeric(input) {
 window.geolocation = function () {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(showPosition, locationErrorCallback, {
-      timeout: 1000000,
-      enableHighAccurace: true
+      timeout: 1000,
+      enableHighAccurace: false
     });
   }
 };
@@ -420,7 +420,6 @@ function showPosition(position) {
 }
 
 function codeLatLng(lat, lng) {
-  console.log("lat lng");
   var geocoder = new google.maps.Geocoder();
   var latLng = new google.maps.LatLng(lat, lng);
   geocoder.geocode({
