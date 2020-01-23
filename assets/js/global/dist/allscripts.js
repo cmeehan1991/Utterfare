@@ -803,7 +803,7 @@ function performSearch(terms, searchLocation, distance, page, limit, offset, map
         display += '<div class="card-body">';
         display += '<h3 class="card-title">' + result.item_name + '</h3>';
         display += '<h4 class="card-title card-title--vendor-name">' + result.vendor_name + '</h4>';
-        display += '<p class="card-text"><small class="text-muted"></small></p>';
+        display += '<p class="card-text"><small class="text-muted">Distance: ' + parseFloat(result.distance).toFixed(2) + ' miles</small></p>';
         display += '<p class="card-text">' + result.item_short_description + '</p>';
         display += "</div></div>";
         display += '</div></div></li>';

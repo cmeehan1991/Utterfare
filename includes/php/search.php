@@ -253,12 +253,13 @@ class Item_Search{
 			$sql .= ")";
 		}
 				
+		
 		if($random){
 			$sql .= " GROUP BY item_id, vendor_id ORDER BY rand()";
 		}
 		
 		$sql .= " LIMIT $ppp OFFSET $offset";			
-				
+						
 		$stmt = $conn->prepare($sql);
 		$stmt->execute();
 		$stmt->setFetchMode(PDO::FETCH_ASSOC);
