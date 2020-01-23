@@ -18,11 +18,12 @@ function showOpenInApp(link){
 }
 
 window.curateHomepageSections = function(user_location){	
-	$('#loadingModal').modal('toggle');	
 	window.geolocation();
 }
 
-window.getTopItems = function(user_location){
+window.getTopItems = function(user_location){        
+	$('#loadingModal').modal('show');
+
 	var data = {
 		'action': 'get_top_items'
 	}
@@ -116,7 +117,7 @@ function getRecommendations(user_location){
 		if(recommendations != ''){
 			$('.recommendations-section').html(recommendations);
 		}		
-		$('#loadingModal').modal('toggle');
+        $('#loadingModal').modal('hide');
 	});
 		
 }

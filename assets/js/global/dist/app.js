@@ -256,11 +256,11 @@ function showOpenInApp(link) {
 }
 
 window.curateHomepageSections = function (user_location) {
-  $('#loadingModal').modal('toggle');
   window.geolocation();
 };
 
 window.getTopItems = function (user_location) {
+  $('#loadingModal').modal('show');
   var data = {
     'action': 'get_top_items'
   };
@@ -343,7 +343,7 @@ function getRecommendations(user_location) {
       $('.recommendations-section').html(recommendations);
     }
 
-    $('#loadingModal').modal('toggle');
+    $('#loadingModal').modal('hide');
   });
 }
 
@@ -359,6 +359,7 @@ function getRecommendations(user_location) {
 var map;
 var userLocation;
 var userSearchLocation;
+var manualEntry = false;
 var searchDistance = 10;
 
 window.showLocationModal = function () {
@@ -376,7 +377,13 @@ window.saveSearchLocation = function () {
     $('.search-form__input').attr('data-location', userSearchLocation);
     $('.search-form__input').attr('data-distance', searchDistance);
     $('#locationModal').modal('toggle');
+    window.searchDistance = searchDistance;
     window.userSearchLocation = userSearchLocation;
+
+    if (this.manualEntry == true) {
+      this.manualEntry = false;
+      window.getTopItems(userSearchLocation);
+    }
   }
 };
 
@@ -404,16 +411,25 @@ function isNumeric(input) {
 
 window.geolocation = function () {
   if (navigator.geolocation) {
+    $('#loadingModal').modal('show');
     navigator.geolocation.getCurrentPosition(showPosition, locationErrorCallback, {
       timeout: 10000,
       enableHighAccurace: false
     });
+    $('#loadingModal').modal('hide');
   }
 };
 
 function locationErrorCallback(err) {
-  console.warn("ERROR(".concat(err.code, "): ").concat(err.message));
-  console.log(err);
+  $('#loadingModal').modal('hide');
+  $('#locationModal').modal({
+    backdrop: 'static',
+    keyboard: false
+  }, 'show');
+  $('button.close').hide();
+  $('button.btn-secondary').data('dismiss', 'modal').hide();
+  $("#locationModal .modal-title").text("A location is required to use this application.");
+  this.manualEntry = true;
 }
 
 function showPosition(position) {
@@ -445,6 +461,7 @@ function codeLatLng(lat, lng) {
 
         if ($('.results').is(":visible") === false) {
           window.userLocation = userLocation;
+          window.userSearchLocation = userLocation;
           window.searchDistance = 10;
           window.getTopItems(userLocation);
           $('.search-form__input').attr('data-location', userSearchLocation);
