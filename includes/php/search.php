@@ -158,7 +158,6 @@ class Item_Search{
         $lat = $obj['results'][0]['geometry']['location']['lat'];
         $lng = $obj['results'][0]['geometry']['location']['lng'];
         
-        
         echo $this->search($distance, $lat, $lng, $limit, $page, $offset, $terms, false, $location);
 	}
 	
@@ -253,12 +252,12 @@ class Item_Search{
 			$sql .= ")";
 		}
 				
-		
 		if($random){
 			$sql .= " GROUP BY item_id, vendor_id ORDER BY rand()";
 		}
 		
 		$sql .= " LIMIT $ppp OFFSET $offset";			
+		
 						
 		$stmt = $conn->prepare($sql);
 		$stmt->execute();
@@ -266,9 +265,11 @@ class Item_Search{
 		
 		$results = $stmt->fetchall();
 		
+		
 		for($i = 0; $i < count($results); $i++){						
 			
-			
+			$results[$i]['item_name'] = utf8_encode($results[$i]['item_name']);
+			$results[$i]['item_short_description'] = utf8_encode($results[$i]['item_short_description']);
 			$results[$i]['original_primary_image'] = $results[$i]['primary_image'];
 			
 			if($results[$i]['primary_image'] == null){
@@ -293,12 +294,14 @@ class Item_Search{
 			// We nee dto reverse the array because usort orders from lowest to highest. 
 			$results = array_reverse($results);
 		}
-				
-		return json_encode($results);
-		
+						
 		if($terms != null){
 			$this->searchData($terms, $location, $latitude, $longitude, $distance, $results);
 		}
+		
+
+
+		return json_encode($results);
 		
 	}
 	
