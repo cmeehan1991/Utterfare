@@ -8,7 +8,7 @@
 
 		</div>
 
-		<div class="col-md-6 map-column">
+		<div class="d-none d-md-block col-md-6 map-column ">
 
 			<div id="map"></div>
 
