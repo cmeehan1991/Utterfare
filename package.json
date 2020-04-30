@@ -30,7 +30,7 @@
     "gulp-ng-annotate": "^2.1.0",
     "gulp-rename": "^1.4.0",
     "gulp-uglify": "^3.0.2",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "laravel-mix": "^5.0.0",
     "popper.js": "^1.16.0",
     "resolve-url-loader": "^3.1.0",
