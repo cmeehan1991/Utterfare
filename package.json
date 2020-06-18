@@ -12,7 +12,7 @@
   "devDependencies": {
     "@angular/core": "^8.2.14",
     "@angular/router": "^8.2.14",
-    "angular": "^1.7.9",
+    "angular": "^1.8.0",
     "angular-gtag": "^1.0.4",
     "angular-route": "^1.6.9",
     "babel-cli": "^6.26.0",
